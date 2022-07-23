@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "ars_gears:item/wood_paxel"
+  }
+}
