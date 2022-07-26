@@ -12,3 +12,12 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+/.idea/.gitignore
+/.idea/gradle.xml
+/.idea/misc.xml
+/.idea/vcs.xml
+/.idea/jarRepositories.xml
+/.idea/compiler.xml
+/.idea/modules/Ars_GEARs.main.iml
+/.idea/modules/Ars_GEARs.test.iml
+/.idea/runConfigurations/
