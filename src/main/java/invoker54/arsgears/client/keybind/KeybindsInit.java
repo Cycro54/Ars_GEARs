@@ -2,7 +2,7 @@ package invoker54.arsgears.client.keybind;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.capability.UtilGearCap;
+import invoker54.arsgears.capability.utilgear.UtilGearCap;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.CycleUtilityGearMsg;
@@ -24,15 +24,15 @@ public class KeybindsInit {
 
     public static void registerKeys(FMLClientSetupEvent event){
         //Open/Close Shop
-        cycleSelectedItem_utility = new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, () ->{
-
+        cycleSelectedItem_utility = new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
+            if(action != GLFW.GLFW_PRESS) return;
             LOGGER.debug("What's the active item: " + ClientUtil.mC.player.getMainHandItem().getItem().getClass());
             ItemStack item = ClientUtil.mC.player.getMainHandItem();
             if(item.getItem() instanceof UtilGearItem){
-                UtilGearCap cap = UtilGearCap.getCap(item);
-                cap.cycleItem();
+//                UtilGearCap cap = UtilGearCap.getCap(item);
+//                cap.cycleItem();
+                NetworkHandler.INSTANCE.sendToServer(new CycleUtilityGearMsg());
             }
-            NetworkHandler.INSTANCE.sendToServer(new CycleUtilityGearMsg());
         });
         gearBinds.add(cycleSelectedItem_utility);
     }

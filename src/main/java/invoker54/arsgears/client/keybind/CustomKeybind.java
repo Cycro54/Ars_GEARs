@@ -15,11 +15,11 @@ public class CustomKeybind {
         this.iClicked = iClicked;
     }
 
-    public void pressed(){
-        iClicked.onClick();
+    public void pressed(int action){
+        iClicked.onClick(action);
     }
 
     public interface IClicked {
-        void onClick();
+        void onClick(int action);
     }
 }

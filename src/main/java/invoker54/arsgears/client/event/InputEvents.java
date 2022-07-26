@@ -17,21 +17,21 @@ public class InputEvents {
 
     @SubscribeEvent
     public static void onKeyPress(InputEvent.KeyInputEvent event){
-        onInput();
+        onInput(event.getAction(), event.getKey());
     }
 
     @SubscribeEvent
     public static void onMousePress(InputEvent.MouseInputEvent event){
-        onInput();
+        onInput(event.getAction(), event.getButton());
     }
 
-    private static void onInput(){
+    private static void onInput(int action, int key){
         //LOGGER.debug("Is there a world?? " + (ClientUtil.mC.level == null));
         if (ClientUtil.mC.level == null) return;
 
         for (CustomKeybind cKeyBind : KeybindsInit.gearBinds){
-            if (cKeyBind.keyBind.isDown()){
-                cKeyBind.pressed();
+            if (cKeyBind.keyBind.getKey().getValue() == key){
+                cKeyBind.pressed(action);
                 break;
             }
         }
