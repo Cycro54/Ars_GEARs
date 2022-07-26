@@ -1,7 +1,7 @@
 package invoker54.arsgears;
 
-import invoker54.arsgears.capability.AttachCapEvents;
 import invoker54.arsgears.client.keybind.KeybindsInit;
+import invoker54.arsgears.init.CapInit;
 import invoker54.arsgears.item.utilgear.CustomFishRenderer;
 import invoker54.arsgears.network.NetworkHandler;
 import net.minecraft.block.Block;
@@ -52,7 +52,7 @@ public class ArsGears {
         // some preinit code
         LOGGER.info("HELLO FROM PREINIT");
         LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
-        AttachCapEvents.registerCaps();
+        CapInit.registerCaps();
         NetworkHandler.init();
     }
 
