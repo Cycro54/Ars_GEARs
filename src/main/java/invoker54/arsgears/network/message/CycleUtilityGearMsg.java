@@ -1,6 +1,7 @@
 package invoker54.arsgears.network.message;
 
-import invoker54.arsgears.capability.UtilGearCap;
+import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.capability.utilgear.UtilGearCap;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -13,7 +14,7 @@ public class CycleUtilityGearMsg {
         NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
-            //System.out.println("Syncing cap data for a client...");
+            System.out.println("Syncing cap data for a client...");
             ItemStack item = context.getSender().getMainHandItem();
             if(item.getItem() instanceof UtilGearItem){
                 UtilGearCap cap = UtilGearCap.getCap(item);
