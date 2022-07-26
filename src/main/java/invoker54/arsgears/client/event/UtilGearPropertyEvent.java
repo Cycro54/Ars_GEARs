@@ -1,7 +1,7 @@
 package invoker54.arsgears.client.event;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.capability.UtilGearCap;
+import invoker54.arsgears.capability.utilgear.UtilGearCap;
 import invoker54.arsgears.init.ItemInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;

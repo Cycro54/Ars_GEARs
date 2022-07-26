@@ -1,9 +1,12 @@
 package invoker54.arsgears.item.utilgear;
 
-import invoker54.arsgears.capability.UtilGearCap;
+import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.capability.utilgear.UtilGearCap;
 import invoker54.arsgears.init.ItemInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,7 +33,7 @@ public class UtilGearItem extends ToolItem {
 
     @Override
     public @NotNull ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        LOGGER.debug("Is this in the main hand? " + (handIn == Hand.MAIN_HAND));
+        //LOGGER.debug("Is this in the main hand? " + (handIn == Hand.MAIN_HAND));
         switch (getSelectedItem(playerIn.getItemInHand(handIn))){
             default:
                 return paxel.use(worldIn, playerIn, handIn);
@@ -104,18 +107,7 @@ public class UtilGearItem extends ToolItem {
         CompoundNBT capNBT = UtilGearCap.getCap(stack).serializeNBT();
 
         cNBT.put(UTIL_GEAR_CAP, capNBT);
-        System.out.println("I AM GRABBING THE SHARED TAG");
         return cNBT;
-    }
-
-    @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        super.readShareTag(stack, nbt);
-
-        if (nbt != null){
-            System.out.println("I AM READING THE SHARED TAG");
-            UtilGearCap.getCap(stack).deserializeNBT((CompoundNBT) nbt.get(UTIL_GEAR_CAP));
-        }
     }
 
     //region Fishing shtuff
@@ -144,7 +136,6 @@ public class UtilGearItem extends ToolItem {
 
         return ActionResult.sidedSuccess(itemStack, worldIn.isClientSide());
     }
-
 
     //endregion
 }
