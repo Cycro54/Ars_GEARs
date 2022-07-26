@@ -2,6 +2,7 @@ package invoker54.arsgears.item.utilgear;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import invoker54.arsgears.capability.utilgear.UtilGearCap;
 import invoker54.arsgears.init.ItemInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -20,6 +21,7 @@ import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.client.settings.IKeyConflictContext;
 
 public class CustomFishRenderer extends EntityRenderer<FishingBobberEntity> {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/fishing_hook.png");

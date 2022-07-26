@@ -1,6 +1,6 @@
 package invoker54.arsgears.item.utilgear;
 
-import invoker54.arsgears.capability.UtilGearCap;
+import invoker54.arsgears.capability.utilgear.UtilGearCap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
