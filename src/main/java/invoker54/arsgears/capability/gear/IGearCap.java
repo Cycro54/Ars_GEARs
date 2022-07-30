@@ -1,12 +1,10 @@
-package invoker54.arsgears.capability.utilgear;
+package invoker54.arsgears.capability.gear;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface IUtilGearCap extends INBTSerializable<CompoundNBT> {
+public interface IGearCap extends INBTSerializable<CompoundNBT> {
     int getSelectedItem();
-
-    int getTier();
 
     void cycleItem();
 

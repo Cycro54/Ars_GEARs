@@ -1,8 +1,10 @@
 package invoker54.arsgears.client.event;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.capability.utilgear.UtilGearCap;
+import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.init.ItemInit;
+import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
@@ -24,16 +26,15 @@ public class UtilGearPropertyEvent {
             //This changes the selected item model
             ItemModelsProperties.register(ItemInit.WOOD_UTILITY_GEAR.getItem(),
                     new ResourceLocation(ArsGears.MOD_ID, "selected_item"),
-                    (itemStack, clientWorld, livingEntity) -> {
-                        if(livingEntity == null) return -1;
-                        if(!(livingEntity instanceof PlayerEntity)) return -1;
-                        boolean isMainhand = livingEntity.getMainHandItem() == itemStack;
-                        boolean isOffHand = livingEntity.getOffhandItem() == itemStack;
-                        if(!isMainhand && !isOffHand) return -1;
+                    (itemStack, clientWorld, entity) -> {
+                        if(entity == null) return -1;
+                        if(!(entity instanceof PlayerEntity)) return -1;
 
-                        float change = (((PlayerEntity) livingEntity).fishing == null) ? 0 : 0.5f;
+                        if (ArsUtil.getHeldItem(entity, UtilGearItem.class).isEmpty()) return -1;
 
-                        return UtilGearCap.getCap(itemStack).getSelectedItem() + change;
+                        float change = (((PlayerEntity) entity).fishing == null) ? 0 : 0.5f;
+
+                        return GearCap.getCap(itemStack).getSelectedItem() + change;
                     });
         });
     }

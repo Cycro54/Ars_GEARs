@@ -14,6 +14,11 @@ public class CustomKeybind {
         ClientRegistry.registerKeyBinding(keyBind);
         this.iClicked = iClicked;
     }
+    public CustomKeybind(KeyBinding keyBind, IClicked iClicked){
+        this.keyBind = keyBind;
+
+        this.iClicked = iClicked;
+    }
 
     public void pressed(int action){
         iClicked.onClick(action);

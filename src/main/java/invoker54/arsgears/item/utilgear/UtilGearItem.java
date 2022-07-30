@@ -1,12 +1,12 @@
 package invoker54.arsgears.item.utilgear;
 
-import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.capability.utilgear.UtilGearCap;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.init.ItemInit;
+import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.network.NetworkHandler;
+import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -22,17 +22,43 @@ import javax.annotation.Nullable;
 public class UtilGearItem extends ToolItem {
     private static final Logger LOGGER = LogManager.getLogger();
     private final String UTIL_GEAR_CAP = "UTIL_GEAR_CAP";
-
-    private final PaxelItem paxel = (PaxelItem) ItemInit.WOOD_PAXEL.getItem();
-    private final FishingRodItem fishingRodItem = (FishingRodItem) Items.FISHING_ROD.getItem();
-    private final HoeItem hoeItem = (HoeItem) Items.WOODEN_HOE.getItem();
+    private final PaxelItem paxel;
+    private final FishingRodItem fishingRodItem;
+    private final HoeItem hoeItem;
 
     public UtilGearItem(IItemTier tier, Item.Properties builder) {
         super(0, 1, tier, null, builder);
+
+        //fishing rod will never change, so just assign it.
+        fishingRodItem = (FishingRodItem) Items.FISHING_ROD.getItem();
+
+        switch (GearTier.valueOf(String.valueOf(tier))){
+            default:
+                paxel = new PaxelItem(tier, 9, 3, builder);
+                hoeItem = (HoeItem) Items.WOODEN_HOE.getItem();
+                break;
+            case STONE:
+                paxel = new PaxelItem(tier, 9, 3, builder);
+                hoeItem = (HoeItem) Items.STONE_HOE.getItem();
+                break;
+            case IRON:
+                paxel = new PaxelItem(tier, 9, 3, builder);
+                hoeItem = (HoeItem) Items.IRON_HOE.getItem();
+                break;
+            case DIAMOND:
+                paxel = new PaxelItem(tier, 9, 3, builder);
+                hoeItem = (HoeItem) Items.DIAMOND_HOE.getItem();
+                break;
+        }
     }
 
     @Override
     public @NotNull ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (playerIn.isCrouching()){
+            if (worldIn.isClientSide()) NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
+
+            return ActionResult.pass(playerIn.getItemInHand(handIn));
+        }
         //LOGGER.debug("Is this in the main hand? " + (handIn == Hand.MAIN_HAND));
         switch (getSelectedItem(playerIn.getItemInHand(handIn))){
             default:
@@ -94,7 +120,7 @@ public class UtilGearItem extends ToolItem {
     }
 
     public int getSelectedItem(ItemStack itemStack) {
-        UtilGearCap cap = UtilGearCap.getCap(itemStack);
+        GearCap cap = GearCap.getCap(itemStack);
 
         return cap.getSelectedItem();
     }
@@ -104,10 +130,16 @@ public class UtilGearItem extends ToolItem {
     public CompoundNBT getShareTag(ItemStack stack) {
         CompoundNBT cNBT = stack.getOrCreateTag();
 
-        CompoundNBT capNBT = UtilGearCap.getCap(stack).serializeNBT();
+        CompoundNBT capNBT = GearCap.getCap(stack).serializeNBT();
 
         cNBT.put(UTIL_GEAR_CAP, capNBT);
         return cNBT;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
+        super.readShareTag(stack, nbt);
+        GearCap.getCap(stack).deserializeNBT(nbt.getCompound(UTIL_GEAR_CAP));
     }
 
     //region Fishing shtuff
@@ -136,6 +168,5 @@ public class UtilGearItem extends ToolItem {
 
         return ActionResult.sidedSuccess(itemStack, worldIn.isClientSide());
     }
-
     //endregion
 }

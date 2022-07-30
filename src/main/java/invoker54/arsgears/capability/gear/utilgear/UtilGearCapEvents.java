@@ -1,4 +1,4 @@
-package invoker54.arsgears.capability.utilgear;
+package invoker54.arsgears.capability.gear.utilgear;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.item.utilgear.UtilGearItem;

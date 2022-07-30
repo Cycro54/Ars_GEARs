@@ -3,13 +3,17 @@ package invoker54.arsgears.client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +48,7 @@ public class ClientUtil {
         bufferbuilder.vertex(lastPos, (float)x1, (float)y1, (float)0).uv(u1, v1).endVertex();
         bufferbuilder.vertex(lastPos, (float)x1, (float)y0, (float)0).uv(u1, v0).endVertex();
         bufferbuilder.vertex(lastPos, (float)x0, (float)y0, (float)0).uv(u0, v0).endVertex();
-        bufferbuilder.endVertex();
+        bufferbuilder.end();
         WorldVertexBufferUploader.end(bufferbuilder);
 
         RenderSystem.enableDepthTest();
@@ -69,7 +73,7 @@ public class ClientUtil {
         bufferbuilder.vertex(lastPos, (float)x1, (float)y1, (float)0).color(f, f1, f2, f3).endVertex();
         bufferbuilder.vertex(lastPos, (float)x1, (float)y0, (float)0).color(f, f1, f2, f3).endVertex();
         bufferbuilder.vertex(lastPos, (float)x0, (float)y0, (float)0).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.endVertex();
+        bufferbuilder.end();
         WorldVertexBufferUploader.end(bufferbuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
@@ -143,6 +147,41 @@ public class ClientUtil {
             this.y0 = y;
             this.y1 = y + height;
 
+        }
+    }
+
+    public static class SimpleButton extends Button {
+
+        public boolean hidden = false;
+
+        public SimpleButton(int x, int y, int width, int height, ITextComponent textComponent, IPressable onPress) {
+            super(x, y, width, height, textComponent, onPress);
+            this.visible = true;
+        }
+
+        @Override
+        public void renderButton(MatrixStack stack, int xMouse, int yMouse, float partialTicks) {
+            if (hidden) return;
+
+            FontRenderer fontrenderer = mC.font;
+            TEXTURE_MANAGER.bind(WIDGETS_LOCATION);
+            int i = this.getYImage(this.isHovered());
+            i = 46 + i * 20;
+
+            //left part of the button
+            ClientUtil.blitImage(stack, this.x,  this.width / 2, this.y, this.height,
+                    0, this.width / 2f, i, 20, 256);
+//            //left part of the button
+//            this.blit(stack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+
+            //right part of the button
+            ClientUtil.blitImage(stack, this.x + this.width / 2,  this.width/2, this.y, this.height,
+                    200 - (this.width/2), this.width/2, i, 20, 256);
+//            //right part of the button
+//            this.blit(stack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+
+            int j = getFGColor();
+            drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
         }
     }
 

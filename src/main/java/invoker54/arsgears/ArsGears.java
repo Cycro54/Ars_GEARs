@@ -2,6 +2,7 @@ package invoker54.arsgears;
 
 import invoker54.arsgears.client.keybind.KeybindsInit;
 import invoker54.arsgears.init.CapInit;
+import invoker54.arsgears.init.ContainerInit;
 import invoker54.arsgears.item.utilgear.CustomFishRenderer;
 import invoker54.arsgears.network.NetworkHandler;
 import net.minecraft.block.Block;
@@ -61,7 +62,11 @@ public class ArsGears {
         // do something that can only be done on the client
         LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
         KeybindsInit.registerKeys(event);
+
+        /** TODO I have to make a seperate fishing class and rod for the Utility gear */
         RenderingRegistry.registerEntityRenderingHandler(EntityType.FISHING_BOBBER, CustomFishRenderer::new);
+
+        ContainerInit.initialize();
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {

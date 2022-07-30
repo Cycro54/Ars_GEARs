@@ -1,7 +1,8 @@
 package invoker54.arsgears.network;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.network.message.CycleUtilityGearMsg;
+import invoker54.arsgears.network.message.*;
+import invoker54.arsgears.network.message.edited.PacketUpdateSpellbook;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -13,7 +14,10 @@ public class NetworkHandler {
     //Increment the first number if you add new stuff to NetworkHandler class
     //Increment the middle number each time you make a new Message
     //Increment the last number each time you fix a bug
-    private static final String PROTOCOL_VERSION = "1.1.0";
+    private static final String PROTOCOL_VERSION = "1.4.0";
+
+    private static int ID = 0;
+    public static int nextID(){return ID++;}
 
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
 
@@ -32,7 +36,14 @@ public class NetworkHandler {
         // (change encode with an empty lambda, and just make decode create a new instance of the target message class)
         // INSTANCE.registerMessage(0, SpawnDiamondMsg.class, (message, buf) -> {}, it -> new SpawnDiamondMsg(), SpawnDiamondMsg::handle);
         // INSTANCE.registerMessage(0, SyncClientCapMsg.class, SyncClientCapMsg::Encode, SyncClientCapMsg::Decode, SyncClientCapMsg::handle);
-        INSTANCE.registerMessage(0, CycleUtilityGearMsg.class, (message, buf) -> {}, it -> new CycleUtilityGearMsg(), CycleUtilityGearMsg::handle);
+        INSTANCE.registerMessage(nextID(), CycleGearMsg.class, (message, buf) -> {}, it -> new CycleGearMsg(), CycleGearMsg::handle);
+        INSTANCE.registerMessage(nextID(), SyncServerPlayerCapMsg.class, SyncServerPlayerCapMsg::encode, SyncServerPlayerCapMsg::decode, SyncServerPlayerCapMsg::handle);
+        INSTANCE.registerMessage(nextID(), OpenGearContainerMsg.class, (message, buf) -> {}, it -> new OpenGearContainerMsg(), OpenGearContainerMsg::handle);
+        INSTANCE.registerMessage(nextID(), FeedGearMsg.class, FeedGearMsg::encode, FeedGearMsg::decode, FeedGearMsg::handle);
+        INSTANCE.registerMessage(nextID(), ActivateGearMsg.class, (message, buf) -> {}, it -> new ActivateGearMsg(), ActivateGearMsg::handle);
+
+        //These are messages from Ars nouveau edited
+        INSTANCE.registerMessage(nextID(), PacketUpdateSpellbook.class, PacketUpdateSpellbook::toBytes, PacketUpdateSpellbook::new, PacketUpdateSpellbook::handle);
     }
 
     //Custom method used to send data to players

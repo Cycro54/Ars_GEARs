@@ -1,7 +1,10 @@
 {
+  "__comment1": "This is for items",
   "item.ars_gears.wood_paxel": "Wooden Paxel",
   "item.ars_gears.wood_utility_gear": "Utility GEAR (wood)",
+  "item.ars_gears.wood_combat_gear": "Combat GEAR (wood)",
 
+  "__comment2": "This is for keybinds",
   "key.category.ars_gears": "Ars GEARs",
   "key.ars_gears.cycle_gear": "Cycle Utility Gear"
 }

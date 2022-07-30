@@ -1,6 +1,7 @@
-package invoker54.arsgears.capability.utilgear;
+package invoker54.arsgears.capability.gear.utilgear;
 
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.capability.gear.GearCap;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -19,13 +20,13 @@ public class UtilGearProvider implements ICapabilitySerializable<INBT> {
     public static final byte COMPOUND_NBT_ID = new CompoundNBT().getId();
 
     public UtilGearProvider(){
-        utilGearCap = new UtilGearCap();
+        utilGearCap = new GearCap();
     }
 
     //region Capability setup
     //This is where all of the ArsGears capability data is
-    @CapabilityInject(UtilGearCap.class)
-    public static Capability<UtilGearCap> CAP_UTILITY_GEAR = null;
+    @CapabilityInject(GearCap.class)
+    public static Capability<GearCap> CAP_UTILITY_GEAR = null;
 
     private final static String CAP_UTILITY_GEAR_NBT = "CAP_UTILITY_GEAR_NBT";
 
@@ -74,5 +75,5 @@ public class UtilGearProvider implements ICapabilitySerializable<INBT> {
     }
 
     //This is where the current capability is stored to read and write
-    private UtilGearCap utilGearCap;
+    private GearCap utilGearCap;
 }

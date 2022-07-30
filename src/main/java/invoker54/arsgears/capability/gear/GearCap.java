@@ -1,5 +1,6 @@
-package invoker54.arsgears.capability.utilgear;
+package invoker54.arsgears.capability.gear;
 
+import invoker54.arsgears.capability.gear.utilgear.UtilGearProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -10,26 +11,19 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-public class UtilGearCap implements IUtilGearCap {
+public class GearCap implements IGearCap {
     private static final Logger LOGGER = LogManager.getLogger();
-    public String SELECTED_ITEM = "SELECTED_ITEM";
-    public String TIER = "TIER";
+    private final String SELECTED_ITEM = "SELECTED_ITEM";
 
     private int selectedItem = 0;
-    private int tier = 0;
 
-    public static UtilGearCap getCap(ItemStack item){
+    public static GearCap getCap(ItemStack item){
         return item.getCapability(UtilGearProvider.CAP_UTILITY_GEAR).orElseThrow(NullPointerException::new);
     }
 
     @Override
     public int getSelectedItem() {
         return selectedItem;
-    }
-
-    @Override
-    public int getTier() {
-        return tier;
     }
 
     @Override
@@ -42,26 +36,24 @@ public class UtilGearCap implements IUtilGearCap {
     public CompoundNBT serializeNBT() {
         CompoundNBT cNBT = new CompoundNBT();
         cNBT.putInt(SELECTED_ITEM, selectedItem);
-        cNBT.putInt(TIER, tier);
         return cNBT;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         selectedItem = nbt.getInt(SELECTED_ITEM);
-        tier = nbt.getInt(TIER);
     }
 
-    public static class UtilGearNBTStorage implements Capability.IStorage<UtilGearCap>{
+    public static class GearNBTStorage implements Capability.IStorage<GearCap>{
 
         @Nullable
         @Override
-        public INBT writeNBT(Capability<UtilGearCap> capability, UtilGearCap instance, Direction side) {
+        public INBT writeNBT(Capability<GearCap> capability, GearCap instance, Direction side) {
             return instance.serializeNBT();
         }
 
         @Override
-        public void readNBT(Capability<UtilGearCap> capability, UtilGearCap instance, Direction side, INBT nbt) {
+        public void readNBT(Capability<GearCap> capability, GearCap instance, Direction side, INBT nbt) {
             CompoundNBT mainNbt = (CompoundNBT) nbt;
 
             instance.deserializeNBT(mainNbt);

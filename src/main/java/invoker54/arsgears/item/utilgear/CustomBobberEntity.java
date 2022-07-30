@@ -1,6 +1,6 @@
 package invoker54.arsgears.item.utilgear;
 
-import invoker54.arsgears.capability.utilgear.UtilGearCap;
+import invoker54.arsgears.capability.gear.GearCap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -28,7 +28,7 @@ public class CustomBobberEntity extends FishingBobberEntity {
         }
     }
     private boolean checkIfOnRod(ItemStack itemStack){
-        UtilGearCap cap = UtilGearCap.getCap(itemStack);
+        GearCap cap = GearCap.getCap(itemStack);
         return cap.getSelectedItem() == 1;
     }
 }
