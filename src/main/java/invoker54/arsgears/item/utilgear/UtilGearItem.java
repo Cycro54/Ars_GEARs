@@ -1,7 +1,6 @@
 package invoker54.arsgears.item.utilgear;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
@@ -30,26 +29,31 @@ public class UtilGearItem extends ToolItem {
         super(0, 1, tier, null, builder);
 
         //fishing rod will never change, so just assign it.
-        fishingRodItem = (FishingRodItem) Items.FISHING_ROD.getItem();
+        fishingRodItem = (FishingRodItem) Items.FISHING_ROD;
 
         switch (GearTier.valueOf(String.valueOf(tier))){
             default:
                 paxel = new PaxelItem(tier, 9, 3, builder);
-                hoeItem = (HoeItem) Items.WOODEN_HOE.getItem();
+                hoeItem = (HoeItem) Items.WOODEN_HOE;
                 break;
             case STONE:
                 paxel = new PaxelItem(tier, 9, 3, builder);
-                hoeItem = (HoeItem) Items.STONE_HOE.getItem();
+                hoeItem = (HoeItem) Items.STONE_HOE;
                 break;
             case IRON:
                 paxel = new PaxelItem(tier, 9, 3, builder);
-                hoeItem = (HoeItem) Items.IRON_HOE.getItem();
+                hoeItem = (HoeItem) Items.IRON_HOE;
                 break;
-            case DIAMOND:
+            case ARCANE:
                 paxel = new PaxelItem(tier, 9, 3, builder);
-                hoeItem = (HoeItem) Items.DIAMOND_HOE.getItem();
+                hoeItem = (HoeItem) Items.NETHERITE_HOE;
                 break;
         }
+    }
+
+    @Override
+    public GearTier getTier() {
+        return (GearTier) super.getTier();
     }
 
     @Override

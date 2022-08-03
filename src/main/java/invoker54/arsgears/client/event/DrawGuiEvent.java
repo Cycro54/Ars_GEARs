@@ -1,9 +1,6 @@
 package invoker54.arsgears.client.event;
 
-import com.hollingsworth.arsnouveau.ArsNouveau;
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.client.gui.modGuiSpellHUD;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

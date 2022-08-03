@@ -32,7 +32,6 @@ public class InputEvents {
         for (CustomKeybind cKeyBind : KeybindsInit.gearBinds){
             if (cKeyBind.keyBind.getKey().getValue() == key){
                 cKeyBind.pressed(action);
-                break;
             }
         }
     }

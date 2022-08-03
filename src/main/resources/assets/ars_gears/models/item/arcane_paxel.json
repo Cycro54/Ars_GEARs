@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "ars_gears:item/wood_combat_gear"
+    "layer0": "ars_gears:item/arcane_paxel"
   }
 }

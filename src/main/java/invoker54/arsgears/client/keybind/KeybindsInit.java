@@ -3,9 +3,14 @@ package invoker54.arsgears.client.keybind;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.modGuiSpellBook;
-import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.client.gui.CombatUpgradeScreen;
+import invoker54.arsgears.client.gui.ModGuiRadialMenu;
+import invoker54.arsgears.client.gui.ModGuiSpellBook;
+import invoker54.arsgears.client.gui.UpgradeScreen;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
@@ -24,8 +29,13 @@ import java.util.ArrayList;
 public class KeybindsInit {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ArrayList<CustomKeybind> gearBinds = new ArrayList<>();
+    //Utility Keybinds
     public static CustomKeybind cycleSelectedItem_utility;
-    public static CustomKeybind configureSpell_combat;
+
+
+    //Combat keybinds
+    public static CustomKeybind openSpell_combat;
+    public static CustomKeybind spellSelect_combat;
 
     public static void registerKeys(FMLClientSetupEvent event){
         //Cycle selected item for combar and utility gear
@@ -45,23 +55,44 @@ public class KeybindsInit {
         gearBinds.add(cycleSelectedItem_utility);
 
         //Open spell book screen to configure spell
-        configureSpell_combat = new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
+        openSpell_combat = new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
             if(action != GLFW.GLFW_PRESS) return;
-
             if (ClientUtil.mC.screen != null) return;
 
             ItemStack itemStack = ClientUtil.mC.player.getMainHandItem();
             if(itemStack.getItem() instanceof CombatGearItem) {
-                if (ClientUtil.mC.screen instanceof modGuiSpellBook) {
+                if (ClientUtil.mC.screen instanceof ModGuiSpellBook) {
                     ClientUtil.mC.setScreen(null);
                     return;
                 }
+                //Make sure the player is tier 2 or higher
+                if (((CombatGearItem) itemStack.getItem()).getTier().ordinal() < 1) return;
 
-                int tier = ((GearTier)((CombatGearItem) itemStack.getItem()).getTier()).ordinal();
-                modGuiSpellBook.open(itemStack.getOrCreateTag(), tier, SpellBook.getUnlockedSpellString(itemStack.getOrCreateTag()));
+                ModGuiSpellBook.open(itemStack);
             }
         }));
-        gearBinds.add(configureSpell_combat);
+        gearBinds.add(openSpell_combat);
 
+        //Open spell select screen
+        spellSelect_combat = new CustomKeybind(ModKeyBindings.OPEN_SPELL_SELECTION, (action -> {
+            if (action != GLFW.GLFW_PRESS) return;
+
+            if (ClientUtil.mC.screen instanceof ModGuiRadialMenu){
+                ClientUtil.mC.setScreen(null);
+                return;
+            }
+
+            ItemStack gearStack = ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class);
+
+            if (gearStack.isEmpty()) return;
+
+            if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() == 0) return;
+
+
+            if (ClientUtil.mC.screen == null){
+                ClientUtil.mC.setScreen(new ModGuiRadialMenu(gearStack));
+            }
+        }));
+        gearBinds.add(spellSelect_combat);
     }
 }

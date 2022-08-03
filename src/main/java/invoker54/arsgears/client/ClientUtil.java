@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
@@ -148,6 +149,19 @@ public class ClientUtil {
             this.y1 = y + height;
 
         }
+
+        public int getMinX() {
+            return x0;
+        }
+        public int getMaxX() {
+        return x1;
+        }
+        public int getMinY() {
+        return y0;
+        }
+        public int getMaxY() {
+        return y1;
+        }
     }
 
     public static class SimpleButton extends Button {
@@ -184,7 +198,6 @@ public class ClientUtil {
             drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
         }
     }
-
     public static String ticksToTime(int ticks){
         //Each second is 20 ticks
         //each minute is 1200 ticks

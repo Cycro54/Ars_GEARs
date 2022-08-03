@@ -1,10 +1,33 @@
 {
-  "__comment1": "This is for items",
+  "__comment": "This is for item names",
   "item.ars_gears.wood_paxel": "Wooden Paxel",
-  "item.ars_gears.wood_utility_gear": "Utility GEAR (wood)",
-  "item.ars_gears.wood_combat_gear": "Combat GEAR (wood)",
+  "item.ars_gears.stone_paxel": "Stone Paxel",
+  "item.ars_gears.iron_paxel": "Iron Paxel",
+  "item.ars_gears.arcane_paxel": "Arcane Paxel",
+  "item.ars_gears.wood_utility_gear": "Utility GEAR (Wood)",
+  "item.ars_gears.stone_utility_gear": "Utility GEAR (Stone)",
+  "item.ars_gears.iron_utility_gear": "Utility GEAR (Iron)",
+  "item.ars_gears.arcane_utility_gear": "Utility GEAR (Arcane)",
+  "item.ars_gears.utility_rune_1": "Utility Upgrade Rune (Stone)",
+  "item.ars_gears.utility_rune_2": "Utility Upgrade Rune (Iron)",
+  "item.ars_gears.utility_rune_3": "Utility Upgrade Rune (Arcane)",
+  "item.ars_gears.wood_combat_gear": "Combat GEAR (Wood)",
+  "item.ars_gears.stone_combat_gear": "Combat GEAR (Stone)",
+  "item.ars_gears.iron_combat_gear": "Combat GEAR (Iron)",
+  "item.ars_gears.arcane_combat_gear": "Combat GEAR (Arcane)",
+  "item.ars_gears.combat_rune_1": "Combat Upgrade Rune (Stone)",
+  "item.ars_gears.combat_rune_2": "Combat Upgrade Rune (Iron)",
+  "item.ars_gears.combat_rune_3": "Combat Upgrade Rune (Arcane)",
+  "item.ars_gears.stick_cross": "Stick Cross",
 
-  "__comment2": "This is for keybinds",
+  "__comment": "This is for keybinds",
   "key.category.ars_gears": "Ars GEARs",
-  "key.ars_gears.cycle_gear": "Cycle Utility Gear"
+  "key.ars_gears.cycle_gear": "Cycle Gear Item",
+
+  "__comment": "This is for player chat messages",
+  "ars_gears.chat.cant_upgrade_low": "Your tier is too low",
+  "ars_gears.chat.cant_upgrade_high": "You already have this upgrade",
+  "ars_gears.chat.upgrade_success": "Your GEAR has been upgraded to tier ",
+
+  "__comment": "This is for text that will be on the Upgrade screen"
 }

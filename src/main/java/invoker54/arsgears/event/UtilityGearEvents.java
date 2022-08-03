@@ -6,11 +6,13 @@ import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,30 +33,19 @@ public class UtilityGearEvents {
         //The player capability
         PlayerDataCap cap = PlayerDataCap.getCap(player);
         //the tracked item in the capability
-        ItemStack trackedGear = cap.getUtilityGear(false);
-        //The item to be inspected
-        ItemStack focusedGear = ItemStack.EMPTY;
-
+        ItemStack trackedGear = cap.getUtilityGear();
         //Check hands for utilty gear
-        focusedGear = ArsUtil.getHeldItem(player, UtilGearItem.class);
+        ItemStack focusedGear = ArsUtil.getHeldItem(player, UtilGearItem.class);
 
         //make sure we have a focused gear
         if (focusedGear.isEmpty()) return;
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
-        if (!ItemStack.matches(trackedGear, focusedGear)) {
+        if (trackedGear == focusedGear) {
             LOGGER.info("THEY WERENT THE SAME");
-            cap.setUtilityGear(focusedGear);
+            cap.setUtilityGear(focusedGear, false);
+            ArsUtil.replaceItemStack(player, focusedGear, cap.getUtilityGear());
         }
-        //Now destroy all of the other gears in the inventory
-        for (ItemStack itemStack : player.inventory.items){
-            if (itemStack.getItem() instanceof UtilGearItem){
-                if (itemStack != focusedGear) itemStack.shrink(1);
-            }
-        }
-        //Don't forget about offhand
-        ItemStack offItem = player.getOffhandItem();
-        if (offItem.getItem() instanceof UtilGearItem && offItem != focusedGear) offItem.shrink(1);
 
         //Finally, sync the data between the copy and the trackedGear
         cap.syncUtilityGearData();

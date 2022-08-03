@@ -6,16 +6,16 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 public interface IPlayerCap extends INBTSerializable<CompoundNBT> {
 
-    ItemStack getUtilityGear(boolean getCopy);
+    ItemStack getUtilityGear();
 
-    void setUtilityGear(ItemStack heldItem);
+    void setUtilityGear(ItemStack heldItem, boolean isUpgrade);
 
     void syncUtilityGearData();
 
     //Combat gear data
-    ItemStack getCombatGear(boolean getCopy);
+    ItemStack getCombatGear();
     
-    void setCombatGear(ItemStack heldItem);
+    void setCombatGear(ItemStack heldItem, boolean isUpgrade);
 
     void syncCombatGearData();
 }

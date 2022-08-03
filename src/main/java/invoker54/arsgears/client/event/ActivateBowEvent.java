@@ -4,16 +4,20 @@ import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
+import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
+import invoker54.arsgears.client.gui.CombatUpgradeScreen;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.ActivateGearMsg;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -58,9 +62,11 @@ public class ActivateBowEvent {
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
-        LOGGER.debug("THIS IS ACTUALLY RUNNING");
-
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
+
+        //If the spell is empty, tell them they can't cast it
+        if (spell.isEmpty()) PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.adding.non_empty_spell"));
+
         spell.recipe.add(0, MethodProjectile.INSTANCE);
         boolean flag = new SpellResolver(new SpellContext(spell, player)).canCast(player);
 
@@ -93,4 +99,5 @@ public class ActivateBowEvent {
 
         event.setNewfov(f);
     }
+
 }

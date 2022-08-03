@@ -48,7 +48,7 @@ public class CustomFishRenderer extends EntityRenderer<FishingBobberEntity> {
             p_225623_4_.popPose();
             int i = playerentity.getMainArm() == HandSide.RIGHT ? 1 : -1;
             ItemStack itemstack = playerentity.getMainHandItem();
-            if (itemstack.getItem() != ItemInit.WOOD_UTILITY_GEAR.getItem() &&
+            if (!(itemstack.getItem() instanceof UtilGearItem) &&
             itemstack.getItem() != Items.FISHING_ROD) {
                 i = -i;
             }

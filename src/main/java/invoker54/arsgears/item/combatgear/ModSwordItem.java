@@ -43,8 +43,6 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
 
     @Override
     public void inventoryTick(ItemStack gearStack, World worldIn, Entity entity, int itemSlot, boolean isSelected) {
-        if (worldIn.isClientSide()) return;
-
         PlayerEntity player = (PlayerEntity) entity;
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
@@ -69,7 +67,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         ItemStack gearStack = playerIn.getItemInHand(handIn);
 
         //Next, Grab its capability
-        CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(gearStack);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         LOGGER.debug("IS MY CAP ACTIVATED? " + cap.getActivated());
 
@@ -127,6 +125,9 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
             //endregion
         }
 
+        //This will stop the player from activating the sword if they aren't high enough level
+        if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() == 0) return ActionResult.fail(gearStack);
+
         //Set it to whatever it wasnt
         cap.setActivated(!cap.getActivated());
         return ActionResult.consume(gearStack);
@@ -134,7 +135,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
 
     @Override
     public boolean hurtEnemy(ItemStack gearStack, LivingEntity target, LivingEntity playerIn) {
-        CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(gearStack);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         //Only if the combat gear is set to active will the spell be cast.
         if (cap.getActivated()) {

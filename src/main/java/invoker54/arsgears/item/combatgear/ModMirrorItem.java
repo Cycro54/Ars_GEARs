@@ -29,8 +29,6 @@ public class ModMirrorItem extends EnchantersMirror {
 
     @Override
     public void inventoryTick(ItemStack gearStack, World worldIn, Entity entity, int itemSlot, boolean isSelected) {
-        if (worldIn.isClientSide()) return;
-
         PlayerEntity player = (PlayerEntity) entity;
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
@@ -40,13 +38,14 @@ public class ModMirrorItem extends EnchantersMirror {
         //Get the cap
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
+        //Make sure the player can even cast the spell
         boolean flag = resolver.canCast(player);
 
         //If the player can afford the spell, AND the combat gear isn't activated, activate the combat gear
         if (flag && !cap.getActivated()){
             cap.setActivated(true);
         }
-        else if (!flag || cap.getActivated()){
+        else if (!flag && cap.getActivated()){
             cap.setActivated(false);
         }
     }
@@ -64,7 +63,6 @@ public class ModMirrorItem extends EnchantersMirror {
         //Get the spell resolver
         SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
                 withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
-
 
         //For client side, and if the gearstack doesn't have a tag, AND if the gear isn't activated
         if (worldIn.isClientSide() || !gearStack.hasTag() || !cap.getActivated()){

@@ -26,7 +26,7 @@ public enum GearTier implements IItemTier {
         return Ingredient.of(Items.IRON_INGOT);
     }),
 
-    DIAMOND(1,1561,8,0.0F,0,() ->
+    ARCANE(1,1561,8,0.0F,0,() ->
 
     {
         return Ingredient.of(Items.DIAMOND);

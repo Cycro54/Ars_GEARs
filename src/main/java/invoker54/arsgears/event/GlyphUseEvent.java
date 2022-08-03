@@ -35,8 +35,8 @@ public class GlyphUseEvent {
         PlayerEntity player = event.getPlayer();
         Glyph glyph = (Glyph) itemStack.getItem();
         PlayerDataCap cap = PlayerDataCap.getCap(player);
-        ItemStack gearStack = cap.getCombatGear(false);
-        if (gearStack.isEmpty()) gearStack = cap.getCombatGear(true);
+        ItemStack gearStack = cap.getCombatGear();
+        if (gearStack.isEmpty()) gearStack = cap.getCombatGear();
 
         //Now lets use the method stuff directly from the Glyph use item class
         if (SpellBook.getUnlockedSpells(gearStack.getOrCreateTag()).contains(glyph.spellPart)){

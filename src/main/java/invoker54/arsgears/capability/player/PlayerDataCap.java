@@ -1,6 +1,6 @@
 package invoker54.arsgears.capability.player;
 
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.init.ItemInit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -17,20 +17,23 @@ public class PlayerDataCap implements IPlayerCap {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final String UTILITY_GEAR_DATA = "UTILITY_GEAR_DATA";
-    private final String COMBAT_GEAR_DATA = "UTILITY_GEAR_DATA";
+    private final String COMBAT_GEAR_DATA = "COMBAT_GEAR_DATA";
 
-    private final ItemStack utility_gear_copy;
-    private ItemStack tracked_utility_gear;
+    private ItemStack utility_gear_copy;
+    private ItemStack utility_gear_tracked;
     
     
-    private final ItemStack combat_gear_copy;
-    private ItemStack tracked_combat_gear;
+    private ItemStack combat_gear_copy;
+    private ItemStack combat_gear_tracked;
     public PlayerDataCap(){
         utility_gear_copy = new ItemStack(ItemInit.WOOD_UTILITY_GEAR);
-        tracked_utility_gear = ItemStack.EMPTY;
+        utility_gear_tracked = ItemStack.EMPTY;
         
         combat_gear_copy = new ItemStack(ItemInit.WOOD_COMBAT_GEAR);
-        tracked_combat_gear = ItemStack.EMPTY;
+        combat_gear_tracked = ItemStack.EMPTY;
+
+        //Just extra stuff for the combat gear so the selected spell isn't 0
+        combat_gear_copy.getOrCreateTag().putInt("mode", 1);
     }
 
     public static PlayerDataCap getCap(LivingEntity player){
@@ -38,57 +41,59 @@ public class PlayerDataCap implements IPlayerCap {
     }
 
     @Override
-    public ItemStack getUtilityGear(boolean getCopy) {
-        return getCopy ? utility_gear_copy : tracked_utility_gear;
+    public ItemStack getUtilityGear() {
+        return utility_gear_tracked.isEmpty() ? utility_gear_copy : utility_gear_tracked;
     }
 
     //This will set an item stack to be the currently held utility gear
     @Override
-    public void setUtilityGear(ItemStack heldItem) {
+    public void setUtilityGear(ItemStack heldItem, boolean isUpgrade) {
+        if (isUpgrade) utility_gear_copy = heldItem.copy();
+
         LOGGER.info("I am setting the held utility gear");
         //Set the item stack as the held_utility_gear
-        tracked_utility_gear = heldItem;
-
-        //Next make sure that itemstack is up to date with the utility_gear_copy
-        heldItem.deserializeNBT(utility_gear_copy.serializeNBT());
+        utility_gear_tracked = utility_gear_copy.copy();
     }
 
     @Override
     public void syncUtilityGearData() {
         //If they are already synced, don't sync it.
-        if (ItemStack.matches(tracked_utility_gear, utility_gear_copy)) return;
+        if (ItemStack.matches(utility_gear_tracked, utility_gear_copy)) return;
         //if (held_utility_gear.equals(utility_gear_copy, false)) return null;
 
+        if (utility_gear_tracked == ItemStack.EMPTY) return;
+
         //Now copy the held utility gear data over to the utility gear copy
-        CompoundNBT cNBT = tracked_utility_gear.serializeNBT();
+        CompoundNBT cNBT = utility_gear_tracked.serializeNBT();
         utility_gear_copy.deserializeNBT(cNBT);
 
         LOGGER.info("I AM SYNCING THE UTILITY GEAR DATA RIGHT NOW");
     }
 
     @Override
-    public ItemStack getCombatGear(boolean getCopy) {
-        return getCopy ? combat_gear_copy : tracked_combat_gear;
+    public ItemStack getCombatGear() {
+        return combat_gear_tracked.isEmpty() ? combat_gear_copy : combat_gear_tracked;
     }
 
     @Override
-    public void setCombatGear(ItemStack heldItem) {
+    public void setCombatGear(ItemStack heldItem, boolean isUpgrade) {
+        if (isUpgrade) combat_gear_copy = heldItem.copy();
+
         LOGGER.info("I am setting the held combat gear");
         //Set the item stack as the held_combat_gear
-        tracked_combat_gear = heldItem;
-
-        //Next make sure that itemstack is up to date with the combat_gear_copy
-        heldItem.deserializeNBT(combat_gear_copy.serializeNBT());
+        combat_gear_tracked = combat_gear_copy.copy();
     }
 
     @Override
     public void syncCombatGearData() {
         //If they are already synced, don't sync it.
-        if (ItemStack.matches(tracked_combat_gear, combat_gear_copy)) return;
+        if (ItemStack.matches(combat_gear_tracked, combat_gear_copy)) return;
         //if (held_combat_gear.equals(combat_gear_copy, false)) return null;
 
+        if (combat_gear_tracked == ItemStack.EMPTY) return;
+
         //Now copy the held combat gear data over to the combat gear copy
-        CompoundNBT cNBT = tracked_combat_gear.serializeNBT();
+        CompoundNBT cNBT = combat_gear_tracked.serializeNBT();
         combat_gear_copy.deserializeNBT(cNBT);
 
         LOGGER.info("I AM SYNCING THE COMBAT GEAR DATA RIGHT NOW");
@@ -104,8 +109,8 @@ public class PlayerDataCap implements IPlayerCap {
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        utility_gear_copy.deserializeNBT(nbt.getCompound(UTILITY_GEAR_DATA));
-        combat_gear_copy.deserializeNBT(nbt.getCompound(COMBAT_GEAR_DATA));
+        utility_gear_copy = ItemStack.of(nbt.getCompound(UTILITY_GEAR_DATA));
+        combat_gear_copy = ItemStack.of(nbt.getCompound(COMBAT_GEAR_DATA));
     }
 
     public static class PlayerDataNBTStorage implements Capability.IStorage<PlayerDataCap>{

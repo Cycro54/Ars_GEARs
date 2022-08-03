@@ -7,6 +7,7 @@ import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,20 +24,22 @@ public class CombatGearPropertyEvent {
 
     @SubscribeEvent
     public static void propertyOverrideRegistry(FMLClientSetupEvent event) {
+        IItemPropertyGetter combatChanger = (itemStack, clientWorld, entity) -> {
+            if(entity == null) return -1;
+
+            if(!(entity instanceof PlayerEntity)) return -1;
+
+            if (ArsUtil.getHeldItem(entity, CombatGearItem.class).isEmpty()) return -1;
+
+            return CombatGearCap.getCap(itemStack).getSelectedItem();
+        };
+        ResourceLocation selected_item = new ResourceLocation(ArsGears.MOD_ID, "selected_item");
+
         event.enqueueWork(() -> {
-
-            //This changes the selected item model
-            ItemModelsProperties.register(ItemInit.WOOD_COMBAT_GEAR.getItem(),
-                    new ResourceLocation(ArsGears.MOD_ID, "selected_item"),
-                    (itemStack, clientWorld, entity) -> {
-                        if(entity == null) return -1;
-
-                        if(!(entity instanceof PlayerEntity)) return -1;
-
-                        if (ArsUtil.getHeldItem(entity, CombatGearItem.class).isEmpty()) return -1;
-
-                        return CombatGearCap.getCap(itemStack).getSelectedItem();
-                    });
+            ItemModelsProperties.register(ItemInit.WOOD_COMBAT_GEAR.getItem(), selected_item, combatChanger);
+            ItemModelsProperties.register(ItemInit.STONE_COMBAT_GEAR.getItem(), selected_item, combatChanger);
+            ItemModelsProperties.register(ItemInit.IRON_COMBAT_GEAR.getItem(), selected_item, combatChanger);
+            ItemModelsProperties.register(ItemInit.ARCANE_COMBAT_GEAR.getItem(), selected_item, combatChanger);
         });
     }
 }

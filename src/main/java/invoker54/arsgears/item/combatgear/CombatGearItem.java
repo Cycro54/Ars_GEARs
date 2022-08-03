@@ -9,9 +9,14 @@ import com.hollingsworth.arsnouveau.client.renderer.item.SpellBowRenderer;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.hollingsworth.arsnouveau.common.network.PacketOpenSpellBook;
+import com.hollingsworth.arsnouveau.setup.BlockRegistry;
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.client.ClientUtil;
+import invoker54.arsgears.client.gui.CombatUpgradeScreen;
+import invoker54.arsgears.client.gui.ModGuiSpellBook;
 import invoker54.arsgears.client.render.CombatGearRenderer;
 import invoker54.arsgears.item.GearTier;
 import net.minecraft.block.BlockState;
@@ -65,7 +70,17 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+    public boolean isFoil(ItemStack p_77636_1_) {
+        return false;
+    }
+
+    @Override
+    public GearTier getTier() {
+        return (GearTier) super.getTier();
+    }
+
+    @Override
+    public void inventoryTick(ItemStack gearStack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 //        if(!worldIn.isClientSide && worldIn.getGameTime() % 5 == 0) {
 //            CompoundNBT tag = stack.getOrCreateTag();
 //            tag.putInt(SpellBook.BOOK_MODE_TAG, 0);
@@ -78,7 +93,27 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 //            }
 //            tag.putString(SpellBook.UNLOCKED_SPELLS, starting_spells.toString());
 //        }
-        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+        if (worldIn.isClientSide()) return;
+
+        PlayerEntity player = (PlayerEntity) entityIn;
+
+        if (ArsUtil.getHeldItem(player, CombatGearItem.class).isEmpty()) return;
+
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+
+        if (SpellBook.getMode(gearStack.getOrCreateTag()) == 0){SpellBook.setMode(gearStack.getOrCreateTag(),0);}
+
+        switch (cap.getSelectedItem()){
+            default:
+                modSword.inventoryTick(gearStack, worldIn, entityIn, itemSlot, isSelected);
+                break;
+            case 1:
+                modBow.inventoryTick(gearStack, worldIn, entityIn, itemSlot, isSelected);
+                break;
+            case 2:
+                modMirror.inventoryTick(gearStack, worldIn, entityIn, itemSlot, isSelected);
+                break;
+        }
     }
 
     @Override
@@ -88,7 +123,7 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 
     @Override
     public boolean hurtEnemy(ItemStack gearStack, LivingEntity target, LivingEntity playerIn) {
-        CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(gearStack);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         switch (cap.getSelectedItem()){
             default:
@@ -103,20 +138,27 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(stack);
+        CombatGearCap cap = CombatGearCap.getCap(stack);
 
         if(!stack.hasTag())
             return new ActionResult<>(ActionResultType.SUCCESS, stack);
 
+        //Check if the spell slot is empty
+//        boolean flag = getRecipeFromTag(stack.getOrCreateTag(), getMode(stack.getOrCreateTag())).isEmpty();
+//        if(getTier().ordinal() > 0 && flag) {
+//            return new ActionResult<>(ActionResultType.CONSUME, stack);
+//        }
+
         if(worldIn.isClientSide || !stack.hasTag()){
             return new ActionResult<>(ActionResultType.CONSUME, stack);
         }
-        // Crafting mode (only available if you are tier 1 or higher
-        if(((GearTier)getTier()).ordinal() > 0 && getMode(stack.getOrCreateTag()) == 0 && playerIn instanceof ServerPlayerEntity) {
+        // Crafting mode (you can no longer select crafting mode)
+        // You will instead select a spell slot, and if that spell slot is empty the spell book will open
+        /*if(getTier().ordinal() > 0 && getMode(stack.getOrCreateTag()) == 0 && playerIn instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) playerIn;
-            Networking.INSTANCE.send(PacketDistributor.PLAYER.with(()->player), new PacketOpenSpellBook(stack.getTag(), ((GearTier)getTier()).ordinal(), getUnlockedSpellString(player.getItemInHand(handIn).getOrCreateTag())));
+            Networking.INSTANCE.send(PacketDistributor.PLAYER.with(()->player), new PacketOpenSpellBook(stack.getTag(), getTier().ordinal(), getUnlockedSpellString(player.getItemInHand(handIn).getOrCreateTag())));
             return new ActionResult<>(ActionResultType.CONSUME, stack);
-        }
+        } */
 
         //If not crafting mode, let's use the selected item instead.
         switch (cap.getSelectedItem()){
@@ -149,7 +191,7 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 
     @Override
     public int getUseDuration(ItemStack gearStack) {
-        CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(gearStack);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         switch (cap.getSelectedItem()){
             default:
@@ -177,7 +219,7 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 
     @Override
     public UseAction getUseAnimation(ItemStack gearStack) {
-        CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(gearStack);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         switch (cap.getSelectedItem()){
             default:
@@ -197,13 +239,15 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
         CompoundNBT capNBT = CombatGearCap.getCap(stack).serializeNBT();
 
         cNBT.put(COMBAT_GEAR, capNBT);
+        LOGGER.info("Share tag shtuff");
+        LOGGER.info("This is the new tag broz: " + CombatGearCap.getCap(stack).getActivated());
         return cNBT;
     }
 
     @Override
     public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
-        super.readShareTag(stack, nbt);
         CombatGearCap.getCap(stack).deserializeNBT(nbt.getCompound(COMBAT_GEAR));
+        super.readShareTag(stack, nbt);
     }
 
     @Override
@@ -213,8 +257,8 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-        //CombatGearCap cap = (CombatGearCap) CombatGearCap.getCap(gearStack);
-        int tier = ((GearTier)getTier()).ordinal();
+        //CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        int tier = getTier().ordinal();
 
         super.appendHoverText(gearStack, world, tooltip, flag);
         if(gearStack.hasTag()) {

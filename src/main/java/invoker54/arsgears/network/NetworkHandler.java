@@ -2,6 +2,8 @@ package invoker54.arsgears.network;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.network.message.*;
+import invoker54.arsgears.network.message.edited.PacketSetBookMode;
+import invoker54.arsgears.network.message.edited.PacketUpdateSpellColors;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellbook;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -14,7 +16,7 @@ public class NetworkHandler {
     //Increment the first number if you add new stuff to NetworkHandler class
     //Increment the middle number each time you make a new Message
     //Increment the last number each time you fix a bug
-    private static final String PROTOCOL_VERSION = "1.4.0";
+    private static final String PROTOCOL_VERSION = "1.8.0";
 
     private static int ID = 0;
     public static int nextID(){return ID++;}
@@ -41,10 +43,14 @@ public class NetworkHandler {
         INSTANCE.registerMessage(nextID(), OpenGearContainerMsg.class, (message, buf) -> {}, it -> new OpenGearContainerMsg(), OpenGearContainerMsg::handle);
         INSTANCE.registerMessage(nextID(), FeedGearMsg.class, FeedGearMsg::encode, FeedGearMsg::decode, FeedGearMsg::handle);
         INSTANCE.registerMessage(nextID(), ActivateGearMsg.class, (message, buf) -> {}, it -> new ActivateGearMsg(), ActivateGearMsg::handle);
+        INSTANCE.registerMessage(nextID(), SyncServerCombatGearMsg.class, SyncServerCombatGearMsg::encode, SyncServerCombatGearMsg::decode, SyncServerCombatGearMsg::handle);
 
         //These are messages from Ars nouveau edited
         INSTANCE.registerMessage(nextID(), PacketUpdateSpellbook.class, PacketUpdateSpellbook::toBytes, PacketUpdateSpellbook::new, PacketUpdateSpellbook::handle);
+        INSTANCE.registerMessage(nextID(), PacketSetBookMode.class, PacketSetBookMode::toBytes, PacketSetBookMode::new, PacketSetBookMode::handle);
+        INSTANCE.registerMessage(nextID(), PacketUpdateSpellColors.class, PacketUpdateSpellColors::toBytes, PacketUpdateSpellColors::new, PacketUpdateSpellColors::handle);
     }
+
 
     //Custom method used to send data to players
     public static void sendToPlayer(PlayerEntity player, Object message) {
