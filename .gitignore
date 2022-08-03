@@ -21,3 +21,7 @@ gradle-app.setting
 /.idea/modules/Ars_GEARs.main.iml
 /.idea/modules/Ars_GEARs.test.iml
 /.idea/runConfigurations/
+/run/
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/uiDesigner.xml
