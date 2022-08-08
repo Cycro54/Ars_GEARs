@@ -1,6 +1,7 @@
 package invoker54.arsgears.network.message;
 
-import invoker54.arsgears.client.screen.GearContainer;
+import invoker54.arsgears.client.gui.container.GearContainer;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -33,15 +34,15 @@ public class FeedGearMsg {
 
         context.enqueueWork(() -> {
             PlayerEntity player = context.getSender();
-            //Mess with the container
-            ((GearContainer)player.containerMenu).tempInv.getItem(0).setCount(msg.newCount);
 
             //Now grab the gear
             ItemStack item = player.getMainHandItem();
-            if(!(item.getItem() instanceof UtilGearItem)) item = player.getOffhandItem();
-
-            //Finally set the damage value
-            item.setDamageValue(msg.newDamageValue);
+            if (item.getItem() instanceof UtilGearItem || item.getItem() instanceof CombatGearItem) {
+                //Mess with the container
+                ((GearContainer)player.containerMenu).tempInv.getItem(0).setCount(msg.newCount);
+                //Finally set the damage value
+                item.setDamageValue(msg.newDamageValue);
+            }
         });
         context.setPacketHandled(true);
     }

@@ -39,6 +39,7 @@ public class CombatGearPropertyEvent {
             ItemModelsProperties.register(ItemInit.WOOD_COMBAT_GEAR.getItem(), selected_item, combatChanger);
             ItemModelsProperties.register(ItemInit.STONE_COMBAT_GEAR.getItem(), selected_item, combatChanger);
             ItemModelsProperties.register(ItemInit.IRON_COMBAT_GEAR.getItem(), selected_item, combatChanger);
+            ItemModelsProperties.register(ItemInit.DIAMOND_COMBAT_GEAR.getItem(), selected_item, combatChanger);
             ItemModelsProperties.register(ItemInit.ARCANE_COMBAT_GEAR.getItem(), selected_item, combatChanger);
         });
     }

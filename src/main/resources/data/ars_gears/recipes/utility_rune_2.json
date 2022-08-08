@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ADA",
+    "BEC",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "ars_gears:iron_paxel"
+    },
+    "C": {
+      "item": "minecraft:iron_hoe"
+    },
+    "D": {
+      "item": "minecraft:fishing_rod"
+    },
+    "E": {
+      "item": "ars_gears:stick_cross"
+    }
+  },
+  "result": {
+    "item": "ars_gears:utility_rune_2"
+  }
+}

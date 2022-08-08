@@ -42,8 +42,7 @@ public class UtilityGearEvents {
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
         if (trackedGear == focusedGear) {
-            LOGGER.info("THEY WERENT THE SAME");
-            cap.setUtilityGear(focusedGear, false);
+            //LOGGER.info("THEY WERENT THE SAME");
             ArsUtil.replaceItemStack(player, focusedGear, cap.getUtilityGear());
         }
 

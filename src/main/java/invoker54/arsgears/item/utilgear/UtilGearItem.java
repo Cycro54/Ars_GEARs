@@ -26,29 +26,47 @@ public class UtilGearItem extends ToolItem {
     private final HoeItem hoeItem;
 
     public UtilGearItem(IItemTier tier, Item.Properties builder) {
-        super(0, 1, tier, null, builder);
+        super(1, -2.8f, tier, null, builder);
 
         //fishing rod will never change, so just assign it.
         fishingRodItem = (FishingRodItem) Items.FISHING_ROD;
 
         switch (GearTier.valueOf(String.valueOf(tier))){
             default:
-                paxel = new PaxelItem(tier, 9, 3, builder);
+                paxel = new PaxelItem(tier, 1, 0, builder);
                 hoeItem = (HoeItem) Items.WOODEN_HOE;
                 break;
             case STONE:
-                paxel = new PaxelItem(tier, 9, 3, builder);
+                paxel = new PaxelItem(tier, 1, 0, builder);
                 hoeItem = (HoeItem) Items.STONE_HOE;
                 break;
             case IRON:
-                paxel = new PaxelItem(tier, 9, 3, builder);
+                paxel = new PaxelItem(tier, 1, 0, builder);
                 hoeItem = (HoeItem) Items.IRON_HOE;
                 break;
+            case DIAMOND:
+                paxel = new PaxelItem(tier, 1, 0, builder);
+                hoeItem = (HoeItem) Items.DIAMOND_HOE;
+                break;
             case ARCANE:
-                paxel = new PaxelItem(tier, 9, 3, builder);
+                paxel = new PaxelItem(tier, 1, 0, builder);
                 hoeItem = (HoeItem) Items.NETHERITE_HOE;
                 break;
         }
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack p_82789_1_, ItemStack p_82789_2_) {
+        return false;
+    }
+    @Override
+    public boolean isRepairable(ItemStack p_isRepairable_1_) {
+        return false;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack p_77616_1_) {
+        return false;
     }
 
     @Override
@@ -58,7 +76,7 @@ public class UtilGearItem extends ToolItem {
 
     @Override
     public @NotNull ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (playerIn.isCrouching()){
+        if (playerIn.isCrouching() && handIn == Hand.MAIN_HAND){
             if (worldIn.isClientSide()) NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
 
             return ActionResult.pass(playerIn.getItemInHand(handIn));

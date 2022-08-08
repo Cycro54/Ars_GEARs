@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "BED",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_sword"
+    },
+    "C": {
+      "item": "minecraft:bow"
+    },
+    "D": {
+      "item": "ars_nouveau:mana_gem"
+    },
+    "E": {
+      "item": "ars_gears:stick_cross"
+    }
+  },
+  "result": {
+    "item": "ars_gears:combat_rune_2"
+  }
+}

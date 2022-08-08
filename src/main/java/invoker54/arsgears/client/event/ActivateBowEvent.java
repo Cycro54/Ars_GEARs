@@ -9,20 +9,15 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.CombatUpgradeScreen;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.ActivateGearMsg;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +50,8 @@ public class ActivateBowEvent {
 
         if (action != GLFW.GLFW_PRESS) return;
 
+        if (!ClientUtil.mC.options.keyUse.isDown()) return;
+
         PlayerEntity player = ClientUtil.mC.player;
         ItemStack gearStack = ArsUtil.getHeldItem(player, CombatGearItem.class);
 
@@ -62,20 +59,24 @@ public class ActivateBowEvent {
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
+        //Make sure the bow is selected
+        if (cap.getSelectedItem() != CombatGearItem.bowInt) return;
+
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
 
         //If the spell is empty, tell them they can't cast it
-        if (spell.isEmpty()) PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.adding.non_empty_spell"));
+        if (spell.isEmpty()) {
+            PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.adding.non_empty_spell"));
+            return;
+        }
 
         spell.recipe.add(0, MethodProjectile.INSTANCE);
+        //This will stop the bow from activating if the player doesn't have enough mana
         boolean flag = new SpellResolver(new SpellContext(spell, player)).canCast(player);
 
         //1 is the bow, make sure the player is charging it too
-        if (cap.getSelectedItem() == 1){
-            //This will stop the bow from activating if the player doesn't have enough mana
-            if (!cap.getActivated() && flag)
-                NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
-        }
+        if (flag) NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
+
     }
 
     /**

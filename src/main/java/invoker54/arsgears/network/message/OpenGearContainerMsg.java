@@ -1,6 +1,6 @@
 package invoker54.arsgears.network.message;
 
-import invoker54.arsgears.client.screen.GearContainer;
+import invoker54.arsgears.client.gui.container.GearContainer;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;

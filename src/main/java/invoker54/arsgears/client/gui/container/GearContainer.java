@@ -1,7 +1,7 @@
-package invoker54.arsgears.client.screen;
+package invoker54.arsgears.client.gui.container;
 
 import invoker54.arsgears.init.ContainerInit;
-import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -38,7 +38,7 @@ public class GearContainer extends Container {
 
     private IntReferenceHolder foodData;
     private IntReferenceHolder countData;
-    public int totalNeededFood;
+    public int repairValue;
     public int totalNeededCount;
     //endregion
 
@@ -102,12 +102,12 @@ public class GearContainer extends Container {
         foodData = addDataSlot(new IntReferenceHolder() {
             @Override
             public int get() {
-                return totalNeededFood;
+                return repairValue;
             }
 
             @Override
             public void set(int value) {
-                totalNeededFood = value;
+                repairValue = value;
             }
         });
 
@@ -169,7 +169,7 @@ public class GearContainer extends Container {
 
     public void calculateNeededFood(PlayerEntity player){
         LOGGER.debug("HEY IMMA RECALCULATE THE FOOD THING.");
-        totalNeededFood = 0;
+        repairValue = 0;
         totalNeededCount = 0;
         ItemStack foodStack = slots.get(slots.size() - 1).getItem();
 
@@ -180,20 +180,24 @@ public class GearContainer extends Container {
         int foodValue = foodStack.getItem().getFoodProperties().getNutrition();
 
         //Grab the utility gear
-        ItemStack utilityGear = player.getMainHandItem();
-        if(!(utilityGear.getItem() instanceof UtilGearItem))utilityGear = player.getOffhandItem();
+        ItemStack gearStack = player.getMainHandItem();
         //Grab its capability as well
-        int tier = ((GearTier)((UtilGearItem) utilityGear.getItem()).getTier()).ordinal();
+        int tier = 0;
+        if (gearStack.getItem() instanceof UtilGearItem) {
+            tier = (((UtilGearItem) gearStack.getItem()).getTier()).ordinal();
+        } else{
+            tier = (((CombatGearItem) gearStack.getItem()).getTier()).ordinal();
+        }
 
-        int damage = utilityGear.getDamageValue();
-        LOGGER.debug("Mt damage is: " + damage);
+        int damage = gearStack.getDamageValue();
+        LOGGER.debug("My damage is: " + damage);
 
-        while (totalNeededFood < damage && totalNeededCount < foodStack.getCount()){
+        while (repairValue < damage && totalNeededCount < foodStack.getCount()){
             totalNeededCount += 1;
-            totalNeededFood = (int) ((foodValue * (5/(tier+1)) * ((float)foodValue/6)) * totalNeededCount);
+            repairValue = (int) ((foodValue * (5/(tier+1)) * ((float)foodValue/6)) * totalNeededCount);
         }
         LOGGER.debug("Total needed count is: " + totalNeededCount);
-        LOGGER.debug("Total needed food is: " + totalNeededFood);
+        LOGGER.debug("Total needed food is: " + repairValue);
 
         this.broadcastChanges();
     }

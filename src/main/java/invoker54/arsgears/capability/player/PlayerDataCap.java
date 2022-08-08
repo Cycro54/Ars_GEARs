@@ -47,12 +47,12 @@ public class PlayerDataCap implements IPlayerCap {
 
     //This will set an item stack to be the currently held utility gear
     @Override
-    public void setUtilityGear(ItemStack heldItem, boolean isUpgrade) {
-        if (isUpgrade) utility_gear_copy = heldItem.copy();
+    public void upgradeUtilityGear(ItemStack upgrade) {
+        utility_gear_copy = upgrade.copy();
 
         LOGGER.info("I am setting the held utility gear");
         //Set the item stack as the held_utility_gear
-        utility_gear_tracked = utility_gear_copy.copy();
+        utility_gear_tracked = ItemStack.EMPTY;
     }
 
     @Override
@@ -76,12 +76,12 @@ public class PlayerDataCap implements IPlayerCap {
     }
 
     @Override
-    public void setCombatGear(ItemStack heldItem, boolean isUpgrade) {
-        if (isUpgrade) combat_gear_copy = heldItem.copy();
+    public void upgradeCombatGear(ItemStack upgrade) {
+        combat_gear_copy = upgrade.copy();
 
         LOGGER.info("I am setting the held combat gear");
-        //Set the item stack as the held_combat_gear
-        combat_gear_tracked = combat_gear_copy.copy();
+        //Set the item stack as the held_combat_gear (this doesn't change the itemstack in the players inv)
+        combat_gear_tracked = ItemStack.EMPTY;
     }
 
     @Override

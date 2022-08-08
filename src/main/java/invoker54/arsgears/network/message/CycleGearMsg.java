@@ -18,19 +18,16 @@ public class CycleGearMsg {
         context.enqueueWork(() -> {
             ItemStack item = context.getSender().getMainHandItem();
 
-            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem();
+            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem(item);
 
             else if(item.getItem() instanceof CombatGearItem) {
                 CombatGearCap cap = CombatGearCap.getCap(item);
-                cap.changeSpell(SpellBook.getMode(item.getOrCreateTag()));
-                cap.cycleItem();
+
+                cap.cycleItem(item);
 
                 //This is for if the item ends up being the mirror
                 if (cap.getSelectedItem() == 2) cap.setActivated(true);
                 else cap.setActivated(false);
-
-                //This is for changing what spell is selected
-                SpellBook.setMode(item.getOrCreateTag(), cap.getSpellMode());
             }
         });
         context.setPacketHandled(true);

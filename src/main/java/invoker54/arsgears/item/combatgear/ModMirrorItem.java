@@ -18,6 +18,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import software.bernie.shadowed.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
@@ -40,12 +41,13 @@ public class ModMirrorItem extends EnchantersMirror {
 
         //Make sure the player can even cast the spell
         boolean flag = resolver.canCast(player);
+        boolean flag2 = (spell.recipe.size() > 1);
 
         //If the player can afford the spell, AND the combat gear isn't activated, activate the combat gear
-        if (flag && !cap.getActivated()){
+        if ((flag && flag2) && !cap.getActivated()){
             cap.setActivated(true);
         }
-        else if (!flag && cap.getActivated()){
+        else if ((!flag || !flag2) && cap.getActivated()){
             cap.setActivated(false);
         }
     }
@@ -65,16 +67,15 @@ public class ModMirrorItem extends EnchantersMirror {
                 withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
 
         //For client side, and if the gearstack doesn't have a tag, AND if the gear isn't activated
-        if (worldIn.isClientSide() || !gearStack.hasTag() || !cap.getActivated()){
-            if (!cap.getActivated()) {
-                PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_nouveau.spell.no_mana"));
-            }
-            return new ActionResult<>(ActionResultType.CONSUME, gearStack);
+        if (worldIn.isClientSide() || !gearStack.hasTag() || !cap.getActivated() || spell.recipe.size() == 1){
+            if (!cap.getActivated()) PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_nouveau.spell.no_mana"));
+            if (spell.recipe.size() == 1) PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));
+            return ActionResult.consume(gearStack);
         }
 
         //Now let's cast the spell on the player
         resolver.onCast(gearStack, playerIn, worldIn);
-        return new ActionResult<>(ActionResultType.CONSUME, gearStack);
+        return ActionResult.success(gearStack);
 
 
 

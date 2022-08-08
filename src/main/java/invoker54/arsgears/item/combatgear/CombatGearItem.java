@@ -1,31 +1,27 @@
 package invoker54.arsgears.item.combatgear;
 
-import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
+import com.google.common.collect.Multimap;
 import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
-import com.hollingsworth.arsnouveau.client.renderer.item.SpellBowRenderer;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.network.Networking;
-import com.hollingsworth.arsnouveau.common.network.PacketOpenSpellBook;
-import com.hollingsworth.arsnouveau.setup.BlockRegistry;
-import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.CombatUpgradeScreen;
-import invoker54.arsgears.client.gui.ModGuiSpellBook;
 import invoker54.arsgears.client.render.CombatGearRenderer;
 import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.network.NetworkHandler;
+import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
@@ -36,20 +32,19 @@ import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import javax.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.*;
 
@@ -57,21 +52,100 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     private static final Logger LOGGER = LogManager.getLogger();
     private final String COMBAT_GEAR = "COMBAT_GEAR";
 
-    private final ModSwordItem modSword;
-    private final ModBowItem modBow;
-    private final ModMirrorItem modMirror;
+    public final ModSwordItem modSword;
+    public final ModBowItem modBow;
+    public final ModMirrorItem modMirror;
+    public static int swordINT = 0;
+    public static int bowInt = 1;
+    public static int mirrorInt = 2;
 
     public CombatGearItem(IItemTier tier, Item.Properties builder) {
-        super(0, 1, tier, null, builder.setISTER(() -> CombatGearRenderer::new));
+        super(0, -2.4f, tier, null, builder.setISTER(() -> CombatGearRenderer::new));
 
         modSword = new ModSwordItem(tier);
         modBow = new ModBowItem();
         modMirror = new ModMirrorItem(builder);
     }
 
+    /**
+     * This is for Attribute modification, but the only thing I really need to change is the attack damage. So I'll just do that in a damage event
+     * I might need this later so I'll keep it for now
+     * @param
+     * @return
+     */
+//    @Override
+//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+//        final Multimap<Attribute, AttributeModifier> modifiers = super.getAttributeModifiers(slot, stack);
+//        CombatGearCap cap = CombatGearCap.getCap(stack);
+//
+//        double newDamage = 0;
+//        double newSpeed = 0;
+//
+//        switch (cap.getSelectedItem()){
+//            default:
+//                newDamage = modSword.getAttributeModifiers(slot, stack).get(Attributes.ATTACK_DAMAGE).stream().findFirst().get().getAmount();
+//                newSpeed = modSword.getAttributeModifiers(slot, stack).get(Attributes.ATTACK_SPEED).stream().findFirst().get().getAmount();
+//                break;
+//            case 1:
+//                newDamage = modBow.getAttributeModifiers(slot, stack).get(Attributes.ATTACK_DAMAGE).stream().findFirst().get().getAmount();
+//                newSpeed = modBow.getAttributeModifiers(slot, stack).get(Attributes.ATTACK_SPEED).stream().findFirst().get().getAmount();
+//                break;
+//            case 2:
+//                newDamage = modMirror.getAttributeModifiers(slot, stack).get(Attributes.ATTACK_DAMAGE).stream().findFirst().get().getAmount();
+//                newSpeed = modMirror.getAttributeModifiers(slot, stack).get(Attributes.ATTACK_SPEED).stream().findFirst().get().getAmount();
+//                break;
+//        }
+//
+//        if (slot == EquipmentSlotType.MAINHAND) {
+//            replaceModifier(modifiers, Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_UUID, newDamage);
+//            replaceModifier(modifiers, Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_UUID, newSpeed);
+//        }
+//
+//        return modifiers;
+//    }
+//
+//    /**
+//     * Replace a modifier in the {@link Multimap} with a copy that's had {@code newValue} applied to its value.
+//     *
+//     * @param modifierMultimap The MultiMap
+//     * @param attribute        The attribute being modified
+//     * @param id               The ID of the modifier
+//     * @param newValue       The newValue to apply
+//     */
+//    private void replaceModifier(Multimap<Attribute, AttributeModifier> modifierMultimap, Attribute attribute, UUID id, double newValue) {
+//        // Get the modifiers for the specified attribute
+//        final Collection<AttributeModifier> modifiers = modifierMultimap.get(attribute);
+//
+//        // Find the modifier with the specified ID, if any
+//        final Optional<AttributeModifier> modifierOptional = modifiers.stream().filter(attributeModifier -> attributeModifier.getId().equals(id)).findFirst();
+//
+//        if (modifierOptional.isPresent()) { // If it exists,
+//            final AttributeModifier modifier = modifierOptional.get();
+//            modifiers.remove(modifier); // Remove it
+//            modifiers.add(new AttributeModifier(modifier.getId(), modifier.getName(), newValue, modifier.getOperation())); // Add the new modifier
+//        }
+//    }
+
     @Override
-    public boolean isFoil(ItemStack p_77636_1_) {
+    public boolean isValidRepairItem(ItemStack p_82789_1_, ItemStack p_82789_2_) {
         return false;
+    }
+    @Override
+    public boolean isRepairable(ItemStack p_isRepairable_1_) {
+        return false;
+    }
+    @Override
+    public boolean isEnchantable(ItemStack p_77616_1_) {
+        return false;
+    }
+
+
+    //Until I can get the enchantment glint to work with custom renderers
+    @Override
+    public boolean isFoil(ItemStack gearStack) {
+        CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
+
+        return gearCap.getActivated();
     }
 
     @Override
@@ -81,6 +155,9 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 
     @Override
     public void inventoryTick(ItemStack gearStack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        /**
+         * This is old code from the Ars Nouveau SpellBookItem, no longer need dis though
+         */
 //        if(!worldIn.isClientSide && worldIn.getGameTime() % 5 == 0) {
 //            CompoundNBT tag = stack.getOrCreateTag();
 //            tag.putInt(SpellBook.BOOK_MODE_TAG, 0);
@@ -93,6 +170,7 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 //            }
 //            tag.putString(SpellBook.UNLOCKED_SPELLS, starting_spells.toString());
 //        }
+
         if (worldIn.isClientSide()) return;
 
         PlayerEntity player = (PlayerEntity) entityIn;
@@ -101,7 +179,11 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
+        //If it's set to the crafting mode, set it to the 1st spell slot instead.
         if (SpellBook.getMode(gearStack.getOrCreateTag()) == 0){SpellBook.setMode(gearStack.getOrCreateTag(),0);}
+
+        //If the item tier isn't high enough and the item is somehow activated, deactivate it.
+        if (getTier().ordinal() <= 1 && cap.getActivated()) cap.setActivated(false);
 
         switch (cap.getSelectedItem()){
             default:
@@ -137,27 +219,34 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
 
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getItemInHand(handIn);
-        CombatGearCap cap = CombatGearCap.getCap(stack);
+        ItemStack gearStack = playerIn.getItemInHand(handIn);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
-        if(!stack.hasTag())
-            return new ActionResult<>(ActionResultType.SUCCESS, stack);
+        //This is for opening the GEARs food menu
+        if (playerIn.isCrouching() && handIn == Hand.MAIN_HAND){
+            if (worldIn.isClientSide()) NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
+
+            return ActionResult.pass(playerIn.getItemInHand(handIn));
+        }
+
+        if(!gearStack.hasTag())
+            return new ActionResult<>(ActionResultType.SUCCESS, gearStack);
 
         //Check if the spell slot is empty
-//        boolean flag = getRecipeFromTag(stack.getOrCreateTag(), getMode(stack.getOrCreateTag())).isEmpty();
+//        boolean flag = getRecipeFromTag(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag())).isEmpty();
 //        if(getTier().ordinal() > 0 && flag) {
-//            return new ActionResult<>(ActionResultType.CONSUME, stack);
+//            return new ActionResult<>(ActionResultType.CONSUME, gearStack);
 //        }
 
-        if(worldIn.isClientSide || !stack.hasTag()){
-            return new ActionResult<>(ActionResultType.CONSUME, stack);
+        if(worldIn.isClientSide || !gearStack.hasTag()){
+            return ActionResult.fail(gearStack);
         }
         // Crafting mode (you can no longer select crafting mode)
         // You will instead select a spell slot, and if that spell slot is empty the spell book will open
-        /*if(getTier().ordinal() > 0 && getMode(stack.getOrCreateTag()) == 0 && playerIn instanceof ServerPlayerEntity) {
+        /*if(getTier().ordinal() > 0 && getMode(gearStack.getOrCreateTag()) == 0 && playerIn instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) playerIn;
-            Networking.INSTANCE.send(PacketDistributor.PLAYER.with(()->player), new PacketOpenSpellBook(stack.getTag(), getTier().ordinal(), getUnlockedSpellString(player.getItemInHand(handIn).getOrCreateTag())));
-            return new ActionResult<>(ActionResultType.CONSUME, stack);
+            Networking.INSTANCE.send(PacketDistributor.PLAYER.with(()->player), new PacketOpenSpellBook(gearStack.getTag(), getTier().ordinal(), getUnlockedSpellString(player.getItemInHand(handIn).getOrCreateTag())));
+            return new ActionResult<>(ActionResultType.CONSUME, gearStack);
         } */
 
         //If not crafting mode, let's use the selected item instead.
@@ -239,8 +328,6 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
         CompoundNBT capNBT = CombatGearCap.getCap(stack).serializeNBT();
 
         cNBT.put(COMBAT_GEAR, capNBT);
-        LOGGER.info("Share tag shtuff");
-        LOGGER.info("This is the new tag broz: " + CombatGearCap.getCap(stack).getActivated());
         return cNBT;
     }
 

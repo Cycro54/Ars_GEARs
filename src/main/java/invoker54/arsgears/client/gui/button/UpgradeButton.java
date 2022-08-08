@@ -1,20 +1,10 @@
 package invoker54.arsgears.client.gui.button;
 
-import com.ibm.icu.lang.UCharacter;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.UpgradeScreen;
-import invoker54.arsgears.init.ItemInit;
-import net.minecraft.client.gui.RenderComponentsUtil;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-
-import javax.swing.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +19,7 @@ public class UpgradeButton extends Button{
     ITextComponent optionalMsg;
     ClientUtil.Bounds bounds;
     int price;
+    public boolean purchased = false;
 
     public UpgradeButton(int x, int y, int width, int height, String name, ResourceLocation image,
                          ClientUtil.Bounds bounds, int price, Irequirement requirement, IPressable onPress) {
@@ -79,11 +70,11 @@ public class UpgradeButton extends Button{
         //First add the title (\247a will make it green)
         textList.add(this.getMessage());
         //Next up is price
-        textList.add(ITextComponent.nullToEmpty("Price:\247a §l" + price));
+        textList.add(ITextComponent.nullToEmpty("§6Price: §l" + price));
         //Players XP
         textList.add(ITextComponent.nullToEmpty("Your XP:\247a §l" + mC.player.totalExperience));
         //Now comes the space
-        textList.add(ITextComponent.nullToEmpty(""));
+        textList.add(ITextComponent.nullToEmpty("--------------"));
         //Finally the last tid bit of info
         textList.add(optionalMsg);
         return textList;

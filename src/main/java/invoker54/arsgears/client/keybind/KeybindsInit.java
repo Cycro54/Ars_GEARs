@@ -1,16 +1,11 @@
 package invoker54.arsgears.client.keybind;
 
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
-import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.CombatUpgradeScreen;
 import invoker54.arsgears.client.gui.ModGuiRadialMenu;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
-import invoker54.arsgears.client.gui.UpgradeScreen;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
@@ -65,8 +60,8 @@ public class KeybindsInit {
                     ClientUtil.mC.setScreen(null);
                     return;
                 }
-                //Make sure the player is tier 2 or higher
-                if (((CombatGearItem) itemStack.getItem()).getTier().ordinal() < 1) return;
+                //Make sure the player is tier 3 or higher
+                if (((CombatGearItem) itemStack.getItem()).getTier().ordinal() <= 1) return;
 
                 ModGuiSpellBook.open(itemStack);
             }
@@ -86,7 +81,7 @@ public class KeybindsInit {
 
             if (gearStack.isEmpty()) return;
 
-            if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() == 0) return;
+            if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() <= 1) return;
 
 
             if (ClientUtil.mC.screen == null){

@@ -20,7 +20,7 @@ public class modGuiSpellHUD extends GuiSpellHUD {
     @Override
     public void drawHUD(MatrixStack ms) {
         ItemStack stack = ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class);
-        if(!stack.isEmpty() && ((CombatGearItem)stack.getItem()).getTier().ordinal() > 0){
+        if(!stack.isEmpty() && ((CombatGearItem)stack.getItem()).getTier().ordinal() > 1){
             int offsetLeft = 10;
             CompoundNBT tag = stack.getOrCreateTag();
             int mode = tag.getInt(SpellBook.BOOK_MODE_TAG);

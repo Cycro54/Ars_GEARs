@@ -1,0 +1,28 @@
+{
+  "parent": "item/handheld_rod",
+  "textures": {
+    "layer0": "ars_gears:item/diamond_combat_gear"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "ars_gears:selected_item": 0
+      },
+      "model": "ars_nouveau:item/enchanters_sword"
+    },
+
+    {
+      "predicate": {
+        "ars_gears:selected_item": 1
+      },
+      "model": "ars_nouveau:item/spell_bow"
+    },
+
+    {
+      "predicate": {
+        "ars_gears:selected_item": 2
+      },
+      "model": "ars_nouveau:item/enchanters_mirror"
+    }
+  ]
+}

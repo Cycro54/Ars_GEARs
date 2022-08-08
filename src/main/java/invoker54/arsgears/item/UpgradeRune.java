@@ -21,9 +21,9 @@ public class UpgradeRune extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
     ToolItem gearType;
 
-    public UpgradeRune(ToolItem gearType, Properties builder) {
+    public UpgradeRune(Item gearType, Properties builder) {
         super(builder);
-        this.gearType = gearType;
+        this.gearType = (ToolItem) gearType;
     }
 
     public int getTier(){
@@ -58,13 +58,14 @@ public class UpgradeRune extends Item {
             else cNBT = cap.getCombatGear().serializeNBT();
 
             LOGGER.warn("SO IS THIS THE UTILGEARITEM? " + (gearType instanceof UtilGearItem));
+            LOGGER.warn("HEY THIS IS NEW!!!!");
 
             //Replace the id string with the upgrade item
             cNBT.putString("id", ForgeRegistries.ITEMS.getKey(gearType).toString());
             //Now update the gear
 
-            if (gearType instanceof UtilGearItem) cap.setUtilityGear(ItemStack.of(cNBT), true);
-            else cap.setCombatGear(ItemStack.of(cNBT), true);
+            if (gearType instanceof UtilGearItem) cap.upgradeUtilityGear(ItemStack.of(cNBT));
+            else cap.upgradeCombatGear(ItemStack.of(cNBT));
 
             //Finally, shrink the itemStack and send the upgrade message
             PortUtil.sendMessage(playerIn, new TranslationTextComponent("ars_gears.chat.upgrade_success").append(String.valueOf(getTier() + 1)));

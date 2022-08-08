@@ -111,14 +111,14 @@ public class ModGuiSpellBook extends BaseBook {
     public static void open(ItemStack gearStack){
         //The spell book tag (where all the spell book data is stored)
         CompoundNBT spell_book_tag = gearStack.getOrCreateTag();
-        //Tier of my combat gear
-        int tier = (((CombatGearItem)gearStack.getItem()).getTier().ordinal());
+        //Tier of my combat gear (minus 1 since I also don't want the player casting on STONE tier)
+        int tier = (((CombatGearItem)gearStack.getItem()).getTier().ordinal() - 1);
         //Unlocked Spells
         String unlockedSpells = SpellBook.getUnlockedSpellString(spell_book_tag);
         //The currently selected item on the combat gear
         int gearCyle = CombatGearCap.getCap(gearStack).getSelectedItem();
 
-        int cast_slot = CombatGearCap.getCap(gearStack).getSpellMode();
+        int cast_slot = SpellBook.getMode(gearStack.getOrCreateTag());
 
         Minecraft.getInstance().setScreen(new ModGuiSpellBook(spell_book_tag, tier, unlockedSpells, gearCyle, cast_slot));
     }
@@ -130,7 +130,7 @@ public class ModGuiSpellBook extends BaseBook {
         int selected_slot_ind = SpellBook.getMode(spell_book_tag);
         if(selected_slot_ind == 0) selected_slot_ind = 1;
 
-        //Crafting slots
+        //Glyph slots for the spell
         for (int i = 0; i < numLinks; i++) {
             String icon = null;
             String spell_id = "";
@@ -176,7 +176,7 @@ public class ModGuiSpellBook extends BaseBook {
 //
         addButton(spell_name);
         addButton(searchBar);
-        // Add spell slots (these are the tabs of the book on the right
+        // Add spell slots (these are the tabs of the book on the right)
         for(int i = 1; i <= max_spell_tier; i++){
             ModGuiSpellSlot slot = new ModGuiSpellSlot(this,bookLeft + 281, bookTop +1 + 15 * i, getActualSlot(i));
             if(getActualSlot(i) == selected_slot_ind) {

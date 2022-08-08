@@ -40,6 +40,7 @@ public class UtilGearPropertyEvent {
             ItemModelsProperties.register(ItemInit.WOOD_UTILITY_GEAR.getItem(), selected_item, UtilityChanger);
             ItemModelsProperties.register(ItemInit.STONE_UTILITY_GEAR.getItem(), selected_item, UtilityChanger);
             ItemModelsProperties.register(ItemInit.IRON_UTILITY_GEAR.getItem(), selected_item, UtilityChanger);
+            ItemModelsProperties.register(ItemInit.DIAMOND_UTILITY_GEAR.getItem(), selected_item, UtilityChanger);
             ItemModelsProperties.register(ItemInit.ARCANE_UTILITY_GEAR.getItem(), selected_item, UtilityChanger);
         });
     }

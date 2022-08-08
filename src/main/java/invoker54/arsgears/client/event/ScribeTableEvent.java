@@ -1,4 +1,4 @@
-package invoker54.arsgears.event;
+package invoker54.arsgears.client.event;
 
 import com.hollingsworth.arsnouveau.setup.BlockRegistry;
 import invoker54.arsgears.ArsGears;
@@ -12,8 +12,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class ScribeTableEvent {

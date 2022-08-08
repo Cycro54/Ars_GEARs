@@ -4,10 +4,12 @@ import com.hollingsworth.arsnouveau.ArsNouveau;
 import com.hollingsworth.arsnouveau.api.spell.AbstractEffect;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.client.gui.book.GuiSpellBook;
+import com.hollingsworth.arsnouveau.common.entity.EntityCarbuncle;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
@@ -28,7 +30,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -58,7 +62,8 @@ public class ModGuiRadialMenu extends Screen {
     public ModGuiRadialMenu(ItemStack gearStack) {
         super(new StringTextComponent(""));
         this.tag = gearStack.getOrCreateTag();
-        this.numberOfSlices = ((CombatGearItem)gearStack.getItem()).getTier().ordinal();
+        //This is minus 1 because the 2nd tier (which is 1 for ordinal) cannot cast spells either & you can only have a max of 3 spells
+        this.numberOfSlices = ((CombatGearItem)gearStack.getItem()).getTier().ordinal() - 1;
         this.gearCycle = CombatGearCap.getCap(gearStack).getSelectedItem();
         this.closing = false;
         this.minecraft = Minecraft.getInstance();
@@ -97,23 +102,20 @@ public class ModGuiRadialMenu extends Screen {
     }
 
     @Override
-    public void render(MatrixStack ms,int mouseX, int mouseY, float partialTicks) {
-        super.render(ms,mouseX, mouseY, partialTicks);
+    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+        super.render(stack,mouseX, mouseY, partialTicks);
 //        final float OPEN_ANIMATION_LENGTH = 2.5f;
-        final float OPEN_ANIMATION_LENGTH = 0.25f;
 //        double worldTime = ClientUtil.mC.level.getGameTime();
-        float animationTime = (float) (startAnimation + totalTime);
-        float openAnimation = closing ? (float) (1.0f - (totalTime / OPEN_ANIMATION_LENGTH)) : (float) (totalTime / OPEN_ANIMATION_LENGTH);
-//        if (totalTime < 3) LOGGER.debug("WHATS the PARTIAL TICKS AT? " + ClientUtil.mC.getFrameTime());
-//        if (totalTime < 3) LOGGER.debug("WHATS the DELTA FRAME AT? " + ClientUtil.mC.getDeltaFrameTime());
-
+//        float animationTime = (float) (startAnimation + totalTime);
+        final float OPEN_ANIMATION_LENGTH = 0.4f;
         //If the partialTick is on a new tick, make sure the equation is adjusted
+        float openAnimation = closing ? (float) (1.0f - (totalTime / OPEN_ANIMATION_LENGTH)) : (float) (totalTime / OPEN_ANIMATION_LENGTH);
         totalTime += (prevTick > partialTicks ? (partialTicks + 1 - prevTick) : partialTicks - prevTick)/20f;
 
         float animProgress = MathHelper.clamp(openAnimation, 0, 1);
+        animProgress = (float) (1 - Math.pow(1 - animProgress, 3));
         //This will make it so the animation is Quad ease out (smooth ending, fast beginning
         //animProgress = 1 - (1 - animProgress) * (1 - animProgress);
-        animProgress = (float) (1 - Math.pow(1 - animProgress, 3));
 
         float radiusIn = Math.max(0.1f, 25 * animProgress);
         float radiusOut = (radiusIn + 60) * animProgress;
@@ -177,16 +179,20 @@ public class ModGuiRadialMenu extends Screen {
         if (hasMouseOver && mousedOverSlot != -1) {
             int adjusted =  (mousedOverSlot+ 6) % 10;
             adjusted = adjusted == 0 ? 10 : adjusted;
-            drawCenteredString(ms,font, SpellBook.getSpellName(tag,  adjusted), width/2,(height - font.lineHeight) / 2,16777215);
+            drawCenteredString(stack,font, SpellBook.getSpellName(tag,  adjusted), width/2,(height - font.lineHeight) / 2,16777215);
         }
 
         RenderHelper.turnBackOn();
         RenderSystem.popMatrix();
-        for(int i = 0; i< numberOfSlices; i++){
-            ItemStack stack = new ItemStack(Blocks.DIRT);
-            float angle1 = ((i / (float) numberOfSlices) - 0.25f) * 2 * (float) Math.PI;
-            float posX = x - 8 + itemRadius * (float) Math.cos(angle1);
-            float posY = y - 8 + itemRadius * (float) Math.sin(angle1);
+        for(int i = 0; i < numberOfSlices; i++){
+            //ItemStack stack = new ItemStack(Blocks.DIRT);
+            double startAngle = Math.floor(((float)i/numberOfSlices) * 360f);
+            startAngle = Math.toRadians(startAngle);
+            float posX = (float) (x + (-itemRadius * Math.sin(startAngle)));
+            float posY = (float) (y + (itemRadius * Math.cos(startAngle)));
+//            float angle1 = ((i / (float) numberOfSlices) - 0.25f) * 2 * (float) Math.PI;
+//            float posX = x - 8 + itemRadius * (float) Math.cos(angle1);
+//            float posY = y - 8 + itemRadius * (float) Math.sin(angle1);
 
             //Can't do cast type, cast method isn't applied till after the spell is cast
             String resourceIcon = "";
@@ -206,20 +212,20 @@ public class ModGuiRadialMenu extends Screen {
             RenderSystem.disableDepthTest();
             if(!resourceIcon.isEmpty()) {
                 GuiSpellBook.drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/items/" + resourceIcon),
-                        (int) posX, (int) posY, 0, 0, 16, 16, 16, 16,ms);
+                        (int) posX - 8, (int) posY - 8, 0, 0, 16, 16, 16, 16,stack);
                 //Can't draw castType since now it only gets applied during cast.
 //                GuiSpellBook.drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/items/" + castType),
 //                        (int) posX +3 , (int) posY - 10, 0, 0, 10, 10, 10, 10,ms);
             }
-            this.itemRenderer.renderGuiItemDecorations(font, stack, (int) posX + 5, (int) posY, String.valueOf(i + 1 + (3 * gearCycle)));
-
+            //this.itemRenderer.renderGuiItemDecorations(font, stack, (int) posX, (int) posY, String.valueOf(i + 1 + (3 * gearCycle)));
+            font.drawShadow(stack, String.valueOf(i + 1 + (3 * gearCycle)), posX + 8, posY + 8, TextFormatting.WHITE.getColor());
         }
 
-        LOGGER.debug("THIS IS THE SELECTED ITEM: " + selectedItem);
+        LOGGER.debug("THIS IS THE SELECTED ITEM: " + (selectedItem + 1));
 
 //        if (mousedOverSlot != -1) {
-//            int adjusted = (mousedOverSlot + 6) % 10;
-//            adjusted = adjusted == 0 ? 10 : adjusted;
+//            int adjusted = (mousedOverSlot + 6) % numberOfSlices;
+//            adjusted = adjusted == 0 ? numberOfSlices : adjusted;
 //            selectedItem = adjusted;
 //        }
 
@@ -228,8 +234,8 @@ public class ModGuiRadialMenu extends Screen {
     @Override
     public boolean keyPressed(int key, int scanCode, int modifiers) {
         int adjustedKey = key - 48;
-        if(adjustedKey >= 0 && adjustedKey < 10){
-            selectedItem = adjustedKey == 0 ? 10 : adjustedKey;
+        if(adjustedKey >= 0 && adjustedKey < numberOfSlices){
+            selectedItem = adjustedKey == 0 ? numberOfSlices : adjustedKey;
             mouseClicked(0,0,0);
             return true;
         }

@@ -11,6 +11,7 @@ import com.hollingsworth.arsnouveau.common.spell.augment.AugmentAmplify;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
+import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +40,7 @@ import static com.hollingsworth.arsnouveau.setup.ItemsRegistry.defaultItemProper
 public class ModSwordItem extends SwordItem implements IAnimatable {
     private static final Logger LOGGER = LogManager.getLogger();
     public ModSwordItem(IItemTier iItemTier) {
-        super(iItemTier, 4, 2.0f, defaultItemProperties().stacksTo(1).setISTER(() -> SwordRenderer::new));
+        super(iItemTier, 3, -2.4f, defaultItemProperties().stacksTo(1).setISTER(() -> SwordRenderer::new));
     }
 
     @Override
@@ -53,6 +55,9 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         boolean flag = resolver.canCast(player);
+
+        //This is if the spell has no glyphs after the Touch glyph
+        if (resolver.spell.recipe.size() == 1) flag = false;
 
         //If the player can't afford the spell, AND the combat gear is activated, set its activation to false
         if (!flag && cap.getActivated()){
@@ -70,6 +75,17 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         LOGGER.debug("IS MY CAP ACTIVATED? " + cap.getActivated());
+
+
+        //get the spell stuff set up
+        Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
+        spell.recipe.add(0, MethodTouch.INSTANCE);
+        //Get the spell resolver
+        SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
+                withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
+
+        boolean canCast1 = resolver.canCast(playerIn);
+        boolean canCast2 = spell.recipe.size() > 1;
 
         //Now I need to find out if it's activated
         if(cap.getActivated()) {
@@ -91,17 +107,12 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
 //            });
             //Get the current spell
             //Get the spell
-            Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-            spell.recipe.add(0, MethodTouch.INSTANCE);
-            //Get the spell resolver
-            SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
-                    withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
             boolean isSensitive = resolver.spell.getBuffsAtIndex(0, playerIn, AugmentSensitive.INSTANCE) > 0;
 
-            //if the item doesn't have spell tags, or this is running on the client
-            if(worldIn.isClientSide || !gearStack.hasTag()){
-                return new ActionResult<>(ActionResultType.CONSUME, gearStack);
-            }
+            //if the item doesn't have spell tags, or this is running on the client (CombatGearItem handles this already)
+//            if(worldIn.isClientSide || !gearStack.hasTag()){
+//                return new ActionResult<>(ActionResultType.CONSUME, gearStack);
+//            }
 
             //region entity raytrace first
             EntityRayTraceResult entityRes = MathUtil.getLookedAtEntity(playerIn, 25);
@@ -109,7 +120,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
                 resolver.onCastOnEntity(gearStack, playerIn, entityRes.getEntity(), handIn);
                 cap.setActivated(false);
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
-                return new ActionResult<>(ActionResultType.CONSUME, gearStack);
+                return ActionResult.success(gearStack);
             }
             //endregion
 
@@ -120,17 +131,23 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
                 resolver.onCastOnBlock(context);
                 cap.setActivated(false);
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
-                return new ActionResult<>(ActionResultType.CONSUME, gearStack);
+                return ActionResult.success(gearStack);
             }
             //endregion
         }
 
         //This will stop the player from activating the sword if they aren't high enough level
-        if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() == 0) return ActionResult.fail(gearStack);
+        if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() <= 1) return ActionResult.fail(gearStack);
+
+        //If they can't cast in the first place, don't allow them to activate the item
+        if (!cap.getActivated() && (!canCast1 || !canCast2)){
+            if (!canCast2) PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));
+            return ActionResult.consume(gearStack);
+        }
 
         //Set it to whatever it wasnt
         cap.setActivated(!cap.getActivated());
-        return ActionResult.consume(gearStack);
+        return cap.getActivated() ? ActionResult.fail(gearStack) : ActionResult.consume(gearStack);
     }
 
     @Override

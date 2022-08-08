@@ -1,15 +1,16 @@
-package invoker54.arsgears.client.screen;
+package invoker54.arsgears.client.gui.container;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
+import invoker54.arsgears.client.gui.container.GearContainer;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.FeedGearMsg;
-import invoker54.arsgears.network.message.SyncServerPlayerCapMsg;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -31,9 +32,9 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
 
 //    //current durability + extra durability from food
 //    int totalDurability;
+    private ItemStack gearStack;
 
-    private PlayerDataCap playerCap;
-    private ItemStack utilGear;
+    private ClientUtil.SimpleButton eatButton;
 
     public GearContainerScreen(GearContainer inst, PlayerInventory inv, ITextComponent title) {
         super(inst, inv, title);
@@ -57,13 +58,11 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
         int buttonXPos = halfWidthSpace + (imageWidth - buttonWidth)/2;
         int buttonYPos = halfHeightSpace + (imageHeight - buttonHeight)/2;
 
-        playerCap = PlayerDataCap.getCap(ClientUtil.mC.player);
-        utilGear = ClientUtil.mC.player.getMainHandItem();
-        if(!(utilGear.getItem() instanceof UtilGearItem)) utilGear = ClientUtil.mC.player.getOffhandItem();
-        addButton(new ClientUtil.SimpleButton(buttonXPos, buttonYPos, buttonWidth, buttonHeight, ITextComponent.nullToEmpty("Feed"), (button) ->
+        gearStack = ClientUtil.mC.player.getMainHandItem();
+        eatButton = addButton(new ClientUtil.SimpleButton(buttonXPos, buttonYPos, buttonWidth, buttonHeight, ITextComponent.nullToEmpty("Feed"), (button) ->
         {
             //If the item isn't damaged, leave it be.
-            if(utilGear.getDamageValue() == 0) return;
+            if(gearStack.getDamageValue() == 0) return;
 
             //Grab the food stack
             ItemStack foodStack = menu.tempInv.getItem(0);
@@ -72,13 +71,13 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
             if (!foodStack.isEdible()) return;
 
             //Set the damage value
-            utilGear.setDamageValue(utilGear.getDamageValue() - menu.totalNeededFood);
+            gearStack.setDamageValue(gearStack.getDamageValue() - menu.repairValue);
 
             //Make sure the food stack shrinks
             foodStack.shrink(menu.totalNeededCount);
 
             //Finally, sync player cap with server
-            NetworkHandler.INSTANCE.sendToServer(new FeedGearMsg(utilGear.getDamageValue(),foodStack.getCount()));
+            NetworkHandler.INSTANCE.sendToServer(new FeedGearMsg(gearStack.getDamageValue(),foodStack.getCount()));
         }));
         //endregion
 
@@ -86,11 +85,22 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
     }
 
     @Override
+    public void tick() {
+        Item item = ClientUtil.mC.player.getMainHandItem().getItem();
+
+        if (!(item instanceof CombatGearItem) && !(item instanceof UtilGearItem) ){
+            ClientUtil.mC.player.closeContainer();
+        }
+
+        eatButton.active = (this.menu.repairValue != 0);
+    }
+
+    @Override
     protected void renderLabels(MatrixStack p_230451_1_, int p_230451_2_, int p_230451_3_) {
         this.font.draw(p_230451_1_, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
 
 
-        double beforePercent = getDurabilityForDisplay(utilGear, 0);
+        double beforePercent = getDurabilityForDisplay(gearStack, 0);
         String foodText;
         if (1 - beforePercent <= 0.25f) {foodText = "Starving!";}
         else if (1 - beforePercent <= 0.5f) {foodText = "Hungry";}
@@ -100,7 +110,6 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
         float textX = (imageWidth - font.width(foodText))/2f;
 
         this.font.drawShadow(p_230451_1_, "§l" + foodText, textX, 58, getRGBDurabilityForDisplay(beforePercent));
-
     }
 
     //Stole this method from IForgeItem (changed ItemStack param to int)
@@ -118,8 +127,8 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
     protected void renderBg(MatrixStack stack, float partialTicks, int xMouse, int yMouse) {
         renderBackground(stack);
 
-        double beforePercent = getDurabilityForDisplay(utilGear, 0);
-        double afterPercent = getDurabilityForDisplay(utilGear, menu.totalNeededFood);
+        double beforePercent = getDurabilityForDisplay(gearStack, 0);
+        double afterPercent = getDurabilityForDisplay(gearStack, menu.repairValue);
 
         //region render the durability bar
         //Render the background of the durability bar

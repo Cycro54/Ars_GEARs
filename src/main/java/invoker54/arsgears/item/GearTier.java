@@ -9,27 +9,33 @@ import net.minecraft.util.LazyValue;
 import java.util.function.Supplier;
 
 public enum GearTier implements IItemTier {
-    WOOD(1,119,2,0.0F,0,() ->
+    WOOD(1,119,1,0.0F,0,() ->
     {
         return Ingredient.of(ItemTags.PLANKS);
     }),
 
-    STONE(1,263,4,0.0F,0,() ->
+    STONE(1,263,3,1.0F,0,() ->
 
     {
         return Ingredient.of(ItemTags.STONE_TOOL_MATERIALS);
     }),
 
-    IRON(1,599,6,0.0F,0,() ->
+    IRON(1,599,5,2.0F,0,() ->
 
     {
         return Ingredient.of(Items.IRON_INGOT);
     }),
 
-    ARCANE(1,1561,8,0.0F,0,() ->
+    DIAMOND(1,1059,7,3.0F,0,() ->
 
     {
         return Ingredient.of(Items.DIAMOND);
+    }),
+
+    ARCANE(1,1561,9,4.0F,0,() ->
+
+    {
+        return Ingredient.of(Items.NETHERITE_INGOT);
     });
 
     private final int harvestLevel;

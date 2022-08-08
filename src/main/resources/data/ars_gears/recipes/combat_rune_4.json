@@ -1,0 +1,51 @@
+{
+  "type": "ars_nouveau:enchanting_apparatus",
+  "item_1": [
+    {
+      "item": "minecraft:diamond_block"
+    }
+  ],
+  "item_2": [
+    {
+      "item": "minecraft:gold_block"
+    }
+  ],
+  "item_3": [
+    {
+      "item": "minecraft:iron_block"
+    }
+  ],
+  "item_4": [
+    {
+      "item": "ars_nouveau:enchanters_sword"
+    }
+  ],
+  "item_5": [
+    {
+      "item": "ars_nouveau:spell_bow"
+    }
+  ],
+  "item_6": [
+    {
+      "item": "ars_nouveau:mana_gem"
+    }
+  ],
+  "item_7": [
+    {
+      "item": "ars_nouveau:enchanters_mirror"
+    }
+  ],
+  "item_8": [
+    {
+      "item": "ars_nouveau:mana_gem"
+    }
+  ],
+  "reagent": [
+    {
+      "item": "ars_gears:stick_cross"
+    }
+  ],
+  "output": {
+    "item": "ars_gears:combat_rune_4"
+  }
+}

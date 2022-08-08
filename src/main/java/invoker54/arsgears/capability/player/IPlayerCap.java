@@ -8,14 +8,14 @@ public interface IPlayerCap extends INBTSerializable<CompoundNBT> {
 
     ItemStack getUtilityGear();
 
-    void setUtilityGear(ItemStack heldItem, boolean isUpgrade);
+    void upgradeUtilityGear(ItemStack upgrade);
 
     void syncUtilityGearData();
 
     //Combat gear data
     ItemStack getCombatGear();
     
-    void setCombatGear(ItemStack heldItem, boolean isUpgrade);
+    void upgradeCombatGear(ItemStack upgrade);
 
     void syncCombatGearData();
 }

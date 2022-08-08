@@ -1,8 +1,8 @@
 package invoker54.arsgears.init;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.client.screen.GearContainer;
-import invoker54.arsgears.client.screen.GearContainerScreen;
+import invoker54.arsgears.client.gui.container.GearContainer;
+import invoker54.arsgears.client.gui.container.GearContainerScreen;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
