@@ -12,23 +12,25 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import org.apache.http.conn.BasicEofSensorWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
-import static invoker54.arsgears.item.combatgear.CombatGearItem.swordINT;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
 public class CombatUpgradeScreen extends UpgradeScreen {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     protected void init() {
-        LOGGER.debug("I AM OPENING THE COMBAT UPGRADE SCREEN");
         super.init();
-
-        createSharpness();
-        createManaSteal();
+        swordUpgrades();
+        createEmptyCategory();
+        bowUpgrades();
+        createEmptyCategory();
+        mirrorUpgrades();
     }
 
     @Override
@@ -37,58 +39,53 @@ public class CombatUpgradeScreen extends UpgradeScreen {
         if (ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class).isEmpty()) ClientUtil.mC.setScreen(null);
     }
 
-    //Sword
-    public void createSharpness() {
-        ResourceLocation image = new ResourceLocation(ArsGears.MOD_ID, "textures/gui/upgrade_screen/combat/sharpness.png");
-        int totalLvls = 3;
-        UpgradeButton prevButton;
-        String catName = "Sharpness";
-
-        //Sharpness 1
-        prevButton = createEnchantUpgrade(CombatGearItem.class, swordINT, catName, Enchantments.SHARPNESS, totalLvls, 1, image, null);
-
-        //Sharpness 2
-        prevButton = createEnchantUpgrade(CombatGearItem.class, swordINT, catName, Enchantments.SHARPNESS, totalLvls, 2, image, prevButton);
-
-        //Empty
-        createEmptyUpgrade(catName);
-
-        //Sharpness 4
-        createEnchantUpgrade(CombatGearItem.class, swordINT, catName, Enchantments.SHARPNESS, totalLvls, 4, image, prevButton);
+    protected ResourceLocation getImage(String location){
+        return new ResourceLocation(ArsGears.MOD_ID, "textures/gui/upgrade_screen/combat/" + location);
     }
 
-    //Sword
-    public void createManaSteal(){
-        ResourceLocation image = new ResourceLocation(ArsGears.MOD_ID, "textures/gui/upgrade_screen/combat/looting.png");
-        int totalLvls = 2;
-        UpgradeButton prevButton;
-        String catName = "Mana Steal";
+    private void swordUpgrades(){
+        //region Enchants
+        //Sharpness
+        createEnchantUpgrade(swordINT, "Sharpness", Enchantments.SHARPNESS, new int[]{1,2,0,4}, getImage("sharpness.png"));
+        //Sweeping Edge
+        createEnchantUpgrade(swordINT, "Sweeping Edge", Enchantments.SWEEPING_EDGE, new int[]{1,2,3,0}, getImage("sweep_edge.png"));
+        //Looting
+        createEnchantUpgrade(swordINT, "Looting", Enchantments.MOB_LOOTING, new int[]{0,1,3,0}, getImage("looting.png"));
+        //endregion
 
-        //Mana Steal 1
-        prevButton = createCustomUpgrade(CombatGearItem.class, swordINT, catName, GearUpgrades.swordManaSteal, totalLvls, 1, image, null);
-
-        //Empty
-        createEmptyUpgrade(catName);
-
-        //Mana Steal 2
-        createCustomUpgrade(CombatGearItem.class, swordINT, catName, GearUpgrades.swordManaSteal, totalLvls, 2, image, prevButton);
+        //region Custom Upgrades
+        //Mana steal
+        createCustomUpgrade(swordINT, "Mana Steal", GearUpgrades.swordManaSteal, new int[]{1,0,2,0}, getImage("mana_steal.png"));
+        //Spell Sweep
+        createCustomUpgrade(swordINT, "Spell Sweep", GearUpgrades.swordSpellSweep, new int[]{0,0,1,0}, getImage("spell_sweep.png"));
+        //endregion
     }
 
-    //This was taken from the EnchantmentHelper class
-    public static void setEnchantments(Map<Enchantment, Integer> enchants, CompoundNBT tag) {
-        ListNBT listnbt = new ListNBT();
+    private void bowUpgrades(){
+        //region Enchants
+        //Power
+        createEnchantUpgrade(bowInt, "Power", Enchantments.POWER_ARROWS, new int[]{1,2,3,0}, getImage("power.png"));
+        //endregion
 
-        for(Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
-            Enchantment enchantment = entry.getKey();
-            if (enchantment != null) {
-                int i = entry.getValue();
-                CompoundNBT compoundnbt = new CompoundNBT();
-                compoundnbt.putString("id", String.valueOf((Object) Registry.ENCHANTMENT.getKey(enchantment)));
-                compoundnbt.putShort("lvl", (short)i);
-                listnbt.add(compoundnbt);
-            }
-        }
-
-        tag.put("Enchantments", listnbt);
+        //region Custom Upgrades
+        //Bow Speed
+        createCustomUpgrade(bowInt, "Bow Speed", GearUpgrades.bowSpeed, new int[]{1,2,3,0}, getImage("bow_speed.png"));
+        //Spell Arrow
+        createCustomUpgrade(bowInt, "Spell Arrow", GearUpgrades.bowSpellArrow, new int[]{0,1,0,0}, getImage("spell_arrow.png"));
+        //Spell Cooldown
+        createCustomUpgrade(bowInt, "Spell Cooldown", GearUpgrades.bowCooldown, new int[]{0,1,0,0}, getImage("spell_cooldown.png"));
+        //Arrow Recycle
+        createCustomUpgrade(bowInt, "Arrow Keep", GearUpgrades.bowArrowKeep, new int[]{1,0,0,0}, getImage("arrow_keep.png"));
+        //Spell Split
+        createCustomUpgrade(bowInt, "Spell Split", GearUpgrades.bowSpellSplit, new int[]{0,0,1,2}, getImage("spell_split.png"));
+        //endregion
+    }
+    private void mirrorUpgrades(){
+        //region Custom Upgrades
+        //Mana Discount
+        createCustomUpgrade(mirrorInt, "Mana Discount", GearUpgrades.mirrorManaDiscount, new int[]{0,1,2,0}, getImage("mana_discount.png"));
+        //Extra Glyph
+        createCustomUpgrade(mirrorInt, "Free Glyph", GearUpgrades.mirrorFreeGlyph, new int[]{0,1,2,3}, getImage("free_glyph.png"));
+        //endregion
     }
 }

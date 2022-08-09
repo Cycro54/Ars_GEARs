@@ -1,5 +1,6 @@
 package invoker54.arsgears.client.gui.upgrade;
 
+import com.ibm.icu.text.UFormat;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
@@ -19,11 +20,14 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.system.CallbackI;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -31,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static invoker54.arsgears.client.ClientUtil.*;
-import static invoker54.arsgears.client.gui.upgrade.CombatUpgradeScreen.setEnchantments;
 
 public class UpgradeScreen extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -48,7 +51,7 @@ public class UpgradeScreen extends Screen {
     private boolean isScrolling;
 
     //This is padding between buttons
-    int paddingX = 8;
+    int paddingX = 4;
     int paddingY = 16;
     int buttonSize = 20;
 
@@ -63,6 +66,10 @@ public class UpgradeScreen extends Screen {
 
     int colorBlack = new Color(0,0,0,255).getRGB();
     int colorWhite = new Color(255,255,255,255).getRGB();
+    int colorPurchased = new Color(4, 94, 18,255).getRGB();
+    int colorSale = new Color(23, 217, 44,255).getRGB();
+    int colorDeny = new Color(101, 7, 7,255).getRGB();
+
 
     //This is the base xp expected (xp level 33 which is 1758)
     int baseXP = 1758;
@@ -93,12 +100,27 @@ public class UpgradeScreen extends Screen {
                 halfHeightSpace, imageHeight, 0 - scrollX, imageWidth, 0 - scrollY, imageHeight, 16);
 
 
-        //Render the lines connecting the upgrades
+        //Render the lines connecting the upgrades up and down
         TEXTURE_MANAGER.release(background);
+        ArrayList<UpgradeButton> prevList = null;
         for (ArrayList<UpgradeButton> list : categories.values()){
+//            if (list.isEmpty() && prevList != null){
+//                for (UpgradeButton button : prevList){
+//                    if (button != null){
+//                        ClientUtil.blitColor(stack, (int) (button.x + buttonSize + paddingX + ((buttonSize - 3)/2f)), 3, halfHeightSpace, imageHeight, colorBlack);
+//                    }
+//                }
+//            }
+
             UpgradeButton prevButton = null;
             for (UpgradeButton button : list){
+
                 if (button == null) continue;
+
+                if (!button.purchased) {
+                    int selectedColor = button.active ? colorSale : colorDeny;
+                    ClientUtil.blitColor(stack, button.x - 1, buttonSize + 2, button.y - 1, buttonSize + 2, selectedColor);
+                }
 
                 //This is where we will grab the first previous button
                 if (prevButton == null && button != null){
@@ -109,21 +131,47 @@ public class UpgradeScreen extends Screen {
                 //If the previous button is null
                 if (prevButton == null) continue;
 
-                //This will place a line in the middle of the button
+                //This will place a line in the middle of the button going up and down
                 int prevX = (int) (prevButton.x + ((buttonSize - 4)/2f));
                 int prevY = (int) (prevButton.y + (buttonSize/2f));
                 int height = (int) ((button.y + (buttonSize/2f)) - prevY);
 
                 //This will make the black line
-                ClientUtil.blitColor(stack, prevX, 4, prevY, height, colorBlack);
+                ClientUtil.blitColor(stack, prevX, 3, prevY, height, colorBlack);
 
                 //This will make the white line
                 if (prevButton.purchased){
-                    ClientUtil.blitColor(stack, prevX + 1, 2, prevY, height, colorWhite);
+                    ClientUtil.blitColor(stack, prevX + 1, 1, prevY, height, colorWhite);
                 }
 
                 //Don't forget to reassign the previous button variable
                 prevButton = button;
+            }
+
+            if (!list.isEmpty()) prevList = list;
+        }
+        //Now render the lines going side to side
+        for (int a = 0; a < 4; a++){
+
+            UpgradeButton leftButton = null;
+            UpgradeButton rightButton = null;
+            for (ArrayList<UpgradeButton> list : categories.values()){
+                if (list.isEmpty()) {
+                    if (rightButton != null){
+                        ClientUtil.blitColor(stack, leftButton.x, rightButton.x - leftButton.x, (int) (leftButton.y + ((buttonSize - 3)/2f)), 3, colorBlack);
+                    }
+
+                    leftButton = null;
+                    rightButton = null;
+                    continue;
+                }
+                LOGGER.debug("IS CURRENT BUTTON NULL? " + (list.get(a) == null));
+                UpgradeButton currButton = list.get(a);
+
+                if (currButton == null) continue;
+
+                if (leftButton == null) leftButton = currButton;
+                else rightButton = currButton;
             }
         }
 
@@ -218,6 +266,25 @@ public class UpgradeScreen extends Screen {
 
         return (int) price;
     }
+
+    //This was taken from the EnchantmentHelper class
+    public static void setEnchantments(Map<Enchantment, Integer> enchants, CompoundNBT tag) {
+        ListNBT listnbt = new ListNBT();
+
+        for(Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
+            Enchantment enchantment = entry.getKey();
+            if (enchantment != null) {
+                int i = entry.getValue();
+                CompoundNBT compoundnbt = new CompoundNBT();
+                compoundnbt.putString("id", String.valueOf((Object) Registry.ENCHANTMENT.getKey(enchantment)));
+                compoundnbt.putShort("lvl", (short)i);
+                listnbt.add(compoundnbt);
+            }
+        }
+
+        tag.put("Enchantments", listnbt);
+    }
+
     public void createEmptyCategory(){
         categories.put(("Empty" + categories.size()), new ArrayList<>());
 
@@ -231,153 +298,214 @@ public class UpgradeScreen extends Screen {
         UpdatePositions();
     }
 
-    public UpgradeButton createCustomUpgrade(Class gearClass, int gearCycle, String catName, String upgradeName,
-                                             int maxUpgrades, int upgradeLvl, ResourceLocation image, UpgradeButton prevButton){
-
+    public void createCustomUpgrade(int gearCycle, String catName, String upgradeName, int[] upgradeLvl, ResourceLocation image){
+        //This is just to make sure that the upgrade lvl integers are all correct (also to get the total levels)
+        int totalLvl = 0;
+        if (upgradeLvl.length != 4){
+            LOGGER.error("THIS ARRAY ISN'T THE RIGHT SIZE!! " + (catName));
+            return;
+        }
+        else {
+            int prevLvl = 0;
+            for (int a : upgradeLvl){
+                if (a == 0) continue;
+                if (a == prevLvl){
+                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+                    return;
+                }
+                if (a < prevLvl) {
+                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+                    return;
+                }
+                prevLvl = a;
+                totalLvl++;
+            }
+        }
+        
         if (!categories.containsKey(catName)) categories.put(catName, new ArrayList<>());
 
-        ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
+        UpgradeButton prevButton = null;
+        for (int lvl : upgradeLvl) {
+            if (lvl == 0) {
+                createEmptyUpgrade(catName);
+                continue;
+            }
 
-        IGearCap cap;
+            int playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            int upgradeTier = categories.get(catName).size() + 1;
 
-        if (gearClass == UtilGearItem.class) cap = GearCap.getCap(gearStack);
-        else { cap = CombatGearCap.getCap(gearStack); }
+            //Make the requirement
+            UpgradeButton finalPrevButton = prevButton;
+            UpgradeButton.Irequirement iRequire = (button) -> {
+                //Grabs the custom upgrades for the related item
+                CompoundNBT customUpgrades = getCap().getUpgrades(gearCycle);
+                PlayerEntity player = ClientUtil.mC.player;
 
-        int playerTier = ((CombatGearItem)gearStack.getItem()).getTier().ordinal();
-        int upgradeTier = categories.get(catName).size() + 1;
+                //Make sure they don't have this enchant already
+                if (customUpgrades.contains(upgradeName) && customUpgrades.getInt(upgradeName) >= lvl) {
+                    button.active = false;
+                    button.purchased = true;
+                    return ITextComponent.nullToEmpty("\247aPurchased");
+                }
+                //Make sure they bought the previous upgrade
+                else if (finalPrevButton != null && finalPrevButton.purchased == false) {
+                    button.active = false;
+                    return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
+                }
+                //Make sure the gear capability is at this tier
+                else if (playerTier < upgradeTier) {
+                    button.active = false;
+                    return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
+                }
+                //Make sure they can afford it
+                else if (button.getPrice() > player.totalExperience) {
+                    button.active = false;
+                    return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
+                }
 
-        //Grabs the custom upgrades for the related item
-        CompoundNBT customUpgrades = cap.getUpgrades(gearCycle);
+                //Finally tell them they can purchase it
+                else {
+                    button.active = true;
+                    return ITextComponent.nullToEmpty("Purchase upgrade?");
+                }
 
-        //Make the requirement
-        UpgradeButton.Irequirement iRequire = (button) ->{
-            PlayerEntity player = ClientUtil.mC.player;
+            };
 
-            //Make sure they don't have this enchant already
-            if (customUpgrades.contains(upgradeName) && customUpgrades.getInt(upgradeName) >= upgradeLvl){
+            int price = getPrice(totalLvl, catName);
+
+            //Make the pressable
+            Button.IPressable iPress = (button) -> {
+                //Place the lvl into the custom Upgrade Compount NBT with its upgradeName
+                getCap().getUpgrades(gearCycle).putInt(upgradeName, lvl);
+
+                //Now finally make sure to sync these changes with the server
+                NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(getCap().getTag(gearCycle), gearCycle, price));
+
+                mC.player.giveExperiencePoints(-price);
+
                 button.active = false;
-                button.purchased = true;
-                return ITextComponent.nullToEmpty("\247aPurchased");
-            }
-            //Make sure the gear capability is at this tier
-            else if (playerTier < upgradeTier){
-                button.active = false;
-                return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
-            }
-            //Make sure they bought the previous upgrade
-            else if (prevButton != null && prevButton.purchased == false){
-                button.active = false;
-                return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
-            }
+            };
 
-            //Make sure they can afford it
-            else if (button.getPrice() > player.totalExperience) {
-                button.active = false;
-                return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
-            }
-
-            //Finally tell them they can purchase it
-            else {
-                button.active = true;
-                return ITextComponent.nullToEmpty("Purchase upgrade?");
-            }
-
-        };
-
-        int price = getPrice(maxUpgrades, catName);
-
-        //Make the pressable
-        Button.IPressable iPress = (button) -> {
-            //Place the upgradeLvl into the custom Upgrade Compount NBT with its upgradeName
-            customUpgrades.putInt(upgradeName, upgradeLvl);
-
-            //Now finally make sure to sync these changes with the server
-            NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(cap.getTag(gearCycle), gearCycle, price));
-
-            PlayerEntity player = mC.player;
-
-            button.active = false;
-        };
-
-
-        return createUpgrade(catName, image, price, iRequire, iPress);
+            prevButton = createUpgrade(catName, image, price, iRequire, iPress);
+        }
     }
 
-    public UpgradeButton createEnchantUpgrade(Class gearClass, int cycleInt, String catName, Enchantment enchantment,
-                                              int maxUpgrades, int upgradeLvl, ResourceLocation image, UpgradeButton prevButton){
-
+    public void createEnchantUpgrade(int cycleInt, String catName, Enchantment enchantment, int[] upgradeLvl, ResourceLocation image){
+        //This is just to make sure that the upgrade lvl integers are all correct (also to get the total levels)
+        int totalLvl = 0;
+        if (upgradeLvl.length != 4){
+            LOGGER.error("THIS ARRAY ISN'T THE RIGHT SIZE!! " + (catName));
+            return;
+        }
+        else {
+            int prevLvl = 0;
+            for (int a : upgradeLvl){
+                if (a == 0) continue;
+                if (a == prevLvl){
+                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+                    return;
+                }
+                if (a < prevLvl) {
+                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+                    return;
+                }
+                prevLvl = a;
+                totalLvl++;
+            }
+        }
+        
         if (!categories.containsKey(catName)) categories.put(catName, new ArrayList<>());
+        
+        UpgradeButton prevButton = null;
+        for (int lvl : upgradeLvl) {
+            if (lvl == 0) {
+                createEmptyUpgrade(catName);
+                continue;
+            }
 
+            int playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            int upgradeTier = categories.get(catName).size() + 1;
+
+            //Make the requirement
+            UpgradeButton finalPrevButton = prevButton;
+            UpgradeButton.Irequirement iRequire = (button) -> {
+                //Grabs the enchantments for the related item
+                Map<Enchantment, Integer> enchantments = EnchantmentHelper.deserializeEnchantments(getCap().getTag(cycleInt).getList("Enchantments", 10));
+                PlayerEntity player = ClientUtil.mC.player;
+
+                //Make sure they don't have this enchant already
+                if (enchantments.containsKey(enchantment) && enchantments.get(enchantment) >= lvl) {
+                    button.active = false;
+                    button.purchased = true;
+                    return ITextComponent.nullToEmpty("\247aPurchased");
+                }
+                //Make sure they bought the previous upgrade
+                else if (finalPrevButton != null && finalPrevButton.purchased == false) {
+                    button.active = false;
+                    return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
+                }
+                //Make sure the gear capability is at this tier
+                else if (playerTier < upgradeTier) {
+                    button.active = false;
+                    return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
+                }
+                //Make sure they can afford it
+                else if (button.getPrice() > player.totalExperience) {
+                    button.active = false;
+                    return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
+                }
+
+                //Finally tell them they can purchase it
+                else {
+                    button.active = true;
+                    return ITextComponent.nullToEmpty("Purchase upgrade?");
+                }
+
+            };
+
+            int price = getPrice(totalLvl, catName);
+
+            //Make the pressable
+            Button.IPressable iPress = (button) -> {
+                //Grabs the enchantments for the related item
+                Map<Enchantment, Integer> enchantments = EnchantmentHelper.deserializeEnchantments(getCap().getTag(cycleInt).getList("Enchantments", 10));
+                
+                //Add this enchantment to their map
+                enchantments.put(enchantment, lvl);
+                //Place the updated map back into the gearStack
+                setEnchantments(enchantments, getCap().getTag(cycleInt));
+
+                //Now finally make sure to sync these changes with the server
+                NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(getCap().getTag(cycleInt), cycleInt, price));
+
+                mC.player.giveExperiencePoints(-price);
+
+                button.active = false;
+            };
+            
+            //Grab the button just made to use in the next iteration
+            prevButton = createUpgrade(catName, image, price, iRequire, iPress);
+        }
+    }
+    
+    protected IGearCap getCap(){
         ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
-
         IGearCap cap;
-
-        if (gearClass == UtilGearItem.class) cap = GearCap.getCap(gearStack);
+        if (gearStack.getItem() instanceof UtilGearItem) cap = GearCap.getCap(gearStack);
         else { cap = CombatGearCap.getCap(gearStack); }
-
-        int playerTier = ((CombatGearItem)gearStack.getItem()).getTier().ordinal();
-        int upgradeTier = categories.get(catName).size() + 1;
-
-        //Grabs the enchantments for the related item
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.deserializeEnchantments(cap.getTag(cycleInt).getList("Enchantments", 10));
-
-        //Make the requirement
-        UpgradeButton.Irequirement iRequire = (button) ->{
-            PlayerEntity player = ClientUtil.mC.player;
-
-            //Make sure they don't have this enchant already
-            if (enchantments.containsKey(enchantment) && enchantments.get(enchantment) >= upgradeLvl){
-                button.active = false;
-                button.purchased = true;
-                return ITextComponent.nullToEmpty("\247aPurchased");
-            }
-            //Make sure the gear capability is at this tier
-            else if (playerTier < upgradeTier){
-                button.active = false;
-                return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
-            }
-            //Make sure they bought the previous upgrade
-            else if (prevButton != null && prevButton.purchased == false){
-                button.active = false;
-                return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
-            }
-
-            //Make sure they can afford it
-            else if (button.getPrice() > player.totalExperience) {
-                button.active = false;
-                return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
-            }
-
-            //Finally tell them they can purchase it
-            else {
-                button.active = true;
-                return ITextComponent.nullToEmpty("Purchase upgrade?");
-            }
-
-        };
-
-        int price = getPrice(maxUpgrades, catName);
-
-        //Make the pressable
-        Button.IPressable iPress = (button) -> {
-            //Add this enchantment to their map
-            enchantments.put(enchantment, upgradeLvl);
-            //Place the updated map back into the gearStack
-            setEnchantments(enchantments, cap.getTag(cycleInt));
-
-            //Now finally make sure to sync these changes with the server
-            NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(cap.getTag(cycleInt), cycleInt, price));
-
-            button.active = false;
-        };
-
-        return createUpgrade(catName, image, price, iRequire, iPress);
+        
+        return cap;
     }
     public UpgradeButton createUpgrade(String category, ResourceLocation image, int price, UpgradeButton.Irequirement require, Button.IPressable purchaseFunc){
         if (!categories.containsKey(category)) categories.put(category, new ArrayList<>());
 
+        int index = 0;
+        for (UpgradeButton button : categories.get(category)){
+            if (button != null) index++;
+        }
+
        UpgradeButton button = new UpgradeButton(0,0, buttonSize, buttonSize,
-               category + " " + (categories.get(category).size() + 1), image, this.bounds, price,require, purchaseFunc);
+               category + " " + (index + 1), image, this.bounds, price,require, purchaseFunc);
 
        addButton(button);
 
