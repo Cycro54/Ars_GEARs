@@ -7,37 +7,31 @@ import invoker54.arsgears.capability.gear.IGearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.UpgradeButton;
-import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
-import invoker54.arsgears.network.message.SyncServerCombatGearMsg;
-import net.minecraft.client.gui.FocusableGui;
+import invoker54.arsgears.network.message.SyncServerGearMsg;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.xml.stream.FactoryConfigurationError;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static invoker54.arsgears.client.ClientUtil.*;
 import static invoker54.arsgears.client.gui.upgrade.CombatUpgradeScreen.setEnchantments;
-import static invoker54.arsgears.item.combatgear.CombatGearItem.swordINT;
 
 public class UpgradeScreen extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -237,6 +231,78 @@ public class UpgradeScreen extends Screen {
         UpdatePositions();
     }
 
+    public UpgradeButton createCustomUpgrade(Class gearClass, int gearCycle, String catName, String upgradeName,
+                                             int maxUpgrades, int upgradeLvl, ResourceLocation image, UpgradeButton prevButton){
+
+        if (!categories.containsKey(catName)) categories.put(catName, new ArrayList<>());
+
+        ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
+
+        IGearCap cap;
+
+        if (gearClass == UtilGearItem.class) cap = GearCap.getCap(gearStack);
+        else { cap = CombatGearCap.getCap(gearStack); }
+
+        int playerTier = ((CombatGearItem)gearStack.getItem()).getTier().ordinal();
+        int upgradeTier = categories.get(catName).size() + 1;
+
+        //Grabs the custom upgrades for the related item
+        CompoundNBT customUpgrades = cap.getUpgrades(gearCycle);
+
+        //Make the requirement
+        UpgradeButton.Irequirement iRequire = (button) ->{
+            PlayerEntity player = ClientUtil.mC.player;
+
+            //Make sure they don't have this enchant already
+            if (customUpgrades.contains(upgradeName) && customUpgrades.getInt(upgradeName) >= upgradeLvl){
+                button.active = false;
+                button.purchased = true;
+                return ITextComponent.nullToEmpty("\247aPurchased");
+            }
+            //Make sure the gear capability is at this tier
+            else if (playerTier < upgradeTier){
+                button.active = false;
+                return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
+            }
+            //Make sure they bought the previous upgrade
+            else if (prevButton != null && prevButton.purchased == false){
+                button.active = false;
+                return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
+            }
+
+            //Make sure they can afford it
+            else if (button.getPrice() > player.totalExperience) {
+                button.active = false;
+                return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
+            }
+
+            //Finally tell them they can purchase it
+            else {
+                button.active = true;
+                return ITextComponent.nullToEmpty("Purchase upgrade?");
+            }
+
+        };
+
+        int price = getPrice(maxUpgrades, catName);
+
+        //Make the pressable
+        Button.IPressable iPress = (button) -> {
+            //Place the upgradeLvl into the custom Upgrade Compount NBT with its upgradeName
+            customUpgrades.putInt(upgradeName, upgradeLvl);
+
+            //Now finally make sure to sync these changes with the server
+            NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(cap.getTag(gearCycle), gearCycle, price));
+
+            PlayerEntity player = mC.player;
+
+            button.active = false;
+        };
+
+
+        return createUpgrade(catName, image, price, iRequire, iPress);
+    }
+
     public UpgradeButton createEnchantUpgrade(Class gearClass, int cycleInt, String catName, Enchantment enchantment,
                                               int maxUpgrades, int upgradeLvl, ResourceLocation image, UpgradeButton prevButton){
 
@@ -290,6 +356,8 @@ public class UpgradeScreen extends Screen {
 
         };
 
+        int price = getPrice(maxUpgrades, catName);
+
         //Make the pressable
         Button.IPressable iPress = (button) -> {
             //Add this enchantment to their map
@@ -298,12 +366,10 @@ public class UpgradeScreen extends Screen {
             setEnchantments(enchantments, cap.getTag(cycleInt));
 
             //Now finally make sure to sync these changes with the server
-            NetworkHandler.INSTANCE.sendToServer(new SyncServerCombatGearMsg(cap.getTag(cycleInt), cycleInt));
+            NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(cap.getTag(cycleInt), cycleInt, price));
 
             button.active = false;
         };
-
-        int price = getPrice(maxUpgrades, catName);
 
         return createUpgrade(catName, image, price, iRequire, iPress);
     }

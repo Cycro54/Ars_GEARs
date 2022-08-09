@@ -2,28 +2,19 @@ package invoker54.arsgears.client.gui.upgrade;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.UpgradeButton;
-import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.network.NetworkHandler;
-import invoker54.arsgears.network.message.SyncServerCombatGearMsg;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import static invoker54.arsgears.item.combatgear.CombatGearItem.swordINT;
@@ -37,6 +28,7 @@ public class CombatUpgradeScreen extends UpgradeScreen {
         super.init();
 
         createSharpness();
+        createManaSteal();
     }
 
     @Override
@@ -45,6 +37,7 @@ public class CombatUpgradeScreen extends UpgradeScreen {
         if (ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class).isEmpty()) ClientUtil.mC.setScreen(null);
     }
 
+    //Sword
     public void createSharpness() {
         ResourceLocation image = new ResourceLocation(ArsGears.MOD_ID, "textures/gui/upgrade_screen/combat/sharpness.png");
         int totalLvls = 3;
@@ -62,6 +55,23 @@ public class CombatUpgradeScreen extends UpgradeScreen {
 
         //Sharpness 4
         createEnchantUpgrade(CombatGearItem.class, swordINT, catName, Enchantments.SHARPNESS, totalLvls, 4, image, prevButton);
+    }
+
+    //Sword
+    public void createManaSteal(){
+        ResourceLocation image = new ResourceLocation(ArsGears.MOD_ID, "textures/gui/upgrade_screen/combat/looting.png");
+        int totalLvls = 2;
+        UpgradeButton prevButton;
+        String catName = "Mana Steal";
+
+        //Mana Steal 1
+        prevButton = createCustomUpgrade(CombatGearItem.class, swordINT, catName, GearUpgrades.swordManaSteal, totalLvls, 1, image, null);
+
+        //Empty
+        createEmptyUpgrade(catName);
+
+        //Mana Steal 2
+        createCustomUpgrade(CombatGearItem.class, swordINT, catName, GearUpgrades.swordManaSteal, totalLvls, 2, image, prevButton);
     }
 
     //This was taken from the EnchantmentHelper class

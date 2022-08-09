@@ -1,10 +1,13 @@
 package invoker54.arsgears.event;
 
 import com.google.common.collect.Multimap;
+import com.hollingsworth.arsnouveau.api.mana.IMana;
+import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.enchantment.Enchantments;
@@ -80,6 +83,13 @@ public class CombatGearEvents {
         //If it's the sword selected, then add some damage
         if (cap.getSelectedItem() == CombatGearItem.swordINT){
             event.setAmount(((CombatGearItem)itemStack.getItem()).modSword.getDamage());
+
+
+            int manaStealLvl = cap.getUpgrades(CombatGearItem.swordINT).getInt(GearUpgrades.swordManaSteal);
+            if (manaStealLvl != 0){
+                LOGGER.debug("MANA STOLEN " + (event.getAmount() * manaStealLvl));
+                ManaCapability.getMana(player).ifPresent((mana) -> mana.addMana(event.getAmount() * manaStealLvl));
+            }
         }
     }
 

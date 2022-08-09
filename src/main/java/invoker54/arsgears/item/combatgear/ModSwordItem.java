@@ -54,7 +54,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         //Get the cap
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
-        boolean flag = resolver.canCast(player);
+        boolean flag = resolver.withSilent(true).canCast(player);
 
         //This is if the spell has no glyphs after the Touch glyph
         if (resolver.spell.recipe.size() == 1) flag = false;

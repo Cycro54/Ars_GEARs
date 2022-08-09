@@ -1,7 +1,8 @@
 package invoker54.arsgears.capability.gear;
 
 import com.mojang.serialization.MapLike;
-import invoker54.arsgears.capability.gear.utilgear.UtilGearProvider;
+import invoker54.arsgears.capability.gear.utilgear.GearProvider;
+import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -15,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.openzen.zenscript.codemodel.expression.MatchExpression;
 
 import javax.annotation.Nullable;
+import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ public class GearCap implements IGearCap {
     protected CompoundNBT[] itemTags = new CompoundNBT[]{new CompoundNBT(), new CompoundNBT(), new CompoundNBT()};
 
     public static GearCap getCap(ItemStack item){
-        return item.getCapability(UtilGearProvider.CAP_UTILITY_GEAR).orElseThrow(NullPointerException::new);
+        return item.getCapability(GearProvider.CAP_GEAR).orElseThrow(NullPointerException::new);
     }
 
     @Override
@@ -46,8 +48,19 @@ public class GearCap implements IGearCap {
     }
 
     @Override
-    public CompoundNBT getTag(int itemToUpdate){
-        return itemTags[itemToUpdate];
+    public CompoundNBT getTag(int gearCycle){
+        return itemTags[gearCycle];
+    }
+
+    @Override
+    public CompoundNBT getUpgrades(int gearCycle) {
+        //First grab the main compoundNBT Tag
+        CompoundNBT cNBT = getTag(gearCycle);
+        //Now inside of it should be an upgrade compound, if there isn't create one.
+        if (!cNBT.contains(GearUpgrades.gearUpgradeNBT)) {
+            cNBT.put(GearUpgrades.gearUpgradeNBT, new CompoundNBT());
+        }
+        return cNBT.getCompound(GearUpgrades.gearUpgradeNBT);
     }
 
     protected CompoundNBT saveTag(CompoundNBT stackTag){

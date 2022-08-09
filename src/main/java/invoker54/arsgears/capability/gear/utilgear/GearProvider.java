@@ -2,6 +2,7 @@ package invoker54.arsgears.capability.gear.utilgear;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -14,29 +15,29 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class UtilGearProvider implements ICapabilitySerializable<INBT> {
+public class GearProvider implements ICapabilitySerializable<INBT> {
 
-    public static final ResourceLocation CAP_UTIL_GEAR_LOC = new ResourceLocation(ArsGears.MOD_ID, "cap_util_gear");
+    public static final ResourceLocation CAP_GEAR_LOC = new ResourceLocation(ArsGears.MOD_ID, "cap_gear");
     public static final byte COMPOUND_NBT_ID = new CompoundNBT().getId();
 
-    public UtilGearProvider(){
-        utilGearCap = new GearCap();
+    public GearProvider(boolean utility){
+        GearCap = utility ? new GearCap() : new CombatGearCap();
     }
 
     //region Capability setup
     //This is where all of the ArsGears capability data is
     @CapabilityInject(GearCap.class)
-    public static Capability<GearCap> CAP_UTILITY_GEAR = null;
+    public static Capability<GearCap> CAP_GEAR = null;
 
-    private final static String CAP_UTILITY_GEAR_NBT = "CAP_UTILITY_GEAR_NBT";
+    private final static String CAP_GEAR_NBT = "CAP_GEAR_NBT";
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
 
 
-        if (CAP_UTILITY_GEAR == capability) {
-            return LazyOptional.of(() -> utilGearCap).cast();
+        if (CAP_GEAR == capability) {
+            return LazyOptional.of(() -> GearCap).cast();
             // why are we using a lambda?  Because LazyOptional.of() expects a NonNullSupplier interface.  The lambda automatically
             //   conforms itself to that interface.  This save me having to define an inner class implementing NonNullSupplier.
             // The explicit cast to LazyOptional<T> is required because our CAPABILITY_ELEMENTAL_FIRE can't be typed.  Our code has
@@ -58,8 +59,8 @@ public class UtilGearProvider implements ICapabilitySerializable<INBT> {
     @Override
     public INBT serializeNBT() {
         CompoundNBT nbtData = new CompoundNBT();
-        INBT utilGearNBT = CAP_UTILITY_GEAR.writeNBT(utilGearCap, null);
-        nbtData.put(CAP_UTILITY_GEAR_NBT, utilGearNBT);
+        INBT GearNBT = CAP_GEAR.writeNBT(GearCap, null);
+        nbtData.put(CAP_GEAR_NBT, GearNBT);
         return  nbtData;
     }
 
@@ -71,9 +72,9 @@ public class UtilGearProvider implements ICapabilitySerializable<INBT> {
         }
         //System.out.println("I ran for deserializing");
         CompoundNBT nbtData = (CompoundNBT) nbt;
-        CAP_UTILITY_GEAR.readNBT(utilGearCap, null, nbtData.getCompound(CAP_UTILITY_GEAR_NBT));
+        CAP_GEAR.readNBT(GearCap, null, nbtData.getCompound(CAP_GEAR_NBT));
     }
 
     //This is where the current capability is stored to read and write
-    private GearCap utilGearCap;
+    private GearCap GearCap;
 }

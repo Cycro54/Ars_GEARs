@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
+import com.hollingsworth.arsnouveau.api.util.MathUtil;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
@@ -28,6 +29,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -222,11 +226,14 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
         ItemStack gearStack = playerIn.getItemInHand(handIn);
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
-        //This is for opening the GEARs food menu
+        //This is for opening the GEARs food menu if the player isn't looking at anything
         if (playerIn.isCrouching() && handIn == Hand.MAIN_HAND){
-            if (worldIn.isClientSide()) NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
-
-            return ActionResult.pass(playerIn.getItemInHand(handIn));
+            //This is for checking if the player is looking at something
+            EntityRayTraceResult entityRes = MathUtil.getLookedAtEntity(playerIn, 25);
+            if(entityRes == null){
+                if (worldIn.isClientSide()) NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
+                return ActionResult.pass(playerIn.getItemInHand(handIn));
+            }
         }
 
         if(!gearStack.hasTag())

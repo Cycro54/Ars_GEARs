@@ -42,7 +42,11 @@ public class PlayerDataCap implements IPlayerCap {
 
     @Override
     public ItemStack getUtilityGear() {
-        return utility_gear_tracked.isEmpty() ? utility_gear_copy : utility_gear_tracked;
+        if (utility_gear_tracked.getItem() != utility_gear_copy.getItem()){
+            utility_gear_tracked = utility_gear_copy.copy();
+        }
+
+        return utility_gear_tracked;
     }
 
     //This will set an item stack to be the currently held utility gear
@@ -61,7 +65,7 @@ public class PlayerDataCap implements IPlayerCap {
         if (ItemStack.matches(utility_gear_tracked, utility_gear_copy)) return;
         //if (held_utility_gear.equals(utility_gear_copy, false)) return null;
 
-        if (utility_gear_tracked == ItemStack.EMPTY) return;
+        if (utility_gear_tracked.getItem() != utility_gear_copy.getItem()) return;
 
         //Now copy the held utility gear data over to the utility gear copy
         CompoundNBT cNBT = utility_gear_tracked.serializeNBT();
@@ -72,7 +76,11 @@ public class PlayerDataCap implements IPlayerCap {
 
     @Override
     public ItemStack getCombatGear() {
-        return combat_gear_tracked.isEmpty() ? combat_gear_copy : combat_gear_tracked;
+        if (combat_gear_tracked.getItem() != combat_gear_copy.getItem()){
+            combat_gear_tracked = combat_gear_copy.copy();
+        }
+
+        return combat_gear_tracked;
     }
 
     @Override
@@ -90,7 +98,7 @@ public class PlayerDataCap implements IPlayerCap {
         if (ItemStack.matches(combat_gear_tracked, combat_gear_copy)) return;
         //if (held_combat_gear.equals(combat_gear_copy, false)) return null;
 
-        if (combat_gear_tracked == ItemStack.EMPTY) return;
+        if (combat_gear_tracked.getItem() != combat_gear_copy.getItem()) return;
 
         //Now copy the held combat gear data over to the combat gear copy
         CompoundNBT cNBT = combat_gear_tracked.serializeNBT();

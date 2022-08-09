@@ -3,6 +3,8 @@ package invoker54.arsgears.item;
 import net.minecraft.entity.monster.VindicatorEntity;
 
 public class GearUpgrades {
+    public static final String gearUpgradeNBT = "ARS_GEAR_UPGRADE_NBT";
+
     //Combat gear upgrades
     //region Sword
     /** Steals mana from entity hit */

@@ -1,7 +1,6 @@
-package invoker54.arsgears.capability.gear.combatgear;
+package invoker54.arsgears.capability.gear.utilgear;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.capability.gear.utilgear.UtilGearProvider;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
@@ -12,15 +11,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
-public class CombatGearCapEvents {
+public class GearCapEvents {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @SubscribeEvent
-    public static void attachCombatGearCaps(AttachCapabilitiesEvent<ItemStack> event){
-        if (event.getObject().getItem() instanceof CombatGearItem){
-            //Add the combat gear cap
-            //LOGGER.debug("am adding the combat cap to dis.");
-            event.addCapability(CombatGearProvider.CAP_COMBAT_GEAR_LOC, new CombatGearProvider());
+    public static void attachUtilGearCaps(AttachCapabilitiesEvent<ItemStack> event){
+        if (event.getObject().getItem() instanceof UtilGearItem){
+            //LOGGER.debug("I HAVE FOUND AN ITEM THAT MATCHES THE DESCRIPTION");
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+        else if (event.getObject().getItem() instanceof CombatGearItem){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
     }
 }

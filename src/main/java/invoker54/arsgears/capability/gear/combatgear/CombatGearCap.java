@@ -3,7 +3,7 @@ package invoker54.arsgears.capability.gear.combatgear;
 import com.google.common.collect.Multimap;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.utilgear.UtilGearProvider;
+import invoker54.arsgears.capability.gear.utilgear.GearProvider;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.advancements.criterion.ThrownItemPickedUpByEntityTrigger;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -33,7 +33,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     }
 
     public static CombatGearCap getCap(ItemStack item){
-        return item.getCapability(CombatGearProvider.CAP_COMBAT_GEAR).orElseThrow(NullPointerException::new);
+        return (CombatGearCap) item.getCapability(GearProvider.CAP_GEAR).orElseThrow(NullPointerException::new);
     }
 
     @Override
