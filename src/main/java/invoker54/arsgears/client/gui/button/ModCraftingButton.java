@@ -57,7 +57,11 @@ public class ModCraftingButton extends ModGuiImageButton {
                     this.playDownSound(Minecraft.getInstance().getSoundManager());
 
                     if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) this.onClick(xMouse, yMouse);
-                    else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) stack += parent.maxAugmentStack == stack ? 0 : 1;
+                    else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                        if (parent.sneakHeld) stack = parent.maxAugmentStack;
+                        else stack += (stack == parent.maxAugmentStack) ? 0 : 1;
+                        parent.validate();
+                    }
                     return true;
                 }
             }

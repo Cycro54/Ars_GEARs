@@ -3,6 +3,7 @@ package invoker54.arsgears.client.event;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
+import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.ArsGears;
@@ -14,6 +15,7 @@ import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.ActivateGearMsg;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.FOVUpdateEvent;
@@ -70,12 +72,20 @@ public class ActivateBowEvent {
             return;
         }
 
+        CompoundNBT itemTag = gearStack.getOrCreateTag();
+
         spell.recipe.add(0, MethodProjectile.INSTANCE);
         //This will stop the bow from activating if the player doesn't have enough mana
         boolean flag = new SpellResolver(new SpellContext(spell, player)).canCast(player);
+        //This is if the spell has no glyphs after the Touch glyph
+        boolean flag2 = spell.recipe.size() != 1;
+        if (!flag2) PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));
+        //This is if the item is still on cooldown
+        boolean flag3 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
+        if (!flag3) PortUtil.sendMessage(player, new TranslationTextComponent("ars_gears.chat.cast_cooldown"));
 
         //1 is the bow, make sure the player is charging it too
-        if (flag) NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
+        if (flag && flag2 && flag3) NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
 
     }
 

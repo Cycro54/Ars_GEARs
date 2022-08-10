@@ -1,6 +1,5 @@
 package invoker54.arsgears.item.combatgear;
 
-import com.google.common.collect.Multimap;
 import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
@@ -9,6 +8,7 @@ import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.render.CombatGearRenderer;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.GearUpgrades;
@@ -19,25 +19,18 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -46,16 +39,14 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import javax.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.*;
 
 public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMana, IAnimatable {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final String COMBAT_GEAR = "COMBAT_GEAR";
+    private static final String COMBAT_GEAR = "COMBAT_GEAR";
+    private static final String COOLDOWN = "_COOLDOWNS";
 
     public final ModSwordItem modSword;
     public final ModBowItem modBow;
@@ -385,6 +376,24 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     }
 
     public AnimationFactory factory = new AnimationFactory(this);
+
+    public static float calcCooldown(Spell spell, boolean inTicks){
+        //Every 50 mana will increase the spell cooldown by 1 second
+        return spell.getCastingCost()/50f * (inTicks ? 20 : 1);
+    }
+    public static float getCooldown(CompoundNBT tag, int spellMode, boolean getDifference){
+        if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
+
+        CompoundNBT cooldownNBT = tag.getCompound(COMBAT_GEAR + COOLDOWN);
+        float endTime = cooldownNBT.getInt("" + (spellMode));
+        return getDifference ? endTime - ClientUtil.mC.level.getGameTime() : endTime;
+    }
+    public static void setCooldown(CompoundNBT tag, int spellMode, float endTime){
+        if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
+
+        CompoundNBT cooldownNBT = tag.getCompound(COMBAT_GEAR + COOLDOWN);
+        cooldownNBT.putFloat(("" + spellMode), endTime);
+    }
 
     @Override
     public AnimationFactory getFactory() {

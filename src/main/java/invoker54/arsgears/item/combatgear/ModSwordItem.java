@@ -59,17 +59,23 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
         spell.recipe.add(0, MethodTouch.INSTANCE);
         SpellResolver resolver = new SpellResolver(new SpellContext(spell, player));
+        CompoundNBT itemTag = gearStack.getOrCreateTag();
 
         //Get the cap
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
-        boolean flag = resolver.withSilent(true).canCast(player);
-
+        boolean flag1 = resolver.withSilent(true).canCast(player);
+        //This is if the item is still on cooldown
+        boolean flag2 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
         //This is if the spell has no glyphs after the Touch glyph
-        if (resolver.spell.recipe.size() == 1) flag = false;
+        boolean flag3 = resolver.spell.recipe.size() != 1;
+
+        LOGGER.debug("Can player cast? " + flag1);
+        LOGGER.debug("Is cooldown done? " + flag2);
+        LOGGER.debug("Is spell larger than 1? " + flag3);
 
         //If the player can't afford the spell, AND the combat gear is activated, set its activation to false
-        if (!flag && cap.getActivated()){
+        if ((!flag1 || !flag2 || !flag3) && cap.getActivated()){
             cap.setActivated(false);
         }
     }
@@ -83,6 +89,9 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         //Next, Grab its capability
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
+        //Finally grab the itemStack tag
+        CompoundNBT itemTag = gearStack.getOrCreateTag();
+
         LOGGER.debug("IS MY CAP ACTIVATED? " + cap.getActivated());
 
 
@@ -91,10 +100,11 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         spell.recipe.add(0, MethodTouch.INSTANCE);
         //Get the spell resolver
         SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
-                withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
+                withColors(getSpellColor(itemTag, getMode(itemTag))));
 
         boolean canCast1 = resolver.canCast(playerIn);
         boolean canCast2 = spell.recipe.size() > 1;
+        boolean canCast3 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
 
         //Now I need to find out if it's activated
         if(cap.getActivated()) {
@@ -128,7 +138,11 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
             if(entityRes != null && entityRes.getEntity() instanceof LivingEntity){
                 resolver.onCastOnEntity(gearStack, playerIn, entityRes.getEntity(), handIn);
                 cap.setActivated(false);
+                //This damages the gear stack
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
+                //This sets the cooldown for the current spell
+                float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
+                CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
                 return ActionResult.success(gearStack);
             }
             //endregion
@@ -139,7 +153,11 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
                 ItemUseContext context = new ItemUseContext(playerIn, handIn, (BlockRayTraceResult) blockResult);
                 resolver.onCastOnBlock(context);
                 cap.setActivated(false);
+                //This damages the gear stack
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
+                //This sets the cooldown for the current spell
+                float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
+                CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
                 return ActionResult.success(gearStack);
             }
             //endregion
@@ -149,8 +167,9 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() <= 1) return ActionResult.fail(gearStack);
 
         //If they can't cast in the first place, don't allow them to activate the item
-        if (!cap.getActivated() && (!canCast1 || !canCast2)){
+        if (!cap.getActivated() && (!canCast1 || !canCast2 || !canCast3)){
             if (!canCast2) PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));
+            if (!canCast3) PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_gears.chat.cast_cooldown"));
             return ActionResult.consume(gearStack);
         }
 
@@ -162,6 +181,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
     @Override
     public boolean hurtEnemy(ItemStack gearStack, LivingEntity target, LivingEntity playerIn) {
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        CompoundNBT itemTag = gearStack.getOrCreateTag();
 
         //Only if the combat gear is set to active will the spell be cast.
         if (cap.getActivated()) {
@@ -170,10 +190,13 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
             spell.recipe.add(0, MethodTouch.INSTANCE);
             //Get the spell resolver
             SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
-                    withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
+                    withColors(getSpellColor(itemTag, getMode(itemTag))));
 
             EntityRayTraceResult entityRes = new EntityRayTraceResult(target);
             resolver.onCastOnEntity(gearStack, playerIn, entityRes.getEntity(), Hand.MAIN_HAND);
+            //This sets the cooldown for the current spell
+            float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
+            CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
         }
         return super.hurtEnemy(gearStack, target, playerIn);
     }

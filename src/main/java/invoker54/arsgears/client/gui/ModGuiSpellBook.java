@@ -8,10 +8,9 @@ import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.api.util.SpellRecipeUtil;
 import com.hollingsworth.arsnouveau.client.gui.NoShadowTextField;
 import com.hollingsworth.arsnouveau.client.gui.book.BaseBook;
-import com.hollingsworth.arsnouveau.client.gui.book.GuiColorScreen;
 import com.hollingsworth.arsnouveau.client.gui.book.GuiFamiliarScreen;
-import com.hollingsworth.arsnouveau.client.gui.buttons.*;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
+import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.validation.CombinedSpellValidator;
 import com.hollingsworth.arsnouveau.common.spell.validation.GlyphMaxTierValidator;
@@ -19,12 +18,11 @@ import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.*;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellbook;
-import jdk.nashorn.internal.ir.WithNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -36,6 +34,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
@@ -43,8 +42,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import vazkii.patchouli.api.PatchouliAPI;
 
-import javax.naming.directory.InvalidAttributeIdentifierException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ArsGears.MOD_ID)
@@ -55,6 +54,8 @@ public class ModGuiSpellBook extends BaseBook {
     public int maxAugmentStack;
     public SpellBook spellBook;
     public ArsNouveauAPI api;
+    public boolean sneakHeld = false;
+    public Spell currSpell;
 
     private int selected_cast_slot;
     public TextFieldWidget spell_name;
@@ -453,7 +454,12 @@ public class ModGuiSpellBook extends BaseBook {
     }
 
     public void onCraftingSlotClick(Button button){
-        ((ModCraftingButton) button).clear();
+        ModCraftingButton craftButton = (ModCraftingButton) button;
+
+        LOGGER.debug("is the player holding shift down? " + ClientUtil.mC.options.keyShift.isDown());
+        if (craftButton.stack == 1 || sneakHeld) craftButton.clear();
+        else craftButton.stack--;
+
         validate();
     }
 
@@ -544,6 +550,24 @@ public class ModGuiSpellBook extends BaseBook {
         }
     }
 
+    @Override
+    public boolean keyPressed(int keyPressed, int xMouse, int yMouse) {
+        if (keyPressed == minecraft.options.keyShift.getKey().getValue()){
+            sneakHeld = true;
+        }
+        
+        return super.keyPressed(keyPressed, xMouse, yMouse);
+    }
+
+    @Override
+    public boolean keyReleased(int keyReleased, int xMouse, int yMouse) {
+        if (keyReleased == minecraft.options.keyShift.getKey().getValue()){
+            sneakHeld = false;
+        }
+        
+        return super.keyReleased(keyReleased, xMouse, yMouse);
+    }
+
     public void drawBackgroundElements(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
         super.drawBackgroundElements(stack, mouseX, mouseY, partialTicks);
         if(formTextRow >= 1) {
@@ -575,7 +599,7 @@ public class ModGuiSpellBook extends BaseBook {
     /**
      * Validates the current spell as well as the potential for adding each glyph.
      */
-    private void validate() {
+    public void validate() {
         List<AbstractSpellPart> recipe = new LinkedList<>();
         int firstBlankSlot = -1;
 
@@ -606,6 +630,10 @@ public class ModGuiSpellBook extends BaseBook {
             }
         }
         this.validationErrors = errors;
+
+        List<AbstractSpellPart> copyRecipe = new LinkedList<>(recipe);
+        copyRecipe.removeIf(Predicate.isEqual(null));
+        this.currSpell = new Spell(copyRecipe);
 
         // Validate the glyph buttons
         // Trim the spell to the first gap, if there is a gap
@@ -641,6 +669,25 @@ public class ModGuiSpellBook extends BaseBook {
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks) {
         super.render(ms, mouseX, mouseY, partialTicks);
+        drawCastInfo(ms);
         spell_name.setSuggestion(spell_name.getValue().isEmpty() ? new TranslationTextComponent("ars_nouveau.spell_book_gui.spell_name").getString() : "");
+    }
+    public void drawCastInfo(MatrixStack ms){
+        int x = bookRight - 100;
+        int y = bookBottom - 55;
+        int ySpacing = 11;
+
+        //Your mana
+        int maxMana = ManaCapability.getMana(ClientUtil.mC.player).resolve().get().getMaxMana();
+        font.draw(ms, "Your Mana: " + (maxMana), x, y, TextFormatting.DARK_AQUA.getColor());
+        y += ySpacing;
+        //How much the spell will cost
+        int cost = currSpell.getCastingCost();
+        int castColor = maxMana < cost ? TextFormatting.DARK_RED.getColor() : TextFormatting.DARK_GREEN.getColor();
+        font.draw(ms, "Mana Cost: " + (cost), x, y, castColor);
+        y += ySpacing;
+        //And finally its cooldown
+        float cooldown = CombatGearItem.calcCooldown(currSpell, false);
+        font.draw(ms, "Cooldown: " + (cooldown), x, y, TextFormatting.DARK_GRAY.getColor());
     }
 }

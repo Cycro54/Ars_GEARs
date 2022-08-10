@@ -8,6 +8,7 @@ import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.entity.EntitySpellArrow;
 import com.hollingsworth.arsnouveau.common.items.SpellArrow;
+import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.items.SpellBow;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSplit;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
@@ -96,9 +97,7 @@ public class ModBowItem extends SpellBow {
                 Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
                 //Add the needed projectile cast method (if there is a spell)
                 if(!spell.isEmpty()) spell.recipe.add(0, MethodProjectile.INSTANCE);
-                //LOGGER.warn("Is de spell empty? " + spell.isEmpty());
-                //Make a spell resolver
-                //SpellResolver spellResolver = new SpellResolver(new SpellContext(spell, playerentity));
+                CompoundNBT itemTag = gearStack.getOrCreateTag();
                 SpellResolver spellResolver = new SpellResolver((new SpellContext(spell, playerentity)).
                         withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
 
@@ -114,11 +113,17 @@ public class ModBowItem extends SpellBow {
                 List<AbstractArrowEntity> arrows = new ArrayList<>();
                 boolean didCastSpell = false;
                 //Only make the arrow cast a spell IF the cap.getActivated returns true
-                if (CombatGearCap.getCap(gearStack).getActivated()) {
-                    CombatGearCap.getCap(gearStack).setActivated(false);
+                CombatGearCap cap = CombatGearCap.getCap(gearStack);
+                if (cap.getActivated()) {
+                    //Deactivate
+                    cap.setActivated(false);
+                    //This sets the cooldown for the current spell
+                    float cooldown = CombatGearItem.calcCooldown(spellResolver.spell, true) + playerIn.level.getGameTime();
+                    CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
+
                     //arrowItem is an arrow, spell isnt null, and the player can cast a spell
                     if (arrowitem == Items.ARROW && !spell.isEmpty() && spellResolver.withSilent(true).canCast(playerentity)) {
-                        abstractarrowentity = buildSpellArrow(worldIn, playerentity, spellResolver);
+                        abstractarrowentity = buildSpellArrow(worldIn, playerentity, spellResolver, cap.getActivated());
                         spellResolver.expendMana(playerentity);
                         didCastSpell = true;
                     }
@@ -150,7 +155,7 @@ public class ModBowItem extends SpellBow {
                         // Alternate sides
                         BlockPos projPos = playerentity.blockPosition().relative(offset, i);
                         projPos = projPos.offset(0, 1.5, 0);
-                        EntitySpellArrow spellArrow = buildSpellArrow(worldIn, playerentity, spellResolver);
+                        EntitySpellArrow spellArrow = buildSpellArrow(worldIn, playerentity, spellResolver, cap.getActivated());
                         spellArrow.setPos(projPos.getX(), spellArrow.blockPosition().getY(), projPos.getZ());
                         arrows.add(spellArrow);
                     }
@@ -175,11 +180,16 @@ public class ModBowItem extends SpellBow {
         }
     }
     //Method from SpellBow class
-    public EntitySpellArrow buildSpellArrow(World worldIn, PlayerEntity playerentity, SpellResolver spellResolver) {
+    public EntitySpellArrow buildSpellArrow(World worldIn, PlayerEntity playerentity, SpellResolver spellResolver, boolean isSpellArrow) {
         EntitySpellArrow spellArrow = new EntitySpellArrow(worldIn, playerentity);
         spellArrow.spellResolver = spellResolver.withSilent(true);
         ParticleColor.IntWrapper color = spellResolver.spellContext.colors;
         spellArrow.setColors(color.r, color.g, color.b);
+
+        //Arrows for spells will deal no damage
+        if (isSpellArrow){
+            spellArrow.setBaseDamage(0);
+        }
 
         return spellArrow;
     }
