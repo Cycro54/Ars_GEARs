@@ -1,6 +1,7 @@
 package invoker54.arsgears.item.utilgear;
 
 import com.google.common.collect.Sets;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
@@ -145,7 +146,9 @@ public class PaxelItem extends ToolItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        if (world == null) return;
+
+        GearCap cap = GearCap.getCap(gearStack);
         CompoundNBT upgrades = GearUpgrades.getUpgrades(UtilGearItem.paxelINT, cap);
 
         if (upgrades.contains(GearUpgrades.paxelAutoInv))

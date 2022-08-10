@@ -72,6 +72,11 @@ public class UtilGearItem extends ToolItem {
     }
 
     @Override
+    public boolean isFoil(ItemStack p_77636_1_) {
+        return false;
+    }
+
+    @Override
     public boolean isValidRepairItem(ItemStack p_82789_1_, ItemStack p_82789_2_) {
         return false;
     }
@@ -169,7 +174,7 @@ public class UtilGearItem extends ToolItem {
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
         if (world == null) return;
 
-        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        GearCap cap = GearCap.getCap(gearStack);
 
         if (GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() == 0) return;
 

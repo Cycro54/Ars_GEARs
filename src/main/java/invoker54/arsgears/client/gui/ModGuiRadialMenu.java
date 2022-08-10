@@ -40,6 +40,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jline.utils.Log;
 import org.lwjgl.opengl.GL11;
 
 
@@ -50,9 +51,9 @@ public class ModGuiRadialMenu extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private boolean closing;
-    private double startAnimation;
-    private double totalTime;
-    private double prevTick;
+    private float totalTime;
+    private float prevTick;
+    private float extraTick;
     private CompoundNBT tag;
     private int selectedItem;
 
@@ -67,8 +68,6 @@ public class ModGuiRadialMenu extends Screen {
         this.gearCycle = CombatGearCap.getCap(gearStack).getSelectedItem();
         this.closing = false;
         this.minecraft = Minecraft.getInstance();
-//        this.startAnimation = getMinecraft().level.getGameTime() + (double) getMinecraft().getFrameTime();
-        this.startAnimation = getMinecraft().level.getGameTime() + ClientUtil.mC.getDeltaFrameTime();
         this.selectedItem = -1;
     }
 
@@ -104,23 +103,20 @@ public class ModGuiRadialMenu extends Screen {
     @Override
     public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
         super.render(stack,mouseX, mouseY, partialTicks);
-//        final float OPEN_ANIMATION_LENGTH = 2.5f;
-//        double worldTime = ClientUtil.mC.level.getGameTime();
-//        float animationTime = (float) (startAnimation + totalTime);
-        final float OPEN_ANIMATION_LENGTH = 0.4f;
-        //If the partialTick is on a new tick, make sure the equation is adjusted
-        float openAnimation = closing ? (float) (1.0f - (totalTime / OPEN_ANIMATION_LENGTH)) : (float) (totalTime / OPEN_ANIMATION_LENGTH);
-        totalTime += (prevTick > partialTicks ? (partialTicks + 1 - prevTick) : partialTicks - prevTick)/20f;
+        final float OPEN_ANIMATION_LENGTH = 0.5f;
+        float openAnimation = closing ? 1.0f - totalTime / OPEN_ANIMATION_LENGTH : totalTime / OPEN_ANIMATION_LENGTH;
+        float currTick = minecraft.getFrameTime();
+        totalTime += (currTick + extraTick - prevTick)/20f;
+        extraTick = 0;
+        prevTick = currTick;
+
 
         float animProgress = MathHelper.clamp(openAnimation, 0, 1);
+        //This will make it so the animation is Cubic ease out (fast beginning, smooth ending)
         animProgress = (float) (1 - Math.pow(1 - animProgress, 3));
-        //This will make it so the animation is Quad ease out (smooth ending, fast beginning
-        //animProgress = 1 - (1 - animProgress) * (1 - animProgress);
-
         float radiusIn = Math.max(0.1f, 25 * animProgress);
         float radiusOut = (radiusIn + 60) * animProgress;
         float itemRadius = (radiusIn + radiusOut) * 0.5f;
-        float animTop = (1 - animProgress) * height / 2.0f;
         int x = width / 2;
         int y = height / 2;
 
@@ -221,7 +217,7 @@ public class ModGuiRadialMenu extends Screen {
             font.drawShadow(stack, String.valueOf(i + 1 + (3 * gearCycle)), posX + 8, posY + 8, TextFormatting.WHITE.getColor());
         }
 
-        LOGGER.debug("THIS IS THE SELECTED ITEM: " + (selectedItem + 1));
+        //LOGGER.debug("THIS IS THE SELECTED ITEM: " + (selectedItem + 1));
 
 //        if (mousedOverSlot != -1) {
 //            int adjusted = (mousedOverSlot + 6) % numberOfSlices;
@@ -279,6 +275,13 @@ public class ModGuiRadialMenu extends Screen {
             buffer.vertex(pos1InX, pos1InY, z).color(r, g, b, a).endVertex();
             buffer.vertex(pos2InX, pos2InY, z).color(r, g, b, a).endVertex();
             buffer.vertex(pos2OutX, pos2OutY, z).color(r, g, b, a).endVertex();
+        }
+    }
+
+    @Override
+    public void tick() {
+        if (totalTime != 0.5f){
+            extraTick += 1;
         }
     }
 

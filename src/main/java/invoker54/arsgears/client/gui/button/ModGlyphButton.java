@@ -91,5 +91,4 @@ public class ModGlyphButton extends Button {
         }
         //super.render(mouseX, mouseY, partialTicks);
     }
-
 }

@@ -24,6 +24,7 @@ import invoker54.arsgears.client.gui.button.*;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellbook;
+import jdk.nashorn.internal.ir.WithNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -42,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import vazkii.patchouli.api.PatchouliAPI;
 
+import javax.naming.directory.InvalidAttributeIdentifierException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,8 @@ import java.util.stream.Collectors;
 public class ModGuiSpellBook extends BaseBook {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public int numLinks = 10;
+    public int numLinks;
+    public int maxAugmentStack;
     public SpellBook spellBook;
     public ArsNouveauAPI api;
 
@@ -126,21 +129,51 @@ public class ModGuiSpellBook extends BaseBook {
     @Override
     public void init() {
         super.init();
+
+        LOGGER.debug("What is craftingCells size? " + this.craftingCells.size());
+        LOGGER.debug("What is the Max Spell Tier? " + this.max_spell_tier);
+
         //This is the currently selected spell
         int selected_slot_ind = SpellBook.getMode(spell_book_tag);
         if(selected_slot_ind == 0) selected_slot_ind = 1;
 
-        //Glyph slots for the spell
-        for (int i = 0; i < numLinks; i++) {
-            String icon = null;
-            String spell_id = "";
-            int offset = i >= 5 ? 14 : 0;
-            ModCraftingButton cell = new ModCraftingButton(this,bookLeft + 19 + 24 * i + offset, bookTop + FULL_HEIGHT - 47, i, this::onCraftingSlotClick);
-            //ModGlyphButton glyphButton = new ModGlyphButton(this,bookLeft + 10 + 28 * i, bookTop + FULL_HEIGHT - 24, )
-            addButton(cell);
-            craftingCells.add(cell);
+        //Max amount of times a augment may stack onto itself (This can only be opened at tier 2)
+        //Also will tell us how many crafting slots are allowed.
+        switch (max_spell_tier){
+            default:
+                numLinks = 4;
+                maxAugmentStack = 3;
+                break;
+            case 2:
+                numLinks = 5;
+                maxAugmentStack = 4;
+                break;
+            case 3:
+                numLinks = 6;
+                maxAugmentStack = 5;
+                break;
         }
-        updateCraftingSlots(selected_slot_ind);
+        //Craft slots for the spell
+        if (craftingCells.isEmpty()) {
+            for (int i = 0; i < numLinks; i++) {
+                String icon = null;
+                String spell_id = "";
+                int offset = i >= 5 ? 14 : 0;
+                ModCraftingButton cell = new ModCraftingButton(this, bookLeft + 19 + 24 * i + offset, bookTop + FULL_HEIGHT - 47, i, this::onCraftingSlotClick);
+                //ModGlyphButton glyphButton = new ModGlyphButton(this,bookLeft + 10 + 28 * i, bookTop + FULL_HEIGHT - 24, )
+                addButton(cell);
+                craftingCells.add(cell);
+            }
+            updateCraftingSlots(selected_slot_ind);
+        }
+        else {
+            for (int a = 0; a < craftingCells.size(); a++){
+                addButton(craftingCells.get(a));
+                int offset = a >= 5 ? 14 : 0;
+                craftingCells.get(a).x = (bookLeft + 19 + 24 * a + offset);
+                craftingCells.get(a).y = (bookTop + FULL_HEIGHT - 47);
+            }
+        }
 
 //        addCastMethodParts();
 //        addAugmentParts();
@@ -289,7 +322,6 @@ public class ModGuiSpellBook extends BaseBook {
         int totalRowsPlaced = 0;
         int row_offset = page == 0 ? 2 : 0;
 
-
         for(int i = 0; i < sorted.size(); i++){
             AbstractSpellPart part = sorted.get(i);
             if(!foundForms && part instanceof AbstractCastMethod) {
@@ -433,6 +465,7 @@ public class ModGuiSpellBook extends BaseBook {
                 if (b.resourceIcon.equals("")) {
                     b.resourceIcon = button1.resourceIcon;
                     b.spellTag = button1.spell_id;
+                    b.stack++;
                     validate();
                     return;
                 }
@@ -453,14 +486,34 @@ public class ModGuiSpellBook extends BaseBook {
     public void updateCraftingSlots(int bookSlot){
         //Crafting slots
         List<AbstractSpellPart> spell_recipe = this.spell_book_tag != null ? SpellBook.getRecipeFromTag(spell_book_tag, bookSlot).recipe : null;
+        if (spell_recipe != null) LOGGER.debug("SPELL RECIPE SIZE IS " + spell_recipe.size());
+        int spellIndex = 0;
         for (int i = 0; i < craftingCells.size(); i++) {
+            //This wipes any data on the current slot
             ModCraftingButton slot = craftingCells.get(i);
-            slot.spellTag = "";
-            slot.resourceIcon = "";
-            if (spell_recipe != null && i < spell_recipe.size()){
-                slot.spellTag = spell_recipe.get(i).getTag();
-                slot.resourceIcon = spell_recipe.get(i).getIcon();
+            slot.clear();
+
+            if (spell_recipe == null) continue;
+            if (spellIndex >= spell_recipe.size()) continue;
+
+            //Assign this slot a Spell part using Spell index
+            slot.spellTag = spell_recipe.get(spellIndex).getTag();
+            slot.resourceIcon = spell_recipe.get(spellIndex).getIcon();
+            LOGGER.debug("SPELL INDEX SIZE BEFORE STACK COUNT " + spellIndex);
+            //If there are Spell parts that equal the current spell part, stack em till the limit is reached or it's the end of the spell
+            for (; spellIndex < spell_recipe.size(); spellIndex++){
+                //If the spell parts don't equal, break
+                LOGGER.debug("IS STACKING SPELL ICON EQUAL TO THIS SPELL ICON? " + Objects.equals(spell_recipe.get(spellIndex).getIcon(), slot.resourceIcon));
+                if (!Objects.equals(spell_recipe.get(spellIndex).getIcon(), slot.resourceIcon)) break;
+                //If we already reached the maxAugmentStack, break
+                //LOGGER.debug("What's the current stack: " + (slot.stack) + ", what's the max? " + (maxAugmentStack));
+                LOGGER.debug("Did I hit the max? " + (slot.stack == this.maxAugmentStack));
+                if (slot.stack == this.maxAugmentStack) break;
+                LOGGER.debug("Stack size: " + (slot.stack + 1));
+                //Increase the slot stack amount
+                slot.stack++;
             }
+            LOGGER.debug("SPELL INDEX SIZE AFTER STACK COUNT " + spellIndex);
         }
     }
 
@@ -482,7 +535,9 @@ public class ModGuiSpellBook extends BaseBook {
         if (validationErrors.isEmpty()) {
             List<String> ids = new ArrayList<>();
             for (ModCraftingButton slot : craftingCells) {
-                ids.add(slot.spellTag);
+                for (int a = 0; a < slot.stack; a++) {
+                    ids.add(slot.spellTag);
+                }
             }
             NetworkHandler.INSTANCE.sendToServer(
                     new PacketUpdateSpellbook(ids.toString(), this.selected_cast_slot, this.spell_name.getValue()));
@@ -534,7 +589,10 @@ public class ModGuiSpellBook extends BaseBook {
                 // Also note where we found the first blank.  Used later for the glyph buttons.
                 if (firstBlankSlot < 0) firstBlankSlot = i;
             } else {
-                recipe.add(api.getSpell_map().get(b.spellTag));
+                //This will make sure the stacked spell glyphs will be counted
+                for (int a = 0; a < b.stack; a++) {
+                    recipe.add(api.getSpell_map().get(b.spellTag));
+                }
             }
         }
 
