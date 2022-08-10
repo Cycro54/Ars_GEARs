@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
@@ -41,7 +42,7 @@ public class UtilityGearEvents {
         if (focusedGear.isEmpty()) return;
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
-        if (trackedGear == focusedGear) {
+        if (trackedGear != focusedGear) {
             //LOGGER.info("THEY WERENT THE SAME");
             ArsUtil.replaceItemStack(player, focusedGear, cap.getUtilityGear());
         }

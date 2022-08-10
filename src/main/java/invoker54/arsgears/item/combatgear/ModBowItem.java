@@ -13,21 +13,28 @@ import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSplit;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.item.GearUpgrades;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.*;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -196,5 +203,24 @@ public class ModBowItem extends SpellBow {
 
                 return playerEntity.abilities.instabuild ? new ItemStack(Items.ARROW) : ItemStack.EMPTY;
             }
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.bowInt, cap);
+
+        if (upgrades.contains(GearUpgrades.bowSpeed))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.bowSpeed, upgrades));
+
+        if (upgrades.contains(GearUpgrades.bowSpellArrow))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.bowSpellArrow, upgrades));
+
+        if (upgrades.contains(GearUpgrades.bowArrowKeep))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.bowArrowKeep, upgrades));
+
+        if (upgrades.contains(GearUpgrades.bowSpellSplit))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.bowSpellSplit, upgrades));
     }
 }

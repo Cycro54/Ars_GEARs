@@ -11,6 +11,7 @@ import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.CombatGearRenderer;
 import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
@@ -351,17 +352,36 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-        //CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        if (world == null) return;
+
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
         int tier = getTier().ordinal();
 
-        super.appendHoverText(gearStack, world, tooltip, flag);
+        if (tier + 1 < 3) return;
+
         if(gearStack.hasTag()) {
             tooltip.add(new StringTextComponent(SpellBook.getSpellName(gearStack.getTag())));
 
             tooltip.add(new TranslationTextComponent("ars_nouveau.spell_book.select", KeyBinding.createNameSupplier(ModKeyBindings.OPEN_SPELL_SELECTION.getKeyBinding().getName()).get().getString()));
             tooltip.add(new TranslationTextComponent("ars_nouveau.spell_book.craft", KeyBinding.createNameSupplier(ModKeyBindings.OPEN_BOOK.getKeyBinding().getName()).get().getString()));
         }
-        tooltip.add(new TranslationTextComponent("tooltip.ars_nouveau.caster_level", tier + 1).setStyle(Style.EMPTY.withColor(TextFormatting.BLUE)));
+        tooltip.add(new TranslationTextComponent("tooltip.ars_nouveau.caster_level", tier - 1).setStyle(Style.EMPTY.withColor(TextFormatting.BLUE)));
+
+
+        if (GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() == 0) return;
+
+        //Now for the special upgrades
+        switch (cap.getSelectedItem()) {
+            default:
+                modSword.appendHoverText(gearStack, world, tooltip, flag);
+                break;
+            case 1:
+                modBow.appendHoverText(gearStack, world, tooltip, flag);
+                break;
+            case 2:
+                modMirror.appendHoverText(gearStack, world, tooltip, flag);
+                break;
+        }
     }
 
     public AnimationFactory factory = new AnimationFactory(this);

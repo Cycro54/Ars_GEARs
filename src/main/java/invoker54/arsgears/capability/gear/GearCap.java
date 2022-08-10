@@ -52,17 +52,6 @@ public class GearCap implements IGearCap {
         return itemTags[gearCycle];
     }
 
-    @Override
-    public CompoundNBT getUpgrades(int gearCycle) {
-        //First grab the main compoundNBT Tag
-        CompoundNBT cNBT = getTag(gearCycle);
-        //Now inside of it should be an upgrade compound, if there isn't create one.
-        if (!cNBT.contains(GearUpgrades.gearUpgradeNBT)) {
-            cNBT.put(GearUpgrades.gearUpgradeNBT, new CompoundNBT());
-        }
-        return cNBT.getCompound(GearUpgrades.gearUpgradeNBT);
-    }
-
     protected CompoundNBT saveTag(CompoundNBT stackTag){
         CompoundNBT capTag = itemTags[selectedItem];
 

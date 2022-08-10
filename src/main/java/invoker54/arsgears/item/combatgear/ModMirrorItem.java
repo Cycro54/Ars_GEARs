@@ -9,16 +9,25 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.item.GearUpgrades;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.shadowed.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
@@ -84,5 +93,21 @@ public class ModMirrorItem extends EnchantersMirror {
 //        ISpellCaster caster = getSpellCaster(stack);
 //        caster.getSpell().setCost((int) (caster.getSpell().getCastingCost() - caster.getSpell().getCastingCost() * 0.25));
 //        return caster.castSpell(worldIn, playerIn, handIn, new TranslationTextComponent("ars_nouveau.mirror.invalid"));
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.mirrorInt, cap);
+
+        if (upgrades.contains(GearUpgrades.mirrorFreeGlyph))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.mirrorFreeGlyph, upgrades));
+
+        if (upgrades.contains(GearUpgrades.mirrorManaDiscount))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.mirrorManaDiscount, upgrades));
+
+        if (upgrades.contains(GearUpgrades.mirrorQuickCast))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.mirrorQuickCast, upgrades));
     }
 }

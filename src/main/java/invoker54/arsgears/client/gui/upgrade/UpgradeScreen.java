@@ -9,6 +9,7 @@ import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.UpgradeButton;
 import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
@@ -25,6 +26,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.system.CallbackI;
@@ -65,11 +67,12 @@ public class UpgradeScreen extends Screen {
     int halfHeightSpace;
 
     int colorBlack = new Color(0,0,0,255).getRGB();
+    int colorTransparentBlack = new Color(0,0,0, 155).getRGB();
     int colorWhite = new Color(255,255,255,255).getRGB();
     int colorPurchased = new Color(4, 94, 18,255).getRGB();
     int colorSale = new Color(23, 217, 44,255).getRGB();
-    int colorDeny = new Color(101, 7, 7,255).getRGB();
-
+    int colorDeny = new Color(201, 17, 17, 134).getRGB();
+    //int colorDeny = new Color(101, 7, 7,255).getRGB();
 
     //This is the base xp expected (xp level 33 which is 1758)
     int baseXP = 1758;
@@ -100,6 +103,33 @@ public class UpgradeScreen extends Screen {
                 halfHeightSpace, imageHeight, 0 - scrollX, imageWidth, 0 - scrollY, imageHeight, 16);
 
 
+        //Now render the lines going side to side
+        for (int a = 0; a < 4; a++){
+
+            UpgradeButton leftButton = null;
+            UpgradeButton rightButton = null;
+            for (ArrayList<UpgradeButton> list : categories.values()){
+                if (list.isEmpty()) {
+                    if (rightButton != null){
+                        ClientUtil.blitColor(stack, leftButton.x, rightButton.x - leftButton.x, (int) (leftButton.y + ((buttonSize - 3)/2f)), 3, colorBlack);
+                    }
+
+                    leftButton = null;
+                    rightButton = null;
+                    continue;
+                }
+                UpgradeButton currButton = list.get(a);
+
+                if (currButton == null) continue;
+
+                if (leftButton == null) leftButton = currButton;
+                else rightButton = currButton;
+            }
+            //This will render the lines for the final category (if there is one)
+            if (rightButton != null){
+                ClientUtil.blitColor(stack, leftButton.x, rightButton.x - leftButton.x, (int) (leftButton.y + ((buttonSize - 3)/2f)), 3, colorBlack);
+            }
+        }
         //Render the lines connecting the upgrades up and down
         TEXTURE_MANAGER.release(background);
         ArrayList<UpgradeButton> prevList = null;
@@ -117,9 +147,8 @@ public class UpgradeScreen extends Screen {
 
                 if (button == null) continue;
 
-                if (!button.purchased) {
-                    int selectedColor = button.active ? colorSale : colorDeny;
-                    ClientUtil.blitColor(stack, button.x - 1, buttonSize + 2, button.y - 1, buttonSize + 2, selectedColor);
+                if (!button.purchased && button.active) {
+                    ClientUtil.blitColor(stack, button.x - 1, buttonSize + 2, button.y - 1, buttonSize + 2, colorSale);
                 }
 
                 //This is where we will grab the first previous button
@@ -150,33 +179,23 @@ public class UpgradeScreen extends Screen {
 
             if (!list.isEmpty()) prevList = list;
         }
-        //Now render the lines going side to side
-        for (int a = 0; a < 4; a++){
-
-            UpgradeButton leftButton = null;
-            UpgradeButton rightButton = null;
-            for (ArrayList<UpgradeButton> list : categories.values()){
-                if (list.isEmpty()) {
-                    if (rightButton != null){
-                        ClientUtil.blitColor(stack, leftButton.x, rightButton.x - leftButton.x, (int) (leftButton.y + ((buttonSize - 3)/2f)), 3, colorBlack);
-                    }
-
-                    leftButton = null;
-                    rightButton = null;
-                    continue;
+        
+        //This will render the buttons
+        try {
+            for(int i = 0; i < this.buttons.size(); ++i) {
+                this.buttons.get(i).render(stack, xMouse, yMouse, partialTicks);
+                UpgradeButton button = (UpgradeButton) this.buttons.get(i);
+                if (button.purchased){
+                    ClientUtil.blitColor(stack, button.x, buttonSize, button.y, buttonSize, colorTransparentBlack);
                 }
-                LOGGER.debug("IS CURRENT BUTTON NULL? " + (list.get(a) == null));
-                UpgradeButton currButton = list.get(a);
-
-                if (currButton == null) continue;
-
-                if (leftButton == null) leftButton = currButton;
-                else rightButton = currButton;
+                else if (!button.active){
+                    ClientUtil.blitColor(stack, button.x, buttonSize, button.y, buttonSize, colorDeny);
+                }
             }
         }
-
-        //This will render the buttons
-        super.render(stack, xMouse, yMouse, partialTicks);
+        catch (Exception e){
+            LOGGER.error(e);
+        }
 
         //End the crop
         ClientUtil.endCrop();
@@ -249,7 +268,7 @@ public class UpgradeScreen extends Screen {
         if (!categories.containsKey(category)) categories.put(category, new ArrayList<>());
 
         float currLvl = categories.get(category).size() + 1;
-        LOGGER.debug("WHATS THE CURRENT LEVEL? " + currLvl);
+        //LOGGER.debug("WHATS THE CURRENT LEVEL? " + currLvl);
 
         //First do the easing (this is easeInQuad)
         float price = ((currLvl/maxLvl)*(currLvl/maxLvl));
@@ -298,7 +317,15 @@ public class UpgradeScreen extends Screen {
         UpdatePositions();
     }
 
-    public void createCustomUpgrade(int gearCycle, String catName, String upgradeName, int[] upgradeLvl, ResourceLocation image){
+    public void createCustomUpgrade(int gearCycle, String upgradeName, int[] upgradeLvl, ResourceLocation image){
+        String catName = GearUpgrades.getName(upgradeName).getString();
+
+        if (categories.containsKey(catName)){
+            LOGGER.error("DUPLICATE NAME FOUND " + catName);
+            return;
+        }
+        else {categories.put(catName, new ArrayList<>());}
+
         //This is just to make sure that the upgrade lvl integers are all correct (also to get the total levels)
         int totalLvl = 0;
         if (upgradeLvl.length != 4){
@@ -321,8 +348,6 @@ public class UpgradeScreen extends Screen {
                 totalLvl++;
             }
         }
-        
-        if (!categories.containsKey(catName)) categories.put(catName, new ArrayList<>());
 
         UpgradeButton prevButton = null;
         for (int lvl : upgradeLvl) {
@@ -330,15 +355,16 @@ public class UpgradeScreen extends Screen {
                 createEmptyUpgrade(catName);
                 continue;
             }
-
-            int playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            int playerTier;
+            if (this instanceof CombatUpgradeScreen) playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            else playerTier = ((UtilGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
             //Make the requirement
             UpgradeButton finalPrevButton = prevButton;
             UpgradeButton.Irequirement iRequire = (button) -> {
                 //Grabs the custom upgrades for the related item
-                CompoundNBT customUpgrades = getCap().getUpgrades(gearCycle);
+                CompoundNBT customUpgrades = GearUpgrades.getUpgrades(gearCycle, getCap());
                 PlayerEntity player = ClientUtil.mC.player;
 
                 //Make sure they don't have this enchant already
@@ -376,7 +402,7 @@ public class UpgradeScreen extends Screen {
             //Make the pressable
             Button.IPressable iPress = (button) -> {
                 //Place the lvl into the custom Upgrade Compount NBT with its upgradeName
-                getCap().getUpgrades(gearCycle).putInt(upgradeName, lvl);
+                GearUpgrades.getUpgrades(gearCycle, getCap()).putInt(upgradeName, lvl);
 
                 //Now finally make sure to sync these changes with the server
                 NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(getCap().getTag(gearCycle), gearCycle, price));
@@ -390,7 +416,15 @@ public class UpgradeScreen extends Screen {
         }
     }
 
-    public void createEnchantUpgrade(int cycleInt, String catName, Enchantment enchantment, int[] upgradeLvl, ResourceLocation image){
+    public void createEnchantUpgrade(int cycleInt, Enchantment enchantment, int[] upgradeLvl, ResourceLocation image){
+        String catName = new TranslationTextComponent(enchantment.getDescriptionId()).getString();
+
+        if (categories.containsKey(catName)){
+            LOGGER.error("DUPLICATE NAME FOUND " + catName);
+            return;
+        }
+        else {categories.put(catName, new ArrayList<>());}
+        
         //This is just to make sure that the upgrade lvl integers are all correct (also to get the total levels)
         int totalLvl = 0;
         if (upgradeLvl.length != 4){
@@ -413,9 +447,7 @@ public class UpgradeScreen extends Screen {
                 totalLvl++;
             }
         }
-        
-        if (!categories.containsKey(catName)) categories.put(catName, new ArrayList<>());
-        
+
         UpgradeButton prevButton = null;
         for (int lvl : upgradeLvl) {
             if (lvl == 0) {
@@ -423,7 +455,9 @@ public class UpgradeScreen extends Screen {
                 continue;
             }
 
-            int playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            int playerTier;
+            if (this instanceof CombatUpgradeScreen) playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            else playerTier = ((UtilGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
             //Make the requirement
@@ -488,9 +522,9 @@ public class UpgradeScreen extends Screen {
         }
     }
     
-    protected IGearCap getCap(){
+    protected GearCap getCap(){
         ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
-        IGearCap cap;
+        GearCap cap;
         if (gearStack.getItem() instanceof UtilGearItem) cap = GearCap.getCap(gearStack);
         else { cap = CombatGearCap.getCap(gearStack); }
         

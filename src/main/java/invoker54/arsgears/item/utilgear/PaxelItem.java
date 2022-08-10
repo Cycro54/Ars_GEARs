@@ -1,20 +1,31 @@
 package invoker54.arsgears.item.utilgear;
 
 import com.google.common.collect.Sets;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolType;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Set;
 
 public class PaxelItem extends ToolItem {
@@ -47,7 +58,8 @@ public class PaxelItem extends ToolItem {
     /**
      * Check whether this Item can harvest the given Block (mostly came from PickaxeItem class)
      */
-    public boolean canHarvestBlock(BlockState blockIn) {
+    @Override
+    public boolean canHarvestBlock(ItemStack itemStack, BlockState blockIn) {
         int i = this.getTier().getLevel();
         if (blockIn.getHarvestTool() == net.minecraftforge.common.ToolType.PICKAXE) {
             return i >= blockIn.getHarvestLevel();
@@ -128,5 +140,17 @@ public class PaxelItem extends ToolItem {
                 //Below is AxeItem code
                 : (AXE_DIGGABLE_MATERIALS.contains(material) ? this.speed : super.getDestroySpeed(stack, state));
 
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(UtilGearItem.paxelINT, cap);
+
+        if (upgrades.contains(GearUpgrades.paxelAutoInv))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelAutoInv, upgrades));
+        if (upgrades.contains(GearUpgrades.paxelRadialMine))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelRadialMine, upgrades));
     }
 }

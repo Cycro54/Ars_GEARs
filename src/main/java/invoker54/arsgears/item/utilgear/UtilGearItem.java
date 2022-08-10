@@ -1,22 +1,34 @@
 package invoker54.arsgears.item.utilgear;
 
+import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
+import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class UtilGearItem extends ToolItem {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -24,6 +36,10 @@ public class UtilGearItem extends ToolItem {
     private final PaxelItem paxel;
     private final FishingRodItem fishingRodItem;
     private final HoeItem hoeItem;
+
+    public static int paxelINT = 0;
+    public static int fishingInt = 1;
+    public static int hoeInt = 2;
 
     public UtilGearItem(IItemTier tier, Item.Properties builder) {
         super(1, -2.8f, tier, null, builder);
@@ -127,7 +143,8 @@ public class UtilGearItem extends ToolItem {
                 return fishingRodItem.useOn(context);
             case 2:
                 return hoeItem.useOn(context);
-        }    }
+        }
+    }
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state){
@@ -145,6 +162,41 @@ public class UtilGearItem extends ToolItem {
         GearCap cap = GearCap.getCap(itemStack);
 
         return cap.getSelectedItem();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+        if (world == null) return;
+
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+
+        if (GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() == 0) return;
+
+        CompoundNBT upgrades;
+
+        //Now for the special upgrades
+        switch (cap.getSelectedItem()) {
+            default:
+                paxel.appendHoverText(gearStack, world, tooltip, flag);
+                break;
+            case 1:
+                //fishing rod
+                upgrades = GearUpgrades.getUpgrades(fishingInt, cap);
+                if (upgrades.contains(GearUpgrades.fishrodBaitKeep))
+                    tooltip.add(GearUpgrades.getFullName(GearUpgrades.fishrodBaitKeep, upgrades));
+                if (upgrades.contains(GearUpgrades.fishrodXPGain))
+                    tooltip.add(GearUpgrades.getFullName(GearUpgrades.fishrodXPGain, upgrades));
+                break;
+            case 2:
+                //hoe
+                upgrades = GearUpgrades.getUpgrades(hoeInt, cap);
+                if (upgrades.contains(GearUpgrades.hoeDrops))
+                    tooltip.add(GearUpgrades.getFullName(GearUpgrades.hoeDrops, upgrades));
+                if (upgrades.contains(GearUpgrades.hoeRadius))
+                    tooltip.add(GearUpgrades.getFullName(GearUpgrades.hoeRadius, upgrades));
+                break;
+        }
     }
 
     @Nullable

@@ -34,5 +34,21 @@
   "ars_gears.chat.cant_upgrade_high": "You already have this upgrade",
   "ars_gears.chat.upgrade_success": "Your GEAR has been upgraded to tier ",
 
-  "__comment": "This is for text that will be on the Upgrade screen"
+  "__comment": "This is for the GEAR upgrades",
+  "ars_gears.upgrades.SWORD_MANA_STEAL": "Mana Steal",
+  "ars_gears.upgrades.SWORD_SPELL_SWEEP": "Spell Sweep",
+  "ars_gears.upgrades.BOW_DRAW_SPEED": "Bow Speed",
+  "ars_gears.upgrades.BOW_SPELL_ARROW": "Spell Arrow",
+  "ars_gears.upgrades.BOW_COOLDOWN": "Cooldown",
+  "ars_gears.upgrades.BOW_ARROW_KEEP": "Arrow Keep",
+  "ars_gears.upgrades.BOW_SPELL_SPLIT": "Spell Split",
+  "ars_gears.upgrades.MIRROR_MANA_DISCOUNT": "Mana Discount",
+  "ars_gears.upgrades.MIRROR_FREE_GLYPH": "Free Glyph",
+  "ars_gears.upgrades.MIRROR_QUICK_CAST": "Quick Cast",
+  "ars_gears.upgrades.PAXEL_AUTO_INVENTORY": "Auto Inventory",
+  "ars_gears.upgrades.PAXEL_RADIAL_MINE": "Radial Mine",
+  "ars_gears.upgrades.HOE_RADIUS": "Radial Harvest",
+  "ars_gears.upgrades.HOE_DROPS": "Green Thumb",
+  "ars_gears.upgrades.FISHING_ROD_BAIT_KEEP": "Bait Keep",
+  "ars_gears.upgrades.FISHING_ROD_XP_GAIN": "XP Gain"
 }

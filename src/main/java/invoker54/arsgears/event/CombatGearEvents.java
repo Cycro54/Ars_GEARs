@@ -36,6 +36,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
 
+import static invoker54.arsgears.item.combatgear.CombatGearItem.swordINT;
+
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class CombatGearEvents {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -81,11 +83,11 @@ public class CombatGearEvents {
         CombatGearCap cap = CombatGearCap.getCap(itemStack);
 
         //If it's the sword selected, then add some damage
-        if (cap.getSelectedItem() == CombatGearItem.swordINT){
+        if (cap.getSelectedItem() == swordINT){
             event.setAmount(((CombatGearItem)itemStack.getItem()).modSword.getDamage());
 
 
-            int manaStealLvl = cap.getUpgrades(CombatGearItem.swordINT).getInt(GearUpgrades.swordManaSteal);
+            int manaStealLvl = GearUpgrades.getUpgrade(swordINT, cap, GearUpgrades.swordManaSteal);
             if (manaStealLvl != 0){
                 LOGGER.debug("MANA STOLEN " + (event.getAmount() * manaStealLvl));
                 ManaCapability.getMana(player).ifPresent((mana) -> mana.addMana(event.getAmount() * manaStealLvl));

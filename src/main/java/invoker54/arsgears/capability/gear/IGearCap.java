@@ -12,6 +12,4 @@ public interface IGearCap extends INBTSerializable<CompoundNBT> {
     void cycleItem(ItemStack gearStack);
 
     CompoundNBT getTag(int itemToUpdate);
-
-    CompoundNBT getUpgrades(int gearCycle);
 }

@@ -1,6 +1,10 @@
 package invoker54.arsgears.item;
 
+import com.sun.corba.se.impl.legacy.connection.USLPort;
+import invoker54.arsgears.capability.gear.GearCap;
 import net.minecraft.entity.monster.VindicatorEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class GearUpgrades {
     public static final String gearUpgradeNBT = "ARS_GEAR_UPGRADE_NBT";
@@ -37,6 +41,8 @@ public class GearUpgrades {
 
     //Utility gear upgrades
     //region paxel
+//    /** Increases the Paxels mining level */
+//    public static final String paxelMiningPower = "PAXEL_MINING_POWER";
     /** Will automatically place mined blocks into a selected inventory */
     public static final String paxelAutoInv = "PAXEL_AUTO_INVENTORY";
     /** This will increase the mining radius of the paxel */
@@ -48,6 +54,35 @@ public class GearUpgrades {
     public static final String hoeRadius = "HOE_RADIUS";
     /** Increase the amount of drops per harvest */
     public static final String hoeDrops = "HOE_DROPS";
-
     //endregion
+
+    //region fishing rod
+    /** Decrease chance to lose bait */
+    public static final String fishrodBaitKeep = "FISHING_ROD_BAIT_KEEP";
+    /** Gain more XP per catch */
+    public static final String fishrodXPGain = "FISHING_ROD_XP_GAIN";
+    //endregion
+
+    public static TranslationTextComponent getName(String upgrade){
+        return new TranslationTextComponent("ars_gears.upgrades." + upgrade);
+    }
+
+    public static TranslationTextComponent getFullName(String upgrade, CompoundNBT nbt){
+        return (TranslationTextComponent) getName(upgrade).append(" " + nbt.getInt(upgrade));
+    }
+
+    public static CompoundNBT getUpgrades(int gearCycle, GearCap cap) {
+        //First grab the main compoundNBT Tag
+        CompoundNBT cNBT = cap.getTag(gearCycle);
+        //Now inside of it should be an upgrade compound, if there isn't create one.
+        if (!cNBT.contains(GearUpgrades.gearUpgradeNBT)) {
+            cNBT.put(GearUpgrades.gearUpgradeNBT, new CompoundNBT());
+        }
+        return cNBT.getCompound(GearUpgrades.gearUpgradeNBT);
+    }
+
+    public static int getUpgrade(int gearCycle, GearCap cap, String upgradeName){
+        CompoundNBT upgrades = getUpgrades(gearCycle, cap);
+        return upgrades.getInt(upgradeName);
+    }
 }

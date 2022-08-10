@@ -55,7 +55,7 @@ public class PlayerDataCap implements IPlayerCap {
         utility_gear_copy = upgrade.copy();
 
         LOGGER.info("I am setting the held utility gear");
-        //Set the item stack as the held_utility_gear
+        //Set the item stack as the held_utility_gear (this doesn't change the itemstack in the players inv)
         utility_gear_tracked = ItemStack.EMPTY;
     }
 
