@@ -3,21 +3,15 @@ package invoker54.arsgears.event;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.awt.event.ItemEvent;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class UtilityGearEvents {

@@ -1,22 +1,20 @@
 package invoker54.arsgears.client.render.item;
 
-import com.hollingsworth.arsnouveau.client.renderer.item.SwordModel;
-import com.hollingsworth.arsnouveau.common.items.EnchantersSword;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import net.minecraft.util.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class modSwordModel extends AnimatedGeoModel<CombatGearItem> {
+public class modSwordModel extends AnimatedGeoModel<ModSpellSword> {
 
-    public ResourceLocation getModelLocation(CombatGearItem wand) {
+    public ResourceLocation getModelLocation(ModSpellSword wand) {
         return new ResourceLocation("ars_nouveau", "geo/sword.geo.json");
     }
 
-    public ResourceLocation getTextureLocation(CombatGearItem wand) {
+    public ResourceLocation getTextureLocation(ModSpellSword wand) {
         return new ResourceLocation("ars_nouveau", "textures/items/enchanters_sword.png");
     }
 
-    public ResourceLocation getAnimationFileLocation(CombatGearItem wand) {
+    public ResourceLocation getAnimationFileLocation(ModSpellSword wand) {
         return new ResourceLocation("ars_nouveau", "animations/sword.json");
     }
 }

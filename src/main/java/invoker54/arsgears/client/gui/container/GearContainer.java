@@ -1,8 +1,8 @@
 package invoker54.arsgears.client.gui.container;
 
 import invoker54.arsgears.init.ContainerInit;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;

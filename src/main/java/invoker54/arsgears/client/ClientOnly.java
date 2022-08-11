@@ -2,8 +2,8 @@ package invoker54.arsgears.client;
 
 import invoker54.arsgears.client.gui.upgrade.CombatUpgradeScreen;
 import invoker54.arsgears.client.gui.upgrade.UtilityUpgradeScreen;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
 
 public class ClientOnly {

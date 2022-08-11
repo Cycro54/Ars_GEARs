@@ -1,20 +1,18 @@
-package invoker54.arsgears.item.combatgear;
+package invoker54.arsgears.event.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.item.ICasterTool;
-import com.hollingsworth.arsnouveau.api.spell.ISpellCaster;
-import com.hollingsworth.arsnouveau.api.spell.Spell;
-import com.hollingsworth.arsnouveau.api.spell.SpellContext;
-import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
+import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.entity.EntitySpellArrow;
 import com.hollingsworth.arsnouveau.common.items.SpellArrow;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.items.SpellBow;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSplit;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
+import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.client.render.item.modSpellBowRenderer;
+import invoker54.arsgears.event.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -26,6 +24,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -43,8 +42,15 @@ import java.util.function.Predicate;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 
-public class ModBowItem extends SpellBow {
+public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
     private static final Logger LOGGER = LogManager.getLogger();
+    public AnimationFactory factory = new AnimationFactory(this);
+
+    public ModSpellBow(Item.Properties builder) {
+        super(builder.setISTER(() -> {
+            return modSpellBowRenderer::new;
+        }));
+    }
 
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
@@ -194,7 +200,6 @@ public class ModBowItem extends SpellBow {
         return spellArrow;
     }
 
-    @Override
     public ItemStack findAmmo(PlayerEntity playerEntity, ItemStack shootable) {
             Predicate<ItemStack> predicate = (ItemsRegistry.SPELL_BOW).getSupportedHeldProjectiles()
                     .and(i -> !(i.getItem() instanceof SpellArrow) || (i.getItem() instanceof SpellArrow && canPlayerCastSpell(shootable, playerEntity)));
@@ -232,5 +237,78 @@ public class ModBowItem extends SpellBow {
 
         if (upgrades.contains(GearUpgrades.bowSpellSplit))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.bowSpellSplit, upgrades));
+    }
+
+    public boolean canPlayerCastSpell(ItemStack bow, PlayerEntity playerentity) {
+        ISpellCaster caster = this.getSpellCaster(bow);
+        return (new SpellResolver(new SpellContext(caster.getSpell(), playerentity))).withSilent(true).canCast(playerentity);
+    }
+
+    public void addArrow(AbstractArrowEntity abstractarrowentity, ItemStack bowStack, ItemStack arrowStack, boolean isArrowInfinite, PlayerEntity playerentity) {
+        int power = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, bowStack);
+        if (power > 0) {
+            abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + (double)power * 0.5 + 0.5);
+        }
+
+        int punch = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, bowStack);
+        if (punch > 0) {
+            abstractarrowentity.setKnockback(punch);
+        }
+
+        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, bowStack) > 0) {
+            abstractarrowentity.setSecondsOnFire(100);
+        }
+
+        if (isArrowInfinite || playerentity.abilities.instabuild && (arrowStack.getItem() == Items.SPECTRAL_ARROW || arrowStack.getItem() == Items.TIPPED_ARROW)) {
+            abstractarrowentity.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+        }
+
+        playerentity.level.addFreshEntity(abstractarrowentity);
+    }
+
+    public Predicate<ItemStack> getAllSupportedProjectiles() {
+        return ARROW_ONLY.or((i) -> {
+            return i.getItem() instanceof SpellArrow;
+        });
+    }
+
+    public void registerControllers(AnimationData data) {
+    }
+
+    public AbstractArrowEntity customArrow(AbstractArrowEntity arrow) {
+        return super.customArrow(arrow);
+    }
+
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+    public boolean isScribedSpellValid(ISpellCaster caster, PlayerEntity player, Hand hand, ItemStack stack, Spell spell) {
+        return spell.recipe.stream().noneMatch((s) -> {
+            return s instanceof AbstractCastMethod;
+        });
+    }
+
+    public void sendInvalidMessage(PlayerEntity player) {
+        PortUtil.sendMessageNoSpam(player, new TranslationTextComponent("ars_nouveau.bow.invalid"));
+    }
+
+    public boolean setSpell(ISpellCaster caster, PlayerEntity player, Hand hand, ItemStack stack, Spell spell) {
+        ArrayList<AbstractSpellPart> recipe = new ArrayList();
+        recipe.add(MethodProjectile.INSTANCE);
+        recipe.addAll(spell.recipe);
+        spell.recipe = recipe;
+        return false; //super.setSpell(caster, player, hand, stack, spell);
+    }
+
+    public int getEnchantmentValue() {
+        return super.getEnchantmentValue();
+    }
+
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
+    }
+
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return true;
     }
 }

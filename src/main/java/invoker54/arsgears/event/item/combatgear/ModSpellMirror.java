@@ -1,31 +1,26 @@
-package invoker54.arsgears.item.combatgear;
+package invoker54.arsgears.event.item.combatgear;
 
-import com.hollingsworth.arsnouveau.api.spell.ISpellCaster;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
 import com.hollingsworth.arsnouveau.common.items.EnchantersMirror;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
-import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.event.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import software.bernie.shadowed.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -33,8 +28,8 @@ import java.util.List;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 
-public class ModMirrorItem extends EnchantersMirror {
-    public ModMirrorItem(Properties builder) {
+public class ModSpellMirror extends EnchantersMirror {
+    public ModSpellMirror(Properties builder) {
         super(builder);
     }
 

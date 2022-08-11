@@ -1,4 +1,4 @@
-package invoker54.arsgears.item.combatgear;
+package invoker54.arsgears.event.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
@@ -10,10 +10,9 @@ import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.render.CombatGearRenderer;
-import invoker54.arsgears.item.GearTier;
-import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.event.item.GearTier;
+import invoker54.arsgears.event.item.GearUpgrades;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
@@ -50,9 +49,9 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     private static final String COMBAT_GEAR = "COMBAT_GEAR";
     private static final String COOLDOWN = "_COOLDOWNS";
 
-    public final ModSwordItem modSword;
-    public final ModBowItem modBow;
-    public final ModMirrorItem modMirror;
+    public final ModSpellSword modSword;
+    public final ModSpellBow modBow = null;
+    public final ModSpellMirror modMirror;
     public static int swordINT = 0;
     public static int bowInt = 1;
     public static int mirrorInt = 2;
@@ -60,9 +59,9 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     public CombatGearItem(IItemTier tier, Item.Properties builder) {
         super(0, -2.4f, tier, null, builder.setISTER(() -> CombatGearRenderer::new));
 
-        modSword = new ModSwordItem(tier);
-        modBow = new ModBowItem();
-        modMirror = new ModMirrorItem(builder);
+        modSword = new ModSpellSword(tier);
+        //modBow = new ModSpellBow();
+        modMirror = new ModSpellMirror(builder);
     }
 
     /**

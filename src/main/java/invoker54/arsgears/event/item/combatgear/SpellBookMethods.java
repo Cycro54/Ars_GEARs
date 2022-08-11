@@ -1,4 +1,4 @@
-package invoker54.arsgears.item.combatgear;
+package invoker54.arsgears.event.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;

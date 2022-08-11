@@ -1,10 +1,9 @@
 package invoker54.arsgears.client.render.item;
 
 import com.hollingsworth.arsnouveau.client.renderer.item.FixedGeoItemRenderer;
-import com.hollingsworth.arsnouveau.client.renderer.item.SwordModel;
-import com.hollingsworth.arsnouveau.common.items.EnchantersSword;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -14,7 +13,7 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 
 import javax.annotation.Nullable;
 
-public class modSwordRenderer  extends FixedGeoItemRenderer<EnchantersSword> {
+public class modSwordRenderer  extends FixedGeoItemRenderer<ModSpellSword> {
     public modSwordRenderer() {
         super(new modSwordModel());
     }

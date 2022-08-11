@@ -1,8 +1,8 @@
 package invoker54.arsgears.network.message;
 
 import invoker54.arsgears.client.gui.container.GearContainer;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;

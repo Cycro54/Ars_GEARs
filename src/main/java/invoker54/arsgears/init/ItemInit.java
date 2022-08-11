@@ -1,14 +1,15 @@
 package invoker54.arsgears.init;
 
 import com.hollingsworth.arsnouveau.ArsNouveau;
-import com.hollingsworth.arsnouveau.api.enchanting_apparatus.EnchantingApparatusRecipe;
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.client.render.CombatGearRenderer;
-import invoker54.arsgears.item.UpgradeRune;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.PaxelItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
-import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.event.item.UpgradeRune;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
+import invoker54.arsgears.event.item.combatgear.ModSpellBow;
+import invoker54.arsgears.event.item.combatgear.ModSpellSword;
+import invoker54.arsgears.event.item.utilgear.PaxelItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.GearTier;
 import net.minecraft.item.*;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -48,17 +49,20 @@ public class ItemInit {
 
    //endregion
 
-    //region This is for the Combat Gear
+    //region This is for the Combat Gear (I will keep the combat gear item to use for changing into the other items
     //public static final Item MOD_SWORD = new ModSwordItem().setRegistryName(ArsGears.MOD_ID, "wood_mod_sword");
     public static final Item WOOD_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.WOOD, getDefault()), "wood_combat_gear");
-    public static final Item STONE_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.STONE, new Item.Properties()), "stone_combat_gear");
-    public static final Item IRON_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.IRON, new Item.Properties()), "iron_combat_gear");
-    public static final Item DIAMOND_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.DIAMOND, new Item.Properties()), "diamond_combat_gear");
-    public static final Item ARCANE_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.ARCANE, new Item.Properties()), "arcane_combat_gear");
-    public static final Item COMBAT_RUNE_1 = addItem(new UpgradeRune(STONE_COMBAT_GEAR, getDefault()), "combat_rune_1");
-    public static final Item COMBAT_RUNE_2 = addItem(new UpgradeRune(IRON_COMBAT_GEAR, getDefault()), "combat_rune_2");
-    public static final Item COMBAT_RUNE_3 = addItem(new UpgradeRune(DIAMOND_COMBAT_GEAR, getDefault()), "combat_rune_3");
-    public static final Item COMBAT_RUNE_4 = addItem(new UpgradeRune(ARCANE_COMBAT_GEAR, getDefault()), "combat_rune_4");
+//    public static final Item STONE_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.STONE, new Item.Properties()), "stone_combat_gear");
+//    public static final Item IRON_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.IRON, new Item.Properties()), "iron_combat_gear");
+//    public static final Item DIAMOND_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.DIAMOND, new Item.Properties()), "diamond_combat_gear");
+//    public static final Item ARCANE_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.ARCANE, new Item.Properties()), "arcane_combat_gear");
+    public static final Item WOODEN_MOD_SWORD = addItem(new ModSpellSword(GearTier.WOOD), "wood_combat_sword");
+    public static final Item WOODEN_MOD_BOW = addItem(new ModSpellBow(new Item.Properties().durability(GearTier.WOOD.getUses())), "wood_combat_bow");
+    public static final Item WOODEN_MOD_MIRROR = addItem(new ModSpellMirror(new Item.Properties().durability(GearTier.WOOD.getUses())), "wood_combat_mirror");
+//    public static final Item COMBAT_RUNE_1 = addItem(new UpgradeRune(STONE_COMBAT_GEAR, getDefault()), "combat_rune_1");
+//    public static final Item COMBAT_RUNE_2 = addItem(new UpgradeRune(IRON_COMBAT_GEAR, getDefault()), "combat_rune_2");
+//    public static final Item COMBAT_RUNE_3 = addItem(new UpgradeRune(DIAMOND_COMBAT_GEAR, getDefault()), "combat_rune_3");
+//    public static final Item COMBAT_RUNE_4 = addItem(new UpgradeRune(ARCANE_COMBAT_GEAR, getDefault()), "combat_rune_4");
     //endregion
 
     //region Regular items

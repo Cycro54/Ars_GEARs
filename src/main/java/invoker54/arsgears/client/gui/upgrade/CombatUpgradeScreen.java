@@ -3,24 +3,14 @@ package invoker54.arsgears.client.gui.upgrade;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.button.UpgradeButton;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import net.minecraft.enchantment.Enchantment;
+import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import org.apache.http.conn.BasicEofSensorWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
-
-import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
+import static invoker54.arsgears.event.item.combatgear.CombatGearItem.*;
 
 public class CombatUpgradeScreen extends UpgradeScreen {
     private static final Logger LOGGER = LogManager.getLogger();

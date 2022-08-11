@@ -1,8 +1,12 @@
 package invoker54.arsgears.capability.gear.utilgear;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
+import invoker54.arsgears.event.item.combatgear.ModSpellBow;
+import invoker54.arsgears.event.item.combatgear.ModSpellSword;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -16,11 +20,25 @@ public class GearCapEvents {
 
     @SubscribeEvent
     public static void attachUtilGearCaps(AttachCapabilitiesEvent<ItemStack> event){
-        if (event.getObject().getItem() instanceof UtilGearItem){
-            //LOGGER.debug("I HAVE FOUND AN ITEM THAT MATCHES THE DESCRIPTION");
+        Item item = event.getObject().getItem();
+
+        //For Combat gear stuff
+        if (item instanceof CombatGearItem){
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
         }
-        else if (event.getObject().getItem() instanceof CombatGearItem){
+        else if (item instanceof ModSpellSword){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+        else if (item instanceof ModSpellBow){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+        else if (item instanceof ModSpellMirror){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+
+
+        //For Util gear stuff
+        else if (item instanceof UtilGearItem){
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
     }

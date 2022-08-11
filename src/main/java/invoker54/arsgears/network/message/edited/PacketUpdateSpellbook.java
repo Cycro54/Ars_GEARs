@@ -1,10 +1,9 @@
 package invoker54.arsgears.network.message.edited;
 
-import com.hollingsworth.arsnouveau.api.util.StackUtil;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.hollingsworth.arsnouveau.common.network.PacketUpdateBookGUI;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;

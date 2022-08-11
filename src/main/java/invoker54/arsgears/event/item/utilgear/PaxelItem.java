@@ -1,10 +1,8 @@
-package invoker54.arsgears.item.utilgear;
+package invoker54.arsgears.event.item.utilgear;
 
 import com.google.common.collect.Sets;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.GearUpgrades;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,7 +21,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.List;

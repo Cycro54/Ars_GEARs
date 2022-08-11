@@ -3,16 +3,14 @@ package invoker54.arsgears.client.gui.upgrade;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
-import static invoker54.arsgears.item.utilgear.UtilGearItem.*;
+import static invoker54.arsgears.event.item.utilgear.UtilGearItem.*;
 
 public class UtilityUpgradeScreen extends UpgradeScreen {
     private static final Logger LOGGER = LogManager.getLogger();

@@ -1,17 +1,15 @@
 package invoker54.arsgears.client.gui.upgrade;
 
-import com.ibm.icu.text.UFormat;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.IGearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.UpgradeButton;
-import invoker54.arsgears.item.GearTier;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.GearTier;
+import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.SyncServerGearMsg;
 import net.minecraft.client.gui.screen.Screen;
@@ -29,7 +27,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.system.CallbackI;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,11 +1,6 @@
 package invoker54.arsgears.capability.gear;
 
-import com.mojang.serialization.MapLike;
 import invoker54.arsgears.capability.gear.utilgear.GearProvider;
-import invoker54.arsgears.item.GearUpgrades;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -13,12 +8,8 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openzen.zenscript.codemodel.expression.MatchExpression;
 
 import javax.annotation.Nullable;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.SeekableByteChannel;
-import java.util.Map;
 
 public class GearCap implements IGearCap {
     private static final Logger LOGGER = LogManager.getLogger();

@@ -1,8 +1,6 @@
-package invoker54.arsgears.item;
+package invoker54.arsgears.event.item;
 
-import com.sun.corba.se.impl.legacy.connection.USLPort;
 import invoker54.arsgears.capability.gear.GearCap;
-import net.minecraft.entity.monster.VindicatorEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 

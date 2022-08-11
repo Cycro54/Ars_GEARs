@@ -1,42 +1,23 @@
 package invoker54.arsgears.event;
 
-import com.google.common.collect.Multimap;
-import com.hollingsworth.arsnouveau.api.mana.IMana;
 import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
+import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.item.ItemEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentMap;
-
-import static invoker54.arsgears.item.combatgear.CombatGearItem.swordINT;
+import static invoker54.arsgears.event.item.combatgear.CombatGearItem.swordINT;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class CombatGearEvents {

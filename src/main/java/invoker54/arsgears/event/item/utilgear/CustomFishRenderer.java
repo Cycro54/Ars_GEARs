@@ -1,8 +1,7 @@
-package invoker54.arsgears.item.utilgear;
+package invoker54.arsgears.event.item.utilgear;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import invoker54.arsgears.init.ItemInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;

@@ -1,20 +1,14 @@
-package invoker54.arsgears.item.combatgear;
+package invoker54.arsgears.event.item.combatgear;
 
-import com.hollingsworth.arsnouveau.api.item.ICasterTool;
-import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.api.util.MathUtil;
-import com.hollingsworth.arsnouveau.client.renderer.item.SwordRenderer;
-import com.hollingsworth.arsnouveau.common.items.EnchantersSword;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.spell.augment.AugmentAmplify;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive;
-import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
-import com.ibm.icu.text.UFormat;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.client.render.item.modSwordRenderer;
+import invoker54.arsgears.event.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -39,17 +32,16 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 import static com.hollingsworth.arsnouveau.setup.ItemsRegistry.defaultItemProperties;
 
-public class ModSwordItem extends SwordItem implements IAnimatable {
+public class ModSpellSword extends SwordItem implements IAnimatable {
     private static final Logger LOGGER = LogManager.getLogger();
-    public ModSwordItem(IItemTier iItemTier) {
-        super(iItemTier, 3, -2.4f, defaultItemProperties().stacksTo(1).setISTER(() -> SwordRenderer::new));
+    public ModSpellSword(IItemTier iItemTier) {
+        super(iItemTier, 3, -2.4f, defaultItemProperties().stacksTo(1).setISTER(() -> modSwordRenderer::new));
     }
 
     @Override
@@ -211,14 +203,14 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-        CombatGearCap cap = CombatGearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.swordINT, cap);
-
-        if (upgrades.contains(GearUpgrades.swordManaSteal))
-            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordManaSteal, upgrades));
-
-        if (upgrades.contains(GearUpgrades.swordSpellSweep))
-            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordSpellSweep, upgrades));
+//        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+//        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.swordINT, cap);
+//
+//        if (upgrades.contains(GearUpgrades.swordManaSteal))
+//            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordManaSteal, upgrades));
+//
+//        if (upgrades.contains(GearUpgrades.swordSpellSweep))
+//            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordSpellSweep, upgrades));
     }
 
     @Override

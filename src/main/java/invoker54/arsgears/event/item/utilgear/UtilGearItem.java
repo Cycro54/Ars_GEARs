@@ -1,16 +1,11 @@
-package invoker54.arsgears.item.utilgear;
+package invoker54.arsgears.event.item.utilgear;
 
-import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
-import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.GearTier;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.event.item.GearTier;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +17,6 @@ import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;

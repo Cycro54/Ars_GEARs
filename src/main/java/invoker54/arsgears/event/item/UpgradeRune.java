@@ -1,9 +1,9 @@
-package invoker54.arsgears.item;
+package invoker54.arsgears.event.item;
 
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
