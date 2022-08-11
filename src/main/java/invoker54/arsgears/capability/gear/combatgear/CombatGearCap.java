@@ -25,6 +25,9 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     private final String ACTIVATED = "ACTIVATED";
     private boolean activated = false;
 
+    //To know when an attack is a sweep attack I'll tick this on for the tick the player does damage
+    public boolean isSweep = false;
+
     public CombatGearCap(){
         //This is setting all of the initial spell modes so that each one will start on the correct initial mode
         itemTags[0].putInt("mode", 1);

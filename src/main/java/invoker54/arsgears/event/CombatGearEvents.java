@@ -77,16 +77,14 @@ public class CombatGearEvents {
         PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
 
         //If the player isn't holding a combat gear, return
-        ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof CombatGearItem)) return;
+        ItemStack gearStack = player.getMainHandItem();
+        if (!(gearStack.getItem() instanceof CombatGearItem)) return;
 
-        CombatGearCap cap = CombatGearCap.getCap(itemStack);
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         //If it's the sword selected, then add some damage
-        if (cap.getSelectedItem() == swordINT){
-            event.setAmount(((CombatGearItem)itemStack.getItem()).modSword.getDamage());
-
-
+        if (cap.getSelectedItem() == swordINT && !cap.isSweep){
+            event.setAmount(((CombatGearItem)gearStack.getItem()).modSword.getDamage());
             int manaStealLvl = GearUpgrades.getUpgrade(swordINT, cap, GearUpgrades.swordManaSteal);
             if (manaStealLvl != 0){
                 LOGGER.debug("MANA STOLEN " + (event.getAmount() * manaStealLvl));

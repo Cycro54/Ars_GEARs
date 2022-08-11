@@ -74,6 +74,9 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         if ((!flag1 || !flag2 || !flag3) && cap.getActivated()){
             cap.setActivated(false);
         }
+
+        //This is for the sweep
+        cap.isSweep = false;
     }
 
     //When the player right clicks with the item (I can also use this to check if they click on an entity)
@@ -179,10 +182,17 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
         CompoundNBT itemTag = gearStack.getOrCreateTag();
 
+        //This is the spell sweep upgrade
+        boolean hasSpellSweep = GearUpgrades.getUpgrade(cap.getSelectedItem(), cap, GearUpgrades.swordSpellSweep) != 0;
+
         //Only if the combat gear is set to active will the spell be cast.
-        if (cap.getActivated()) {
+        if (cap.getActivated() || (hasSpellSweep && cap.isSweep)) {
             cap.setActivated(false);
             Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
+
+            //This is the spell sweep upgrade
+            if (cap.isSweep) spell.setCost(0);
+
             spell.recipe.add(0, MethodTouch.INSTANCE);
             //Get the spell resolver
             SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
@@ -194,6 +204,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
             float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
             CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
         }
+        cap.isSweep = true;
         return super.hurtEnemy(gearStack, target, playerIn);
     }
 
