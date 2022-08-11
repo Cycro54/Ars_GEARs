@@ -46,8 +46,8 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
     private static final Logger LOGGER = LogManager.getLogger();
     public AnimationFactory factory = new AnimationFactory(this);
 
-    public ModSpellBow(Item.Properties builder) {
-        super(builder.setISTER(() -> {
+    public ModSpellBow(IItemTier tier) {
+        super(new Item.Properties().durability(tier.getUses()).setISTER(() -> {
             return modSpellBowRenderer::new;
         }));
     }

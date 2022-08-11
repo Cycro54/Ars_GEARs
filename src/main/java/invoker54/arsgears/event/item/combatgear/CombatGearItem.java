@@ -44,24 +44,27 @@ import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.*;
 
-public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMana, IAnimatable {
+public class CombatGearItem extends Item implements IScribeable, IDisplayMana, IAnimatable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String COMBAT_GEAR = "COMBAT_GEAR";
     private static final String COOLDOWN = "_COOLDOWNS";
 
-    public final ModSpellSword modSword;
+    public final ModSpellSword modSword = null;
     public final ModSpellBow modBow = null;
-    public final ModSpellMirror modMirror;
+    public final ModSpellMirror modMirror = null;
     public static int swordINT = 0;
     public static int bowInt = 1;
     public static int mirrorInt = 2;
 
-    public CombatGearItem(IItemTier tier, Item.Properties builder) {
-        super(0, -2.4f, tier, null, builder.setISTER(() -> CombatGearRenderer::new));
+    GearTier gearTier;
 
-        modSword = new ModSpellSword(tier);
+    public CombatGearItem(GearTier gearTier, Item.Properties builder) {
+        super(builder);
+
+        this.gearTier = gearTier;
+        //modSword = new ModSpellSword(tier);
         //modBow = new ModSpellBow();
-        modMirror = new ModSpellMirror(builder);
+        //modMirror = new ModSpellMirror();
     }
 
     /**
@@ -145,9 +148,8 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
         return gearCap.getActivated();
     }
 
-    @Override
     public GearTier getTier() {
-        return (GearTier) super.getTier();
+        return gearTier;
     }
 
     @Override

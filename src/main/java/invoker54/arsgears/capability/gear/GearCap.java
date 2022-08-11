@@ -3,6 +3,7 @@ package invoker54.arsgears.capability.gear;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.utilgear.GearProvider;
 import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.event.item.GearTier;
 import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,11 +24,20 @@ public class GearCap implements IGearCap {
     private final String SELECTED_ITEM = "SELECTED_ITEM";
     private final String ITEM_TAG = "ITEM_TAG";
 
+    private GearTier gearTier = GearTier.WOOD;
+
+    public GearTier getTier(){
+        return gearTier;
+    }
+    public void setTier(GearTier gearTier){
+        this.gearTier = gearTier;
+    }
+
     private int selectedItem = 0;
     protected CompoundNBT[] itemTags = new CompoundNBT[]{new CompoundNBT(), new CompoundNBT(), new CompoundNBT()};
 
     public static GearCap getCap(ItemStack item){
-        return item.getCapability(GearProvider.CAP_GEAR).orElseThrow(NullPointerException::new);
+        return item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
     }
 
     public GearCap(){

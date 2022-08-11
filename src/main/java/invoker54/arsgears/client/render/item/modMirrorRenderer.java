@@ -2,6 +2,7 @@ package invoker54.arsgears.client.render.item;
 
 import com.hollingsworth.arsnouveau.client.renderer.item.GenericItemRenderer;
 import com.hollingsworth.arsnouveau.client.renderer.tile.GenericModel;
+import com.hollingsworth.arsnouveau.common.items.EnchantersMirror;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
@@ -21,9 +22,9 @@ public class modMirrorRenderer extends GeoItemRenderer<ModSpellMirror> {
         super(model);
     }
 
-    public static GenericItemRenderer getISTER() {
-        return new GenericItemRenderer(model);
-    }
+//    public static GenericItemRenderer getISTER() {
+//        return new GenericItemRenderer(model);
+//    }
 
     @Override
     public void render(GeoModel model, ModSpellMirror animatable, float partialTicks, RenderType type, MatrixStack matrixStackIn, @Nullable IRenderTypeBuffer renderTypeBuffer, @Nullable IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {

@@ -3,15 +3,13 @@ package invoker54.arsgears.client.keybind;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiRadialMenu;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
+import invoker54.arsgears.event.item.GearTier;
 import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.combatgear.ModSpellBow;
-import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
-import invoker54.arsgears.event.item.combatgear.ModSpellSword;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.CycleGearMsg;
 import net.minecraft.item.ItemStack;
@@ -29,7 +27,7 @@ public class KeybindsInit {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ArrayList<CustomKeybind> gearBinds = new ArrayList<>();
     //Utility Keybinds
-    public static CustomKeybind cycleSelectedItem_utility;
+    public static CustomKeybind cycleGear;
 
 
     //Combat keybinds
@@ -38,28 +36,18 @@ public class KeybindsInit {
 
     public static void registerKeys(FMLClientSetupEvent event){
         //Cycle selected item for combar and utility gear
-        cycleSelectedItem_utility = new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
+        cycleGear = new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
             if(action != GLFW.GLFW_PRESS) return;
 
             if(ClientUtil.mC.screen != null) return;
 
             ItemStack item = ClientUtil.mC.player.getMainHandItem();
-            boolean flag = item.getItem() instanceof CombatGearItem;
-            flag = !flag ? item.getItem() instanceof ModSpellSword : flag;
-            flag = !flag ? item.getItem() instanceof ModSpellBow : flag;
-            flag = !flag ? item.getItem() instanceof ModSpellMirror : flag;
+            GearCap cap = GearCap.getCap(item);
+            if (cap == null) return;
 
-            if (flag) {
-                NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
-            }
-
-//            if(item.getItem() instanceof UtilGearItem
-//                    || item.getItem() instanceof CombatGearItem) {
-//                NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
-//            }
-
+            NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
         });
-        gearBinds.add(cycleSelectedItem_utility);
+        gearBinds.add(cycleGear);
 
         //Open spell book screen to configure spell
         openSpell_combat = new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
@@ -67,16 +55,17 @@ public class KeybindsInit {
             if (ClientUtil.mC.screen != null) return;
 
             ItemStack itemStack = ClientUtil.mC.player.getMainHandItem();
-            if(itemStack.getItem() instanceof CombatGearItem) {
-                if (ClientUtil.mC.screen instanceof ModGuiSpellBook) {
+            CombatGearCap cap = CombatGearCap.getCap(itemStack);
+            if (cap == null) return;
+
+            if (ClientUtil.mC.screen instanceof ModGuiSpellBook) {
                     ClientUtil.mC.setScreen(null);
                     return;
-                }
-                //Make sure the player is tier 3 or higher
-                if (((CombatGearItem) itemStack.getItem()).getTier().ordinal() <= 1) return;
-
-                ModGuiSpellBook.open(itemStack);
             }
+            //Make sure the player is GearTier Iron or higher
+            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
+
+            ModGuiSpellBook.open(itemStack);
         }));
         gearBinds.add(openSpell_combat);
 
@@ -89,12 +78,11 @@ public class KeybindsInit {
                 return;
             }
 
-            ItemStack gearStack = ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class);
+            ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
+            CombatGearCap cap = CombatGearCap.getCap(gearStack);
+            if (cap == null) return;
 
-            if (gearStack.isEmpty()) return;
-
-            if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() <= 1) return;
-
+            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
 
             if (ClientUtil.mC.screen == null){
                 ClientUtil.mC.setScreen(new ModGuiRadialMenu(gearStack));
