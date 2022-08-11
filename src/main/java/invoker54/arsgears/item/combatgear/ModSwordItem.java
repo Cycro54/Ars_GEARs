@@ -66,13 +66,9 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
 
         boolean flag1 = resolver.withSilent(true).canCast(player);
         //This is if the item is still on cooldown
-        boolean flag2 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
+        boolean flag2 = CombatGearItem.getCooldown(player, itemTag, SpellBook.getMode(itemTag), true) <= 0;
         //This is if the spell has no glyphs after the Touch glyph
         boolean flag3 = resolver.spell.recipe.size() != 1;
-
-        LOGGER.debug("Can player cast? " + flag1);
-        LOGGER.debug("Is cooldown done? " + flag2);
-        LOGGER.debug("Is spell larger than 1? " + flag3);
 
         //If the player can't afford the spell, AND the combat gear is activated, set its activation to false
         if ((!flag1 || !flag2 || !flag3) && cap.getActivated()){
@@ -104,7 +100,7 @@ public class ModSwordItem extends SwordItem implements IAnimatable {
 
         boolean canCast1 = resolver.canCast(playerIn);
         boolean canCast2 = spell.recipe.size() > 1;
-        boolean canCast3 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
+        boolean canCast3 = CombatGearItem.getCooldown(playerIn, itemTag, SpellBook.getMode(itemTag), true) <= 0;
 
         //Now I need to find out if it's activated
         if(cap.getActivated()) {

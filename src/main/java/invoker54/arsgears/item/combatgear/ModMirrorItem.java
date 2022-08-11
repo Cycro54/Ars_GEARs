@@ -55,7 +55,7 @@ public class ModMirrorItem extends EnchantersMirror {
         //Make sure the player can even cast the spell
         boolean flag = resolver.canCast(player);
         //This is if the item is still on cooldown
-        boolean flag2 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
+        boolean flag2 = CombatGearItem.getCooldown(player, itemTag, SpellBook.getMode(itemTag), true) <= 0;
         //This is if the spell has no glyphs after the Touch glyph
         boolean flag3 = resolver.spell.recipe.size() != 1;
 

@@ -2,6 +2,8 @@ package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
+import com.hollingsworth.arsnouveau.api.spell.AbstractAugment;
+import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.util.MathUtil;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
@@ -381,12 +383,12 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
         //Every 50 mana will increase the spell cooldown by 1 second
         return spell.getCastingCost()/50f * (inTicks ? 20 : 1);
     }
-    public static float getCooldown(CompoundNBT tag, int spellMode, boolean getDifference){
+    public static float getCooldown(PlayerEntity playerEntity, CompoundNBT tag, int spellMode, boolean getDifference){
         if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
 
         CompoundNBT cooldownNBT = tag.getCompound(COMBAT_GEAR + COOLDOWN);
         float endTime = cooldownNBT.getInt("" + (spellMode));
-        return getDifference ? endTime - ClientUtil.mC.level.getGameTime() : endTime;
+        return getDifference ? endTime - playerEntity.level.getGameTime() : endTime;
     }
     public static void setCooldown(CompoundNBT tag, int spellMode, float endTime){
         if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
@@ -404,6 +406,20 @@ public class CombatGearItem extends ToolItem implements IScribeable, IDisplayMan
     public static class SpellM {
         public static Spell getCurrentRecipe(ItemStack stack){
             return SpellBook.getRecipeFromTag(stack.getTag(), getMode(stack.getTag()));
+        }
+
+        public static int getInitialCost(Spell spell) {
+            int cost = 0;
+            if (spell.recipe != null) {
+                for (int i = 0; i < spell.recipe.size(); ++i) {
+                    AbstractSpellPart spellPiece = (AbstractSpellPart) spell.recipe.get(i);
+                    if (!(spellPiece instanceof AbstractAugment)) {
+                        List<AbstractAugment> augments = spell.getAugments(i, (LivingEntity) null);
+                        cost += spellPiece.getAdjustedManaCost(augments);
+                    }
+                }
+            }
+            return cost;
         }
     }
 }

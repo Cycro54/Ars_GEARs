@@ -81,12 +81,11 @@ public class ActivateBowEvent {
         boolean flag2 = spell.recipe.size() != 1;
         if (!flag2) PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));
         //This is if the item is still on cooldown
-        boolean flag3 = CombatGearItem.getCooldown(itemTag, SpellBook.getMode(itemTag), true) <= 0;
+        boolean flag3 = CombatGearItem.getCooldown(player, itemTag, SpellBook.getMode(itemTag), true) <= 0;
         if (!flag3) PortUtil.sendMessage(player, new TranslationTextComponent("ars_gears.chat.cast_cooldown"));
 
         //1 is the bow, make sure the player is charging it too
         if (flag && flag2 && flag3) NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
-
     }
 
     /**
