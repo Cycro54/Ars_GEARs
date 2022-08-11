@@ -24,22 +24,22 @@ public class GearCapEvents {
 
         //For Combat gear stuff
         if (item instanceof CombatGearItem){
-            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
         else if (item instanceof ModSpellSword){
-            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
         else if (item instanceof ModSpellBow){
-            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
         else if (item instanceof ModSpellMirror){
-            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
 
 
         //For Util gear stuff
         else if (item instanceof UtilGearItem){
-            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
         }
     }
 }

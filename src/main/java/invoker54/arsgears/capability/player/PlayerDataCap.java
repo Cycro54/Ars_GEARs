@@ -29,7 +29,7 @@ public class PlayerDataCap implements IPlayerCap {
         utility_gear_copy = new ItemStack(ItemInit.WOOD_UTILITY_GEAR);
         utility_gear_tracked = ItemStack.EMPTY;
         
-        combat_gear_copy = new ItemStack(ItemInit.WOOD_COMBAT_GEAR);
+        combat_gear_copy = new ItemStack(ItemInit.WOODEN_MOD_SWORD);
         combat_gear_tracked = ItemStack.EMPTY;
 
         //Just extra stuff for the combat gear so the selected spell isn't 0
@@ -98,12 +98,11 @@ public class PlayerDataCap implements IPlayerCap {
         if (ItemStack.matches(combat_gear_tracked, combat_gear_copy)) return;
         //if (held_combat_gear.equals(combat_gear_copy, false)) return null;
 
-        if (combat_gear_tracked.getItem() != combat_gear_copy.getItem()) return;
+        if (combat_gear_tracked.isEmpty()) return;
 
         //Now copy the held combat gear data over to the combat gear copy
         CompoundNBT cNBT = combat_gear_tracked.serializeNBT();
-        combat_gear_copy.deserializeNBT(cNBT);
-
+        combat_gear_copy = ItemStack.of(cNBT);
         LOGGER.info("I AM SYNCING THE COMBAT GEAR DATA RIGHT NOW");
     }
 

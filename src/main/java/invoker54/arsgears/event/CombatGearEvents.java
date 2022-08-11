@@ -7,6 +7,9 @@ import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.event.item.GearUpgrades;
 import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.combatgear.ModSpellBow;
+import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
+import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
@@ -28,15 +31,17 @@ public class CombatGearEvents {
         if(event.side == LogicalSide.CLIENT) return;
         //Make sure it's the last phase (only needs to run once)
         //if(event.phase == TickEvent.Phase.END) return;
-
         //I need the player
         PlayerEntity player = event.player;
         //The player capability
         PlayerDataCap cap = PlayerDataCap.getCap(player);
         //the tracked item in the capability
         ItemStack trackedGear = cap.getCombatGear();
-        //Check hands for combat gear
+        //Check hands for combat gear, spell sword, bow, or mirror
         ItemStack focusedGear = ArsUtil.getHeldItem(player, CombatGearItem.class);
+        focusedGear = focusedGear.isEmpty() ? ArsUtil.getHeldItem(player, ModSpellSword.class) : focusedGear;
+        focusedGear = focusedGear.isEmpty() ? ArsUtil.getHeldItem(player, ModSpellBow.class) : focusedGear;
+        focusedGear = focusedGear.isEmpty() ? ArsUtil.getHeldItem(player, ModSpellMirror.class) : focusedGear;
 
         //make sure we have a focused gear
         if (focusedGear.isEmpty()) return;
@@ -50,29 +55,29 @@ public class CombatGearEvents {
         cap.syncCombatGearData();
     }
 
-    @SubscribeEvent
-    public static void hitCombatGear(LivingDamageEvent event){
-        //If it is not a player, return
-        if (!(event.getSource().getEntity() instanceof PlayerEntity)) return;
-
-        PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
-
-        //If the player isn't holding a combat gear, return
-        ItemStack gearStack = player.getMainHandItem();
-        if (!(gearStack.getItem() instanceof CombatGearItem)) return;
-
-        CombatGearCap cap = CombatGearCap.getCap(gearStack);
-
-        //If it's the sword selected, then add some damage
-        if (cap.getSelectedItem() == swordINT && !cap.isSweep){
-            event.setAmount(((CombatGearItem)gearStack.getItem()).modSword.getDamage());
-            int manaStealLvl = GearUpgrades.getUpgrade(swordINT, cap, GearUpgrades.swordManaSteal);
-            if (manaStealLvl != 0){
-                LOGGER.debug("MANA STOLEN " + (event.getAmount() * manaStealLvl));
-                ManaCapability.getMana(player).ifPresent((mana) -> mana.addMana(event.getAmount() * manaStealLvl));
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void hitCombatGear(LivingDamageEvent event){
+//        //If it is not a player, return
+//        if (!(event.getSource().getEntity() instanceof PlayerEntity)) return;
+//
+//        PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
+//
+//        //If the player isn't holding a combat gear, return
+//        ItemStack gearStack = player.getMainHandItem();
+//        if (!(gearStack.getItem() instanceof CombatGearItem)) return;
+//
+//        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+//
+//        //If it's the sword selected, then add some damage
+//        if (cap.getSelectedItem() == swordINT && !cap.isSweep){
+//            event.setAmount(((CombatGearItem)gearStack.getItem()).modSword.getDamage());
+//            int manaStealLvl = GearUpgrades.getUpgrade(swordINT, cap, GearUpgrades.swordManaSteal);
+//            if (manaStealLvl != 0){
+//                LOGGER.debug("MANA STOLEN " + (event.getAmount() * manaStealLvl));
+//                ManaCapability.getMana(player).ifPresent((mana) -> mana.addMana(event.getAmount() * manaStealLvl));
+//            }
+//        }
+//    }
 
     //region Failed attempt at switching out attributes
 //    @SubscribeEvent
