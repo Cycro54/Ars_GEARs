@@ -17,17 +17,19 @@ public class CycleGearMsg {
         context.enqueueWork(() -> {
             ItemStack item = context.getSender().getMainHandItem();
 
-            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem(item);
+            GearCap.getCap(item).cycleItem(item, context.getSender());
 
-            else if(item.getItem() instanceof CombatGearItem) {
-                CombatGearCap cap = CombatGearCap.getCap(item);
-
-                cap.cycleItem(item);
-
-                //This is for if the item ends up being the mirror
-                if (cap.getSelectedItem() == 2) cap.setActivated(true);
-                else cap.setActivated(false);
-            }
+//            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem(item);
+//
+//            else if(item.getItem() instanceof CombatGearItem) {
+//                CombatGearCap cap = CombatGearCap.getCap(item);
+//
+//                cap.cycleItem(item);
+//
+//                //This is for if the item ends up being the mirror
+//                if (cap.getSelectedItem() == 2) cap.setActivated(true);
+//                else cap.setActivated(false);
+//            }
         });
         context.setPacketHandled(true);
     }

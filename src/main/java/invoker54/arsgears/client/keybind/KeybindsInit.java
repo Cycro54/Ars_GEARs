@@ -3,10 +3,14 @@ package invoker54.arsgears.client.keybind;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiRadialMenu;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
 import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.event.item.combatgear.ModSpellBow;
+import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
+import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.CycleGearMsg;
@@ -40,11 +44,19 @@ public class KeybindsInit {
             if(ClientUtil.mC.screen != null) return;
 
             ItemStack item = ClientUtil.mC.player.getMainHandItem();
+            boolean flag = item.getItem() instanceof CombatGearItem;
+            flag = !flag ? item.getItem() instanceof ModSpellSword : flag;
+            flag = !flag ? item.getItem() instanceof ModSpellBow : flag;
+            flag = !flag ? item.getItem() instanceof ModSpellMirror : flag;
 
-            if(item.getItem() instanceof UtilGearItem
-                    || item.getItem() instanceof CombatGearItem) {
+            if (flag) {
                 NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
             }
+
+//            if(item.getItem() instanceof UtilGearItem
+//                    || item.getItem() instanceof CombatGearItem) {
+//                NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
+//            }
 
         });
         gearBinds.add(cycleSelectedItem_utility);

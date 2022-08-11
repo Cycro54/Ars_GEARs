@@ -41,7 +41,7 @@ import static com.hollingsworth.arsnouveau.setup.ItemsRegistry.defaultItemProper
 public class ModSpellSword extends SwordItem implements IAnimatable {
     private static final Logger LOGGER = LogManager.getLogger();
     public ModSpellSword(IItemTier iItemTier) {
-        super(iItemTier, 3, -2.4f, defaultItemProperties().stacksTo(1).setISTER(() -> modSwordRenderer::new));
+        super(iItemTier, 3, -2.4f, new Properties().setISTER(() -> modSwordRenderer::new));
     }
 
     @Override
