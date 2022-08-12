@@ -46,6 +46,6 @@
     }
   ],
   "output": {
-    "item": "ars_gears:combat_rune_3"
+    "item": "ars_gears:combat/combat_rune_3"
   }
 }

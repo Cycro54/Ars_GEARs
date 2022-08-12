@@ -65,6 +65,7 @@ public class PlayerDataCap implements IPlayerCap {
         if (ItemStack.matches(utility_gear_tracked, utility_gear_copy)) return;
         //if (held_utility_gear.equals(utility_gear_copy, false)) return null;
 
+        //This also makes sure the tracked item isn't null
         if (utility_gear_tracked.getItem() != utility_gear_copy.getItem()) return;
 
         //Now copy the held utility gear data over to the utility gear copy

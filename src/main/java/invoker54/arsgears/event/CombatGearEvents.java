@@ -12,6 +12,7 @@ import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,12 +39,17 @@ public class CombatGearEvents {
         //the tracked item in the capability
         ItemStack trackedGear = cap.getCombatGear();
         //Check hands for combat gear, spell sword, bow, or mirror
-        ItemStack focusedGear = ArsUtil.getHeldItem(player, CombatGearItem.class);
-        focusedGear = focusedGear.isEmpty() ? ArsUtil.getHeldItem(player, ModSpellSword.class) : focusedGear;
-        focusedGear = focusedGear.isEmpty() ? ArsUtil.getHeldItem(player, ModSpellBow.class) : focusedGear;
-        focusedGear = focusedGear.isEmpty() ? ArsUtil.getHeldItem(player, ModSpellMirror.class) : focusedGear;
+        ItemStack focusedGear = player.getMainHandItem();
+        CombatGearCap itemCap = CombatGearCap.getCap(focusedGear);
+        if (itemCap == null) {
+            focusedGear = player.getOffhandItem();
+            itemCap = CombatGearCap.getCap(focusedGear);
+        }
 
-        //make sure we have a focused gear
+        //If it STILL equals null, that means there is not Combat Gear equipped
+        if (itemCap == null) return;
+
+        LOGGER.warn("IS THE ITEMSTACK EMPTY? " + (focusedGear.isEmpty()));
         if (focusedGear.isEmpty()) return;
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear

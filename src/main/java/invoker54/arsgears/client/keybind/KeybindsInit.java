@@ -12,6 +12,7 @@ import invoker54.arsgears.event.item.GearTier;
 import invoker54.arsgears.event.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.CycleGearMsg;
+import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
@@ -20,15 +21,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
+import javax.xml.ws.soap.Addressing;
 import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ArsGears.MOD_ID)
 public class KeybindsInit {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ArrayList<CustomKeybind> gearBinds = new ArrayList<>();
+
+    //General Keybinds
+    public static CustomKeybind gearInventory;
+
     //Utility Keybinds
     public static CustomKeybind cycleGear;
-
 
     //Combat keybinds
     public static CustomKeybind openSpell_combat;
@@ -36,7 +41,7 @@ public class KeybindsInit {
 
     public static void registerKeys(FMLClientSetupEvent event){
         //Cycle selected item for combar and utility gear
-        cycleGear = new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
+        cycleGear = addBind(new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
             if(action != GLFW.GLFW_PRESS) return;
 
             if(ClientUtil.mC.screen != null) return;
@@ -46,11 +51,10 @@ public class KeybindsInit {
             if (cap == null) return;
 
             NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
-        });
-        gearBinds.add(cycleGear);
+        }));
 
         //Open spell book screen to configure spell
-        openSpell_combat = new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
+        openSpell_combat = addBind(new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
             if(action != GLFW.GLFW_PRESS) return;
             if (ClientUtil.mC.screen != null) return;
 
@@ -66,11 +70,10 @@ public class KeybindsInit {
             if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
 
             ModGuiSpellBook.open(itemStack);
-        }));
-        gearBinds.add(openSpell_combat);
+        })));
 
         //Open spell select screen
-        spellSelect_combat = new CustomKeybind(ModKeyBindings.OPEN_SPELL_SELECTION, (action -> {
+        spellSelect_combat = addBind(new CustomKeybind(ModKeyBindings.OPEN_SPELL_SELECTION, (action -> {
             if (action != GLFW.GLFW_PRESS) return;
 
             if (ClientUtil.mC.screen instanceof ModGuiRadialMenu){
@@ -87,7 +90,23 @@ public class KeybindsInit {
             if (ClientUtil.mC.screen == null){
                 ClientUtil.mC.setScreen(new ModGuiRadialMenu(gearStack));
             }
-        }));
-        gearBinds.add(spellSelect_combat);
+        })));
+
+        gearInventory = addBind(new CustomKeybind("gear_inventory", GLFW.GLFW_KEY_K, (action -> {
+            if (action != GLFW.GLFW_PRESS) return;
+
+            if (ClientUtil.mC.screen != null) return;
+
+            ItemStack item = ClientUtil.mC.player.getMainHandItem();
+            GearCap cap = GearCap.getCap(item);
+            if (cap == null) return;
+
+            NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
+        })));
+    }
+
+    public static CustomKeybind addBind(CustomKeybind keybind){
+        gearBinds.add(keybind);
+        return keybind;
     }
 }

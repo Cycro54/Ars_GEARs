@@ -1,8 +1,7 @@
 package invoker54.arsgears.client.gui.container;
 
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.init.ContainerInit;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -182,12 +181,7 @@ public class GearContainer extends Container {
         //Grab the utility gear
         ItemStack gearStack = player.getMainHandItem();
         //Grab its capability as well
-        int tier = 0;
-        if (gearStack.getItem() instanceof UtilGearItem) {
-            tier = (((UtilGearItem) gearStack.getItem()).getTier()).ordinal();
-        } else{
-            tier = (((CombatGearItem) gearStack.getItem()).getTier()).ordinal();
-        }
+        int tier = GearCap.getCap(gearStack).getTier().ordinal();
 
         int damage = gearStack.getDamageValue();
         LOGGER.debug("My damage is: " + damage);

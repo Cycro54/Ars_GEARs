@@ -42,27 +42,50 @@ public class ItemInit {
     public static final Item IRON_UTILITY_GEAR = addItem(new UtilGearItem(GearTier.IRON, new Item.Properties()), "iron_utility_gear");
     public static final Item DIAMOND_UTILITY_GEAR = addItem(new UtilGearItem(GearTier.DIAMOND, new Item.Properties()), "diamond_utility_gear");
     public static final Item ARCANE_UTILITY_GEAR = addItem(new UtilGearItem(GearTier.ARCANE, new Item.Properties()), "arcane_utility_gear");
-    public static final Item UTILITY_RUNE_1 = addItem(new UpgradeRune(STONE_UTILITY_GEAR, getDefault()), "utility_rune_1");
-    public static final Item UTILITY_RUNE_2 = addItem(new UpgradeRune(IRON_UTILITY_GEAR, getDefault()),"utility_rune_2");
-    public static final Item UTILITY_RUNE_3 = addItem(new UpgradeRune(DIAMOND_UTILITY_GEAR, getDefault()), "utility_rune_3");
-    public static final Item UTILITY_RUNE_4 = addItem(new UpgradeRune(ARCANE_UTILITY_GEAR, getDefault()), "utility_rune_4");
+//    public static final Item UTILITY_RUNE_1 = addItem(new UpgradeRune(STONE_UTILITY_GEAR, getDefault()), "utility_rune_1");
+//    public static final Item UTILITY_RUNE_2 = addItem(new UpgradeRune(IRON_UTILITY_GEAR, getDefault()),"utility_rune_2");
+//    public static final Item UTILITY_RUNE_3 = addItem(new UpgradeRune(DIAMOND_UTILITY_GEAR, getDefault()), "utility_rune_3");
+//    public static final Item UTILITY_RUNE_4 = addItem(new UpgradeRune(ARCANE_UTILITY_GEAR, getDefault()), "utility_rune_4");
 
    //endregion
 
     //region This is for the Combat Gear (I will keep the combat gear item to use for changing into the other items
-    //public static final Item MOD_SWORD = new ModSwordItem().setRegistryName(ArsGears.MOD_ID, "wood_mod_sword");
-    public static final Item WOOD_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.WOOD, getDefault()), "wood_combat_gear");
-//    public static final Item STONE_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.STONE, new Item.Properties()), "stone_combat_gear");
-//    public static final Item IRON_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.IRON, new Item.Properties()), "iron_combat_gear");
-//    public static final Item DIAMOND_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.DIAMOND, new Item.Properties()), "diamond_combat_gear");
-//    public static final Item ARCANE_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.ARCANE, new Item.Properties()), "arcane_combat_gear");
+    public static final Item WOOD_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.WOOD, getDefault()), "combat/wood_combat_gear");
+    
+    //Wood
     public static final Item WOODEN_MOD_SWORD = addItem(new ModSpellSword(GearTier.WOOD), "combat/wood_combat_sword");
     public static final Item WOODEN_MOD_BOW = addItem(new ModSpellBow(GearTier.WOOD), "combat/wood_combat_bow");
     public static final Item WOODEN_MOD_MIRROR = addItem(new ModSpellMirror(GearTier.WOOD), "combat/wood_combat_mirror");
-//    public static final Item COMBAT_RUNE_1 = addItem(new UpgradeRune(STONE_COMBAT_GEAR, getDefault()), "combat_rune_1");
-//    public static final Item COMBAT_RUNE_2 = addItem(new UpgradeRune(IRON_COMBAT_GEAR, getDefault()), "combat_rune_2");
-//    public static final Item COMBAT_RUNE_3 = addItem(new UpgradeRune(DIAMOND_COMBAT_GEAR, getDefault()), "combat_rune_3");
-//    public static final Item COMBAT_RUNE_4 = addItem(new UpgradeRune(ARCANE_COMBAT_GEAR, getDefault()), "combat_rune_4");
+    
+    //Stone
+    public static final Item STONE_MOD_SWORD = addItem(new ModSpellSword(GearTier.STONE), "combat/stone_combat_sword");
+    public static final Item STONE_MOD_BOW = addItem(new ModSpellBow(GearTier.STONE), "combat/stone_combat_bow");
+    public static final Item STONE_MOD_MIRROR = addItem(new ModSpellMirror(GearTier.STONE), "combat/stone_combat_mirror");
+    
+    //Iron
+    public static final Item IRON_MOD_SWORD = addItem(new ModSpellSword(GearTier.IRON), "combat/iron_combat_sword");
+    public static final Item IRON_MOD_BOW = addItem(new ModSpellBow(GearTier.IRON), "combat/iron_combat_bow");
+    public static final Item IRON_MOD_MIRROR = addItem(new ModSpellMirror(GearTier.IRON), "combat/iron_combat_mirror");
+    
+    //Diamond
+    public static final Item DIAMOND_MOD_SWORD = addItem(new ModSpellSword(GearTier.DIAMOND), "combat/diamond_combat_sword");
+    public static final Item DIAMOND_MOD_BOW = addItem(new ModSpellBow(GearTier.DIAMOND), "combat/diamond_combat_bow");
+    public static final Item DIAMOND_MOD_MIRROR = addItem(new ModSpellMirror(GearTier.DIAMOND), "combat/diamond_combat_mirror");
+    
+    //Arcane
+    public static final Item ARCANE_MOD_SWORD = addItem(new ModSpellSword(GearTier.ARCANE), "combat/arcane_combat_sword");
+    public static final Item ARCANE_MOD_BOW = addItem(new ModSpellBow(GearTier.ARCANE), "combat/arcane_combat_bow");
+    public static final Item ARCANE_MOD_MIRROR = addItem(new ModSpellMirror(GearTier.ARCANE), "combat/arcane_combat_mirror");
+    
+    //Runes
+    public static final Item COMBAT_RUNE_1 = 
+            addItem(new UpgradeRune(GearTier.STONE, STONE_MOD_SWORD, STONE_MOD_BOW, STONE_MOD_MIRROR,false, getDefault()), "combat/combat_rune_1");
+    public static final Item COMBAT_RUNE_2 = 
+            addItem(new UpgradeRune(GearTier.IRON, IRON_MOD_SWORD, IRON_MOD_BOW, IRON_MOD_MIRROR,false, getDefault()), "combat/combat_rune_2");
+    public static final Item COMBAT_RUNE_3 = 
+            addItem(new UpgradeRune(GearTier.DIAMOND, DIAMOND_MOD_SWORD, DIAMOND_MOD_BOW, DIAMOND_MOD_MIRROR,false, getDefault()), "combat/combat_rune_3");
+    public static final Item COMBAT_RUNE_4 = 
+            addItem(new UpgradeRune(GearTier.ARCANE, ARCANE_MOD_SWORD, ARCANE_MOD_BOW, ARCANE_MOD_MIRROR,false, getDefault()), "combat/combat_rune_4");
     //endregion
 
     //region Regular items
@@ -79,6 +102,7 @@ public class ItemInit {
         for (Item item: items){
             registry.register(item);
         }
-    }
 
+        LOGGER.error(WOODEN_MOD_SWORD.getRegistryName().getPath());
+    }
 }

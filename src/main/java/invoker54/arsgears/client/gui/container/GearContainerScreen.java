@@ -2,14 +2,12 @@ package invoker54.arsgears.client.gui.container;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.FeedGearMsg;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -85,11 +83,10 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
 
     @Override
     public void tick() {
-        Item item = ClientUtil.mC.player.getMainHandItem().getItem();
+        ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
+        GearCap cap = GearCap.getCap(gearStack);
 
-        if (!(item instanceof CombatGearItem) && !(item instanceof UtilGearItem) ){
-            ClientUtil.mC.player.closeContainer();
-        }
+        if (cap == null) ClientUtil.mC.player.closeContainer();
 
         eatButton.active = (this.menu.repairValue != 0);
     }

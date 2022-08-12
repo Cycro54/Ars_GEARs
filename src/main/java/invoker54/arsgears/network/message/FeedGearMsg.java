@@ -1,5 +1,6 @@
 package invoker54.arsgears.network.message;
 
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.gui.container.GearContainer;
 import invoker54.arsgears.event.item.combatgear.CombatGearItem;
 import invoker54.arsgears.event.item.utilgear.UtilGearItem;
@@ -37,12 +38,15 @@ public class FeedGearMsg {
 
             //Now grab the gear
             ItemStack item = player.getMainHandItem();
-            if (item.getItem() instanceof UtilGearItem || item.getItem() instanceof CombatGearItem) {
-                //Mess with the container
-                ((GearContainer)player.containerMenu).tempInv.getItem(0).setCount(msg.newCount);
-                //Finally set the damage value
-                item.setDamageValue(msg.newDamageValue);
-            }
+            GearCap cap = GearCap.getCap(item);
+
+            if (cap == null) return;
+
+            //Mess with the container
+            ((GearContainer)player.containerMenu).tempInv.getItem(0).setCount(msg.newCount);
+
+            //Finally set the damage value
+            item.setDamageValue(msg.newDamageValue);
         });
         context.setPacketHandled(true);
     }
