@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item;
+package invoker54.arsgears.item;
 
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Items;

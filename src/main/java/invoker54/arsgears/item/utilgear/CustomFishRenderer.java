@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item.utilgear;
+package invoker54.arsgears.item.utilgear;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;

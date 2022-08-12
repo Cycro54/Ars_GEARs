@@ -1,26 +1,26 @@
 package invoker54.arsgears;
 
-import net.minecraft.client.renderer.OutlineLayerBuffer;
+import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.awt.geom.AreaOp;
 
 public class ArsUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static ItemStack getHeldItem(LivingEntity entity, Class<?> CLASS){
-        if (entity.getMainHandItem().getItem().getClass() == CLASS){
-            return entity.getMainHandItem();
-        }
-        else if(entity.getOffhandItem().getItem().getClass() == CLASS){
-            return entity.getOffhandItem();
-        }
-        else return ItemStack.EMPTY;
-    }
+//    public static ItemStack getHeldItem(LivingEntity entity, Class<?> CLASS){
+//        if (entity.getMainHandItem().getItem().getClass() == CLASS){
+//            return entity.getMainHandItem();
+//        }
+//        else if(entity.getOffhandItem().getItem().getClass() == CLASS){
+//            return entity.getOffhandItem();
+//        }
+//        else return ItemStack.EMPTY;
+//    }
 
     public static void replaceItemStack(PlayerEntity player, ItemStack oldItemStack, ItemStack newItemStack){
         LOGGER.debug("Old Item: " + oldItemStack.getDisplayName().getString());
@@ -47,5 +47,21 @@ public class ArsUtil {
                 return;
             }
         }
+    }
+
+    public static ItemStack getHeldGearCap(LivingEntity entity, boolean utility){
+        ItemStack currentItem = entity.getMainHandItem();
+        GearCap cap = GearCap.getCap(currentItem);
+
+        if (cap == null){
+            currentItem = entity.getOffhandItem();
+            cap = GearCap.getCap(currentItem);
+        }
+
+        if (cap == null) return ItemStack.EMPTY;
+
+        if (utility && cap instanceof CombatGearCap) return ItemStack.EMPTY;
+
+        return currentItem;
     }
 }

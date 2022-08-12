@@ -1,11 +1,11 @@
 package invoker54.arsgears.capability.gear.utilgear;
 
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
-import invoker54.arsgears.event.item.combatgear.ModSpellBow;
-import invoker54.arsgears.event.item.combatgear.ModSpellSword;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.combatgear.ModSpellMirror;
+import invoker54.arsgears.item.combatgear.ModSpellBow;
+import invoker54.arsgears.item.combatgear.ModSpellSword;
+import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;

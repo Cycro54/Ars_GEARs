@@ -8,9 +8,10 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.ActivateGearMsg;
 import net.minecraft.entity.player.PlayerEntity;
@@ -55,11 +56,10 @@ public class ActivateBowEvent {
         if (!ClientUtil.mC.options.keyUse.isDown()) return;
 
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = ArsUtil.getHeldItem(player, CombatGearItem.class);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false);
+        CombatGearCap cap = CombatGearCap.getCap(ArsUtil.getHeldGearCap(player, false));
 
-        if (gearStack.isEmpty()) return;
-
-        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        if (cap == null) return;
 
         //Make sure the bow is selected
         if (cap.getSelectedItem() != CombatGearItem.bowInt) return;

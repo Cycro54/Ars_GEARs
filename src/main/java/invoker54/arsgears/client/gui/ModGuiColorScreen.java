@@ -8,7 +8,7 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellColors;
 import net.minecraft.client.GameSettings;
@@ -107,7 +107,7 @@ public class ModGuiColorScreen extends BaseBook {
 
     public void onSaveClick(Button button){
         NetworkHandler.INSTANCE.sendToServer(new PacketUpdateSpellColors(slot, red, green, blue));
-        ItemStack gearStack = ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false);
         if(!gearStack.isEmpty()){
             CompoundNBT tag = gearStack.hasTag() ? gearStack.getTag() : new CompoundNBT();
             SpellBook.setSpellColor(tag, new ParticleColor.IntWrapper((int) red * 255, (int) green * 255, (int) blue * 255), slot);

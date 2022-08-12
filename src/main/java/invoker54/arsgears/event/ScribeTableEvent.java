@@ -1,10 +1,11 @@
-package invoker54.arsgears.client.event;
+package invoker54.arsgears.event;
 
 import com.hollingsworth.arsnouveau.setup.BlockRegistry;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.ClientOnly;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,10 +20,12 @@ public class ScribeTableEvent {
     public static void rightClickTable(PlayerInteractEvent.RightClickBlock event){
         if(event.getWorld().getBlockState(event.getPos()).getBlock() == BlockRegistry.SCRIBES_BLOCK){
             ItemStack gearStack = event.getItemStack();
-            if (gearStack.getItem() instanceof UtilGearItem || gearStack.getItem() instanceof CombatGearItem) {
+            GearCap cap = GearCap.getCap(gearStack);
+
+            if (cap != null) {
                 event.setCanceled(true);
                 event.setCancellationResult(ActionResultType.FAIL);
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientOnly.openUpgradeScreen(gearStack));
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientOnly.openUpgradeScreen(cap));
             }
         }
     }

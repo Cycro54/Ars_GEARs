@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item.combatgear;
+package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.IScribeable;
@@ -10,9 +10,8 @@ import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.client.render.CombatGearRenderer;
-import invoker54.arsgears.event.item.GearTier;
-import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;
@@ -174,7 +173,7 @@ public class CombatGearItem extends Item implements IScribeable, IDisplayMana, I
 
         PlayerEntity player = (PlayerEntity) entityIn;
 
-        if (ArsUtil.getHeldItem(player, CombatGearItem.class).isEmpty()) return;
+        if (ArsUtil.getHeldGearCap(player, false).isEmpty()) return;
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 

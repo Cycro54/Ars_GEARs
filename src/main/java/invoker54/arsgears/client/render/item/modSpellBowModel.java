@@ -1,7 +1,7 @@
 package invoker54.arsgears.client.render.item;
 
 import com.hollingsworth.arsnouveau.ArsNouveau;
-import invoker54.arsgears.event.item.combatgear.ModSpellBow;
+import invoker54.arsgears.item.combatgear.ModSpellBow;
 import net.minecraft.util.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

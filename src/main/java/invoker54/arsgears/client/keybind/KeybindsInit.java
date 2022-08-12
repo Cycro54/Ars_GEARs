@@ -2,14 +2,12 @@ package invoker54.arsgears.client.keybind;
 
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import invoker54.arsgears.ArsGears;
-import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiRadialMenu;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
-import invoker54.arsgears.event.item.GearTier;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.CycleGearMsg;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
@@ -21,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
-import javax.xml.ws.soap.Addressing;
 import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ArsGears.MOD_ID)
@@ -67,7 +64,7 @@ public class KeybindsInit {
                     return;
             }
             //Make sure the player is GearTier Iron or higher
-            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
+            if (cap.GetTier().ordinal() < GearTier.IRON.ordinal()) return;
 
             ModGuiSpellBook.open(itemStack);
         })));
@@ -85,7 +82,7 @@ public class KeybindsInit {
             CombatGearCap cap = CombatGearCap.getCap(gearStack);
             if (cap == null) return;
 
-            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
+            if (cap.GetTier().ordinal() < GearTier.IRON.ordinal()) return;
 
             if (ClientUtil.mC.screen == null){
                 ClientUtil.mC.setScreen(new ModGuiRadialMenu(gearStack));

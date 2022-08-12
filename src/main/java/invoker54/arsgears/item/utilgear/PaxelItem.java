@@ -1,8 +1,8 @@
-package invoker54.arsgears.event.item.utilgear;
+package invoker54.arsgears.item.utilgear;
 
 import com.google.common.collect.Sets;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

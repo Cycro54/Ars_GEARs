@@ -3,7 +3,7 @@ package invoker54.arsgears;
 import invoker54.arsgears.client.keybind.KeybindsInit;
 import invoker54.arsgears.init.CapInit;
 import invoker54.arsgears.init.ContainerInit;
-import invoker54.arsgears.event.item.utilgear.CustomFishRenderer;
+import invoker54.arsgears.item.utilgear.CustomFishRenderer;
 import invoker54.arsgears.network.NetworkHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

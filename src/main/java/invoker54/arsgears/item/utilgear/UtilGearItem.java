@@ -1,8 +1,8 @@
-package invoker54.arsgears.event.item.utilgear;
+package invoker54.arsgears.item.utilgear;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.event.item.GearUpgrades;
-import invoker54.arsgears.event.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.OpenGearContainerMsg;
 import net.minecraft.block.BlockState;

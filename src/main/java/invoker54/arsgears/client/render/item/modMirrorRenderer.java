@@ -1,11 +1,9 @@
 package invoker54.arsgears.client.render.item;
 
-import com.hollingsworth.arsnouveau.client.renderer.item.GenericItemRenderer;
 import com.hollingsworth.arsnouveau.client.renderer.tile.GenericModel;
-import com.hollingsworth.arsnouveau.common.items.EnchantersMirror;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
+import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;

@@ -3,13 +3,10 @@ package invoker54.arsgears.client.gui.upgrade;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.UpgradeButton;
-import invoker54.arsgears.event.item.GearTier;
-import invoker54.arsgears.event.item.GearUpgrades;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
+import invoker54.arsgears.item.GearTier;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.SyncServerGearMsg;
 import net.minecraft.client.gui.screen.Screen;
@@ -352,9 +349,8 @@ public class UpgradeScreen extends Screen {
                 createEmptyUpgrade(catName);
                 continue;
             }
-            int playerTier;
-            if (this instanceof CombatUpgradeScreen) playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
-            else playerTier = ((UtilGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            ItemStack gearStack = mC.player.getMainHandItem();
+            int playerTier = GearCap.getCap(gearStack).GetTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
             //Make the requirement
@@ -452,9 +448,8 @@ public class UpgradeScreen extends Screen {
                 continue;
             }
 
-            int playerTier;
-            if (this instanceof CombatUpgradeScreen) playerTier = ((CombatGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
-            else playerTier = ((UtilGearItem) mC.player.getMainHandItem().getItem()).getTier().ordinal();
+            ItemStack gearStack = mC.player.getMainHandItem();
+            int playerTier = GearCap.getCap(gearStack).GetTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
             //Make the requirement
@@ -521,11 +516,8 @@ public class UpgradeScreen extends Screen {
     
     protected GearCap getCap(){
         ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
-        GearCap cap;
-        if (gearStack.getItem() instanceof UtilGearItem) cap = GearCap.getCap(gearStack);
-        else { cap = CombatGearCap.getCap(gearStack); }
-        
-        return cap;
+
+        return GearCap.getCap(gearStack);
     }
     public UpgradeButton createUpgrade(String category, ResourceLocation image, int price, UpgradeButton.Irequirement require, Button.IPressable purchaseFunc){
         if (!categories.containsKey(category)) categories.put(category, new ArrayList<>());

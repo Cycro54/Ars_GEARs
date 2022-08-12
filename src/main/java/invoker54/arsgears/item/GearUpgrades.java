@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item;
+package invoker54.arsgears.item;
 
 import invoker54.arsgears.capability.gear.GearCap;
 import net.minecraft.nbt.CompoundNBT;

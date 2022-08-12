@@ -13,7 +13,7 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.CircleRender;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -50,7 +50,7 @@ public class DrawGuiEvent {
         if (ClientUtil.mC.screen != null) return;
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = ArsUtil.getHeldItem(player, CombatGearItem.class);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false);
         CompoundNBT itemTag = gearStack.getOrCreateTag();
 
         //If the player isn't holding the combat gear, return

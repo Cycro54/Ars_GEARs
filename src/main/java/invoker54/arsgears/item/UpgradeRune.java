@@ -1,18 +1,13 @@
-package invoker54.arsgears.event.item;
+package invoker54.arsgears.item;
 
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
-import invoker54.arsgears.init.ItemInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.BedExplosionDamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -53,12 +48,12 @@ public class UpgradeRune extends Item {
 
         if (forUtility){
             gearCap = GearCap.getCap(cap.getUtilityGear());
-            playerTier = gearCap.getTier().ordinal();
+            playerTier = gearCap.GetTier().ordinal();
             gearStack = cap.getUtilityGear();
         }
         else {
             gearCap = GearCap.getCap(cap.getCombatGear());
-            playerTier = gearCap.getTier().ordinal();
+            playerTier = gearCap.GetTier().ordinal();
             gearStack = cap.getCombatGear();
         }
 

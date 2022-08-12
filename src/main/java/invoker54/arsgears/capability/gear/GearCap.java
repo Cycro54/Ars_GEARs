@@ -1,10 +1,8 @@
 package invoker54.arsgears.capability.gear;
 
-import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.utilgear.GearProvider;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.event.item.GearTier;
-import invoker54.arsgears.event.item.combatgear.ModSpellSword;
+import invoker54.arsgears.item.GearTier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -13,7 +11,6 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openzen.zenscript.codemodel.expression.ThisExpression;
 
 import javax.annotation.Nullable;
 
@@ -23,10 +20,11 @@ public class GearCap implements IGearCap {
     private static final Logger LOGGER = LogManager.getLogger();
     private final String SELECTED_ITEM = "SELECTED_ITEM";
     private final String ITEM_TAG = "ITEM_TAG";
+    private final String TIER = "TIER";
 
     private GearTier gearTier = GearTier.WOOD;
 
-    public GearTier getTier(){
+    public GearTier GetTier(){
         return gearTier;
     }
     public void setTier(GearTier gearTier){
@@ -132,7 +130,12 @@ public class GearCap implements IGearCap {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT cNBT = new CompoundNBT();
+
+        //Saves the currently selected item
         cNBT.putInt(SELECTED_ITEM, selectedItem);
+
+        //Saves the gearTier
+        cNBT.putInt(TIER, gearTier.ordinal());
 
         //This is for the item tags
         cNBT.put(ITEM_TAG + (0), itemTags[0]);
@@ -143,7 +146,11 @@ public class GearCap implements IGearCap {
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
+        //Sets the currently selected gear
         selectedItem = nbt.getInt(SELECTED_ITEM);
+
+        //Sets the gear tier
+        gearTier = GearTier.values()[nbt.getInt(TIER)];
 
         //This is for the item tags
         itemTags[0].merge(nbt.getCompound(ITEM_TAG + (0)));

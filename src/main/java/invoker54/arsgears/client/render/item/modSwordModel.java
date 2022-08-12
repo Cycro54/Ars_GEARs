@@ -1,6 +1,6 @@
 package invoker54.arsgears.client.render.item;
 
-import invoker54.arsgears.event.item.combatgear.ModSpellSword;
+import invoker54.arsgears.item.combatgear.ModSpellSword;
 import net.minecraft.util.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

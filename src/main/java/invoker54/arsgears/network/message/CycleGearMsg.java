@@ -1,9 +1,6 @@
 package invoker54.arsgears.network.message;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.network.NetworkEvent;
 

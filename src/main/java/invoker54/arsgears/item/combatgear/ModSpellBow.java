@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item.combatgear;
+package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.item.ICasterTool;
 import com.hollingsworth.arsnouveau.api.spell.*;
@@ -12,7 +12,7 @@ import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.item.modSpellBowRenderer;
-import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;

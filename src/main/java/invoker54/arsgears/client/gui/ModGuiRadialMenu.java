@@ -10,7 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.edited.PacketSetBookMode;
 import net.minecraft.client.GameSettings;

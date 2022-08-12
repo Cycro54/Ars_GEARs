@@ -2,15 +2,19 @@ package invoker54.arsgears.client.gui.upgrade;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.event.item.GearUpgrades;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
+import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 
-import static invoker54.arsgears.event.item.combatgear.CombatGearItem.*;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
 public class CombatUpgradeScreen extends UpgradeScreen {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -28,7 +32,9 @@ public class CombatUpgradeScreen extends UpgradeScreen {
     @Override
     public void tick() {
         //If the player ends up dropping the gear at some point while this screen is on, close the screen
-        if (ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class).isEmpty()) ClientUtil.mC.setScreen(null);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false);
+
+        if(gearStack.isEmpty()) ClientUtil.mC.setScreen(null);
     }
 
     protected ResourceLocation getImage(String location){

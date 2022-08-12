@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item.combatgear;
+package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.api.util.MathUtil;
@@ -8,7 +8,7 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.item.modSwordRenderer;
-import invoker54.arsgears.event.item.GearUpgrades;
+import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -36,7 +36,6 @@ import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
-import static com.hollingsworth.arsnouveau.setup.ItemsRegistry.defaultItemProperties;
 
 public class ModSpellSword extends SwordItem implements IAnimatable {
     private static final Logger LOGGER = LogManager.getLogger();

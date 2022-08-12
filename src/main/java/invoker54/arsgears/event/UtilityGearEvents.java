@@ -3,7 +3,7 @@ package invoker54.arsgears.event;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.event.item.utilgear.UtilGearItem;
+import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
@@ -30,7 +30,7 @@ public class UtilityGearEvents {
         //the tracked item in the capability
         ItemStack trackedGear = cap.getUtilityGear();
         //Check hands for utilty gear
-        ItemStack focusedGear = ArsUtil.getHeldItem(player, UtilGearItem.class);
+        ItemStack focusedGear = ArsUtil.getHeldGearCap(player, true);
 
         //make sure we have a focused gear
         if (focusedGear.isEmpty()) return;

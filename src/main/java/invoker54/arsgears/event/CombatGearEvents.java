@@ -1,27 +1,17 @@
 package invoker54.arsgears.event;
 
-import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.event.item.GearUpgrades;
-import invoker54.arsgears.event.item.combatgear.CombatGearItem;
-import invoker54.arsgears.event.item.combatgear.ModSpellBow;
-import invoker54.arsgears.event.item.combatgear.ModSpellMirror;
-import invoker54.arsgears.event.item.combatgear.ModSpellSword;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static invoker54.arsgears.event.item.combatgear.CombatGearItem.swordINT;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class CombatGearEvents {

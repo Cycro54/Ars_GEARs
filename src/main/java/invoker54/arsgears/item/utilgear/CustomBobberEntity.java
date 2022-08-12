@@ -1,4 +1,4 @@
-package invoker54.arsgears.event.item.utilgear;
+package invoker54.arsgears.item.utilgear;
 
 import invoker54.arsgears.capability.gear.GearCap;
 import net.minecraft.entity.player.PlayerEntity;
