@@ -6,9 +6,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,7 +18,7 @@ public class modGuiSpellHUD extends GuiSpellHUD {
     @Override
     public void drawHUD(MatrixStack ms) {
         ItemStack stack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false);
-        if(!stack.isEmpty() && GearCap.getCap(stack).GetTier().ordinal() > 1){
+        if(!stack.isEmpty() && GearCap.getCap(stack).getTier().ordinal() > 1){
             int offsetLeft = 10;
             CompoundNBT tag = stack.getOrCreateTag();
             int mode = tag.getInt(SpellBook.BOOK_MODE_TAG);

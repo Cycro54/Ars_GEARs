@@ -3,6 +3,7 @@ package invoker54.arsgears.network.message.edited;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.hollingsworth.arsnouveau.common.network.PacketUpdateBookGUI;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -38,8 +39,8 @@ public class PacketUpdateSpellbook {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ((NetworkEvent.Context)ctx.get()).enqueueWork(() -> {
             if (((NetworkEvent.Context)ctx.get()).getSender() != null) {
-                ItemStack stack = ctx.get().getSender().getMainHandItem();
-                if (stack != null && stack.getItem() instanceof CombatGearItem && this.spellRecipe != null) {
+                ItemStack stack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false);
+                if (stack != null && this.spellRecipe != null) {
                     CompoundNBT tag = stack.getOrCreateTag();
                     SpellBook.setRecipe(tag, this.spellRecipe, this.cast_slot);
                     SpellBook.setSpellName(tag, this.spellName, this.cast_slot);

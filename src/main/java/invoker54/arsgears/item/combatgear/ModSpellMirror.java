@@ -1,5 +1,8 @@
 package invoker54.arsgears.item.combatgear;
 
+import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
+import com.hollingsworth.arsnouveau.api.item.ICasterTool;
+import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
@@ -9,6 +12,7 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.client.render.item.modMirrorRenderer;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -23,28 +27,52 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.mirrorInt;
 
-public class ModSpellMirror extends EnchantersMirror {
+public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
     public ModSpellMirror(IItemTier tier) {
-        super(new Properties().durability(tier.getUses()).setISTER(() -> MirrorRenderer::new));
+        super(new Properties().durability(tier.getUses()).setISTER(() -> modMirrorRenderer::new));
+    }
+
+    @Override
+    public boolean isFoil(ItemStack gearStack) {
+        CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
+
+        return gearCap.getActivated();
+    }
+    @Override
+    public boolean isValidRepairItem(ItemStack p_82789_1_, ItemStack p_82789_2_) {
+        return false;
+    }
+    @Override
+    public boolean isRepairable(ItemStack p_isRepairable_1_) {
+        return false;
+    }
+    @Override
+    public boolean isEnchantable(ItemStack p_77616_1_) {
+        return false;
     }
 
     @Override
     public void inventoryTick(ItemStack gearStack, World worldIn, Entity entity, int itemSlot, boolean isSelected) {
+        if (!CombatGearItem.checkInvTick(gearStack, worldIn, entity, itemSlot, isSelected)) return;
+
+        //Grab the items tag
+        CompoundNBT itemTag = gearStack.getOrCreateTag();
         PlayerEntity player = (PlayerEntity) entity;
+
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
         spell.recipe.add(0, MethodSelf.INSTANCE);
         SpellResolver resolver = new SpellResolver(new SpellContext(spell, player));
-
-        //Grab the items tag
-        CompoundNBT itemTag = gearStack.getOrCreateTag();
 
         //Get the cap
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
@@ -106,8 +134,10 @@ public class ModSpellMirror extends EnchantersMirror {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+        if (!CombatGearItem.checkHoverText(gearStack, world, tooltip)) return;
+
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.mirrorInt, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(mirrorInt, cap);
 
         if (upgrades.contains(GearUpgrades.mirrorFreeGlyph))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.mirrorFreeGlyph, upgrades));
@@ -117,5 +147,22 @@ public class ModSpellMirror extends EnchantersMirror {
 
         if (upgrades.contains(GearUpgrades.mirrorQuickCast))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.mirrorQuickCast, upgrades));
+    }
+
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        CompoundNBT cNBT = stack.getOrCreateTag();
+
+        CompoundNBT capNBT = CombatGearCap.getCap(stack).serializeNBT();
+
+        cNBT.put(COMBAT_GEAR, capNBT);
+        return cNBT;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
+        CombatGearCap.getCap(stack).deserializeNBT(nbt.getCompound(COMBAT_GEAR));
+        super.readShareTag(stack, nbt);
     }
 }

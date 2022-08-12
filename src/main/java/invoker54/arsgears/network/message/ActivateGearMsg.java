@@ -17,7 +17,7 @@ public class ActivateGearMsg {
         context.enqueueWork(() -> {
             ItemStack item = ArsUtil.getHeldGearCap(context.getSender(), false);
 
-            if(item.getItem() instanceof CombatGearItem) {
+            if(item != null) {
                 CombatGearCap cap = CombatGearCap.getCap(item);
                 cap.setActivated(!cap.getActivated());
             }

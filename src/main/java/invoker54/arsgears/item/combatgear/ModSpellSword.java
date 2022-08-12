@@ -1,5 +1,6 @@
 package invoker54.arsgears.item.combatgear;
 
+import com.hollingsworth.arsnouveau.api.item.ICasterTool;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.api.util.MathUtil;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
@@ -36,21 +37,46 @@ import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.mirrorInt;
 
-public class ModSpellSword extends SwordItem implements IAnimatable {
+public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool {
     private static final Logger LOGGER = LogManager.getLogger();
     public ModSpellSword(IItemTier iItemTier) {
         super(iItemTier, 3, -2.4f, new Properties().setISTER(() -> modSwordRenderer::new));
     }
 
     @Override
+    public boolean isFoil(ItemStack gearStack) {
+        CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
+
+        return gearCap.getActivated();
+    }
+    @Override
+    public boolean isValidRepairItem(ItemStack p_82789_1_, ItemStack p_82789_2_) {
+        return false;
+    }
+    @Override
+    public boolean isRepairable(ItemStack p_isRepairable_1_) {
+        return false;
+    }
+    @Override
+    public boolean isEnchantable(ItemStack p_77616_1_) {
+        return false;
+    }
+
+    @Override
     public void inventoryTick(ItemStack gearStack, World worldIn, Entity entity, int itemSlot, boolean isSelected) {
+        if (!CombatGearItem.checkInvTick(gearStack, worldIn, entity, itemSlot, isSelected)) return;
+
+        //Grab the items tag
+        CompoundNBT itemTag = gearStack.getOrCreateTag();
         PlayerEntity player = (PlayerEntity) entity;
+
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
         spell.recipe.add(0, MethodTouch.INSTANCE);
         SpellResolver resolver = new SpellResolver(new SpellContext(spell, player));
-        CompoundNBT itemTag = gearStack.getOrCreateTag();
 
         //Get the cap
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
@@ -154,7 +180,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable {
         }
 
         //This will stop the player from activating the sword if they aren't high enough level
-        if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() <= 1) return ActionResult.fail(gearStack);
+        if (cap.getTier().ordinal() <= 1) return ActionResult.fail(gearStack);
 
         //If they can't cast in the first place, don't allow them to activate the item
         if (!cap.getActivated() && (!canCast1 || !canCast2 || !canCast3)){
@@ -202,23 +228,40 @@ public class ModSpellSword extends SwordItem implements IAnimatable {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-//        CombatGearCap cap = CombatGearCap.getCap(gearStack);
-//        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.swordINT, cap);
-//
-//        if (upgrades.contains(GearUpgrades.swordManaSteal))
-//            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordManaSteal, upgrades));
-//
-//        if (upgrades.contains(GearUpgrades.swordSpellSweep))
-//            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordSpellSweep, upgrades));
+        if (!CombatGearItem.checkHoverText(gearStack, world, tooltip)) return;
+
+        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.swordINT, cap);
+
+        if (upgrades.contains(GearUpgrades.swordManaSteal))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordManaSteal, upgrades));
+
+        if (upgrades.contains(GearUpgrades.swordSpellSweep))
+            tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordSpellSweep, upgrades));
     }
 
+
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        CompoundNBT cNBT = stack.getOrCreateTag();
+
+        CompoundNBT capNBT = CombatGearCap.getCap(stack).serializeNBT();
+
+        cNBT.put(COMBAT_GEAR, capNBT);
+        return cNBT;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
+        CombatGearCap.getCap(stack).deserializeNBT(nbt.getCompound(COMBAT_GEAR));
+        super.readShareTag(stack, nbt);
+    }
     @Override
     public void registerControllers(AnimationData data) {
 
     }
-
     public AnimationFactory factory = new AnimationFactory(this);
-
     @Override
     public AnimationFactory getFactory() {
         return factory;

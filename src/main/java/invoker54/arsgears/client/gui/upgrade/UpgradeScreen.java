@@ -8,7 +8,7 @@ import invoker54.arsgears.client.gui.button.UpgradeButton;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.network.NetworkHandler;
-import invoker54.arsgears.network.message.SyncServerGearMsg;
+import invoker54.arsgears.network.message.buyUpgradeMsg;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.enchantment.Enchantment;
@@ -350,7 +350,7 @@ public class UpgradeScreen extends Screen {
                 continue;
             }
             ItemStack gearStack = mC.player.getMainHandItem();
-            int playerTier = GearCap.getCap(gearStack).GetTier().ordinal();
+            int playerTier = GearCap.getCap(gearStack).getTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
             //Make the requirement
@@ -398,7 +398,7 @@ public class UpgradeScreen extends Screen {
                 GearUpgrades.getUpgrades(gearCycle, getCap()).putInt(upgradeName, lvl);
 
                 //Now finally make sure to sync these changes with the server
-                NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(getCap().getTag(gearCycle), gearCycle, price));
+                NetworkHandler.INSTANCE.sendToServer(new buyUpgradeMsg(getCap().getTag(gearCycle), gearCycle, price));
 
                 mC.player.giveExperiencePoints(-price);
 
@@ -449,7 +449,7 @@ public class UpgradeScreen extends Screen {
             }
 
             ItemStack gearStack = mC.player.getMainHandItem();
-            int playerTier = GearCap.getCap(gearStack).GetTier().ordinal();
+            int playerTier = GearCap.getCap(gearStack).getTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
             //Make the requirement
@@ -502,7 +502,7 @@ public class UpgradeScreen extends Screen {
                 setEnchantments(enchantments, getCap().getTag(cycleInt));
 
                 //Now finally make sure to sync these changes with the server
-                NetworkHandler.INSTANCE.sendToServer(new SyncServerGearMsg(getCap().getTag(cycleInt), cycleInt, price));
+                NetworkHandler.INSTANCE.sendToServer(new buyUpgradeMsg(getCap().getTag(cycleInt), cycleInt, price));
 
                 mC.player.giveExperiencePoints(-price);
 

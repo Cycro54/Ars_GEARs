@@ -13,29 +13,29 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SyncServerGearMsg {
+public class buyUpgradeMsg {
     
     public INBT nbtData;
     public int gearCycle;
     public int cost;
 
-    public SyncServerGearMsg(INBT nbtData, int itemToUpdate, int cost){
+    public buyUpgradeMsg(INBT nbtData, int itemToUpdate, int cost){
         this.nbtData = nbtData;
         this.gearCycle = itemToUpdate;
         this.cost = cost;
     }
     
-    public static void encode(SyncServerGearMsg msg, PacketBuffer buffer){
+    public static void encode(buyUpgradeMsg msg, PacketBuffer buffer){
         buffer.writeNbt((CompoundNBT) msg.nbtData);
         buffer.writeInt(msg.gearCycle);
         buffer.writeInt(msg.cost);
     }
     
-    public static SyncServerGearMsg decode(PacketBuffer buffer){
-        return new SyncServerGearMsg(buffer.readNbt(), buffer.readInt(), buffer.readInt());
+    public static buyUpgradeMsg decode(PacketBuffer buffer){
+        return new buyUpgradeMsg(buffer.readNbt(), buffer.readInt(), buffer.readInt());
     }
 
-    public static void handle(SyncServerGearMsg msg, Supplier<NetworkEvent.Context> contextSupplier){
+    public static void handle(buyUpgradeMsg msg, Supplier<NetworkEvent.Context> contextSupplier){
         NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
@@ -43,23 +43,21 @@ public class SyncServerGearMsg {
 
             ItemStack gearStack = player.getMainHandItem();
 
-            GearCap cap;
-            if (gearStack.getItem() instanceof UtilGearItem) cap = GearCap.getCap(gearStack);
-            else if (gearStack.getItem() instanceof CombatGearItem)  cap = CombatGearCap.getCap(gearStack);
-            else return;
+            GearCap cap = GearCap.getCap(gearStack);
+
+            if (cap == null) return;
 
             //This writes the nbtData to the required item
             //Let's say the data is Sharpness enchant, this will write the Enchantment to the Sword CompoundNBT in the gear capability
-            CompoundNBT tag = cap.getTag(msg.gearCycle).merge((CompoundNBT) msg.nbtData);
+            cap.getTag(msg.gearCycle).merge((CompoundNBT) msg.nbtData);
 
             //If the player has the item equipped, make sure to sync the data
             if (cap.getSelectedItem() == msg.gearCycle){
                 gearStack.getOrCreateTag().merge(cap.getTag(msg.gearCycle));
             }
 
-            //Now finally take their experience.
+            //Now finally take their precious experience.
             player.giveExperiencePoints(-msg.cost);
-
         });
         context.setPacketHandled(true);
     }

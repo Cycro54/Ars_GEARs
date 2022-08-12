@@ -83,16 +83,14 @@ public class ModGuiSpellBook extends BaseBook {
     int augmentTextRow = 0;
     int effectTextRow = 0;
 
-    int gearCycle;
 
-    public ModGuiSpellBook(CompoundNBT tag, int tier, String unlockedSpells, int gearCycle, int selected_cast_slot) {
+    public ModGuiSpellBook(CompoundNBT tag, int tier, String unlockedSpells, int selected_cast_slot) {
         super();
         this.api = ArsNouveauAPI.getInstance();
 
         this.max_spell_tier = tier;
         this.spell_book_tag = tag;
         this.unlockedSpells = SpellRecipeUtil.getSpellsFromString(unlockedSpells);
-        this.gearCycle = gearCycle;
         this.selected_cast_slot = selected_cast_slot;
 
         this.castMethods = new ArrayList<>();
@@ -116,7 +114,7 @@ public class ModGuiSpellBook extends BaseBook {
         //The spell book tag (where all the spell book data is stored)
         CompoundNBT spell_book_tag = gearStack.getOrCreateTag();
         //Tier of my combat gear (minus 1 since I also don't want the player casting on STONE tier)
-        int tier = (((CombatGearItem)gearStack.getItem()).getTier().ordinal() - 1);
+        int tier = (CombatGearCap.getCap(gearStack).getTier().ordinal() - 1);
         //Unlocked Spells
         String unlockedSpells = SpellBook.getUnlockedSpellString(spell_book_tag);
         //The currently selected item on the combat gear
@@ -124,7 +122,7 @@ public class ModGuiSpellBook extends BaseBook {
 
         int cast_slot = SpellBook.getMode(gearStack.getOrCreateTag());
 
-        Minecraft.getInstance().setScreen(new ModGuiSpellBook(spell_book_tag, tier, unlockedSpells, gearCyle, cast_slot));
+        Minecraft.getInstance().setScreen(new ModGuiSpellBook(spell_book_tag, tier, unlockedSpells, cast_slot));
     }
 
     @Override
@@ -212,11 +210,11 @@ public class ModGuiSpellBook extends BaseBook {
         addButton(searchBar);
         // Add spell slots (these are the tabs of the book on the right)
         for(int i = 1; i <= max_spell_tier; i++){
-            ModGuiSpellSlot slot = new ModGuiSpellSlot(this,bookLeft + 281, bookTop +1 + 15 * i, getActualSlot(i));
-            if(getActualSlot(i) == selected_slot_ind) {
+            ModGuiSpellSlot slot = new ModGuiSpellSlot(this,bookLeft + 281, bookTop +1 + 15 * i, i);
+            if(i == selected_slot_ind) {
                 selected_slot = slot;
-                selected_cast_slot = getActualSlot(i);
-                LOGGER.debug("THE ACTUAL SLOT IS " + getActualSlot(i));
+                selected_cast_slot = i;
+                LOGGER.debug("THE ACTUAL SLOT IS " + i);
                 slot.isSelected = true;
             }
             addButton(slot);
@@ -236,10 +234,6 @@ public class ModGuiSpellBook extends BaseBook {
         previousButton.visible = false;
 
         validate();
-    }
-
-    public int getActualSlot(int a){
-        return (3 * gearCycle) + a;
     }
 
     public void resetPageState(){

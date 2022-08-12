@@ -1,6 +1,8 @@
 package invoker54.arsgears.item.combatgear;
 
+import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.ICasterTool;
+import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.entity.EntitySpellArrow;
@@ -16,6 +18,7 @@ import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
@@ -41,6 +44,8 @@ import java.util.function.Predicate;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
 
 public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -50,6 +55,32 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
         super(new Item.Properties().durability(tier.getUses()).setISTER(() -> {
             return modSpellBowRenderer::new;
         }));
+    }
+
+    @Override
+    public boolean isFoil(ItemStack gearStack) {
+        CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
+
+        return gearCap.getActivated();
+    }
+    @Override
+    public boolean isValidRepairItem(ItemStack p_82789_1_, ItemStack p_82789_2_) {
+        return false;
+    }
+    @Override
+    public boolean isRepairable(ItemStack p_isRepairable_1_) {
+        return false;
+    }
+    @Override
+    public boolean isEnchantable(ItemStack p_77616_1_) {
+        return false;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack gearStack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (!CombatGearItem.checkInvTick(gearStack, worldIn, entityIn, itemSlot, isSelected)) return;
+
+        super.inventoryTick(gearStack, worldIn, entityIn, itemSlot, isSelected);
     }
 
     @Override
@@ -175,6 +206,11 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
                     }
                     addArrow(arr, gearStack, arrowStack, isArrowInfinite, playerentity);
                 }
+
+                //This will reduce the items durability by 1
+                gearStack.hurtAndBreak(1, playerentity, (player) -> {
+                    player.broadcastBreakEvent(playerentity.getUsedItemHand());
+                });
             }
 
             worldIn.playSound(null, playerentity.getX(), playerentity.getY(), playerentity.getZ(), SoundEvents.ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (random.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
@@ -223,6 +259,8 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(final ItemStack gearStack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+        if (!CombatGearItem.checkHoverText(gearStack, world, tooltip)) return;
+
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
         CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.bowInt, cap);
 
@@ -300,15 +338,24 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
         return false; //super.setSpell(caster, player, hand, stack, spell);
     }
 
-    public int getEnchantmentValue() {
-        return super.getEnchantmentValue();
-    }
-
-    public boolean isEnchantable(ItemStack stack) {
-        return true;
-    }
-
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return true;
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        CompoundNBT cNBT = stack.getOrCreateTag();
+
+        CompoundNBT capNBT = CombatGearCap.getCap(stack).serializeNBT();
+
+        cNBT.put(COMBAT_GEAR, capNBT);
+        return cNBT;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
+        CombatGearCap.getCap(stack).deserializeNBT(nbt.getCompound(COMBAT_GEAR));
+        super.readShareTag(stack, nbt);
     }
 }

@@ -48,12 +48,12 @@ public class UpgradeRune extends Item {
 
         if (forUtility){
             gearCap = GearCap.getCap(cap.getUtilityGear());
-            playerTier = gearCap.GetTier().ordinal();
+            playerTier = gearCap.getTier().ordinal();
             gearStack = cap.getUtilityGear();
         }
         else {
             gearCap = GearCap.getCap(cap.getCombatGear());
-            playerTier = gearCap.GetTier().ordinal();
+            playerTier = gearCap.getTier().ordinal();
             gearStack = cap.getCombatGear();
         }
 

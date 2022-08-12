@@ -2,11 +2,15 @@ package invoker54.arsgears.event;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.init.ItemInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
@@ -39,7 +43,6 @@ public class CombatGearEvents {
         //If it STILL equals null, that means there is not Combat Gear equipped
         if (itemCap == null) return;
 
-        LOGGER.warn("IS THE ITEMSTACK EMPTY? " + (focusedGear.isEmpty()));
         if (focusedGear.isEmpty()) return;
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
@@ -49,6 +52,19 @@ public class CombatGearEvents {
         }
         //Finally, sync the data between the copy and the trackedGear
         cap.syncCombatGearData();
+    }
+
+    @SubscribeEvent
+    public static void onDrop(ItemTossEvent event){
+        ItemStack oldStack = event.getEntityItem().getItem();
+
+        if (CombatGearCap.getCap(oldStack) == null) return;
+
+        ItemStack newStack = new ItemStack(ItemInit.WOOD_COMBAT_GEAR);
+
+        newStack.deserializeNBT(oldStack.serializeNBT());
+
+        event.getEntityItem().setItem(newStack);
     }
 
 //    @SubscribeEvent

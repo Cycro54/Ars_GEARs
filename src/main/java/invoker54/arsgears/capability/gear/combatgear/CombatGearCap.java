@@ -11,17 +11,21 @@ import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.brain.task.SwimTask;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.stream.IntStream;
 
 public class CombatGearCap extends GearCap implements ICombatGear {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final String ACTIVATED = "ACTIVATED";
     private boolean activated = false;
@@ -29,10 +33,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     public boolean isSweep = false;
 
     public CombatGearCap(){
-        //This is setting all of the initial spell modes so that each one will start on the correct initial mode
-        itemTags[0].putInt("mode", 1);
-        itemTags[1].putInt("mode", 4);
-        itemTags[2].putInt("mode", 7);
+        super();
     }
 
     public static CombatGearCap getCap(ItemStack item){
@@ -49,12 +50,28 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         activated = flag;
     }
 
+    String mode = "mode";
+    String recipe1 = "1recipe";
+    String recipe2 = "2recipe";
+    String recipe3 = "3recipe";
+    
     @Override
     protected CompoundNBT saveTag(CompoundNBT stackTag) {
         CompoundNBT capTag = super.saveTag(stackTag);
 
-        if (stackTag.contains("mode")){
-            capTag.putInt("mode", stackTag.getInt("mode"));
+        //What spell mode you have selected
+        if (stackTag.contains(mode)) capTag.putInt(mode, stackTag.getInt(mode));
+
+        //All the spell recipes from that gear cycle
+        if (stackTag.contains(recipe1)) {
+            capTag.putString(recipe1, stackTag.getString(recipe1));
+        }
+        if (stackTag.contains(recipe2)) {
+            capTag.putString(recipe2, stackTag.getString(recipe2));
+        }
+        if (stackTag.contains(recipe3)){
+            capTag.putString(recipe3, stackTag.getString(recipe3));
+            stackTag.remove(recipe3);
         }
 
         return capTag;
@@ -63,14 +80,24 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     @Override
     protected CompoundNBT readTag(CompoundNBT stackTag) {
         //This is the capNBT
-       CompoundNBT nbt = super.readTag(stackTag);
+       CompoundNBT capTag = super.readTag(stackTag);
 
-       //Now we will be reading the selected spell mode for the current item
-        if (nbt.contains("mode")){
-            stackTag.putInt("mode", nbt.getInt("mode"));
-        }
+        //What spell mode you have selected
+        if (capTag.contains(mode)) stackTag.putInt(mode, capTag.getInt(mode));
 
-        return nbt;
+        //All the spell recipes from that gear cycle
+        if (capTag.contains(recipe1)) stackTag.putString(recipe1, capTag.getString(recipe1));
+        if (capTag.contains(recipe2)) stackTag.putString(recipe2, capTag.getString(recipe2));
+        if (capTag.contains(recipe3)) stackTag.putString(recipe3, capTag.getString(recipe3));
+
+        return capTag;
+    }
+
+    @Override
+    public void cycleItem(ItemStack gearStack, PlayerEntity player) {
+        setActivated(false);
+        super.cycleItem(gearStack, player);
+        LOGGER.debug("IS IT ACTIVATED???? " + getActivated());
     }
 
     @Override

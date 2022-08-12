@@ -50,7 +50,7 @@ public class ItemInit {
    //endregion
 
     //region This is for the Combat Gear (I will keep the combat gear item to use for changing into the other items
-    public static final Item WOOD_COMBAT_GEAR = addItem(new CombatGearItem(GearTier.WOOD, getDefault()), "combat/wood_combat_gear");
+    public static final Item WOOD_COMBAT_GEAR = addItem(new CombatGearItem(getDefault()), "combat/wood_combat_gear");
     
     //Wood
     public static final Item WOODEN_MOD_SWORD = addItem(new ModSpellSword(GearTier.WOOD), "combat/wood_combat_sword");

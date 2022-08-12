@@ -24,7 +24,7 @@ public class GearCap implements IGearCap {
 
     private GearTier gearTier = GearTier.WOOD;
 
-    public GearTier GetTier(){
+    public GearTier getTier(){
         return gearTier;
     }
     public void setTier(GearTier gearTier){

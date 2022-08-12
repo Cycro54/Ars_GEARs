@@ -88,26 +88,4 @@ public class ActivateBowEvent {
         if (flag && flag2 && flag3) NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
     }
 
-    /**
-    This will only run if the player is using the bow in combat gear
-     */
-    @SubscribeEvent
-    public static void changeFOV(FOVUpdateEvent event){
-        float f = event.getFov();
-        PlayerEntity player = event.getEntity();
-        if (player.isUsingItem() && player.getUseItem().getItem() instanceof CombatGearItem) {
-            int i = player.getTicksUsingItem();
-            float f1 = (float)i / 20.0F;
-            if (f1 > 1.0F) {
-                f1 = 1.0F;
-            } else {
-                f1 = f1 * f1;
-            }
-
-            f *= 1.0F - f1 * 0.15F;
-        }
-
-        event.setNewfov(f);
-    }
-
 }

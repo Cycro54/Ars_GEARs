@@ -43,7 +43,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(nextID(), OpenGearContainerMsg.class, (message, buf) -> {}, it -> new OpenGearContainerMsg(), OpenGearContainerMsg::handle);
         INSTANCE.registerMessage(nextID(), FeedGearMsg.class, FeedGearMsg::encode, FeedGearMsg::decode, FeedGearMsg::handle);
         INSTANCE.registerMessage(nextID(), ActivateGearMsg.class, (message, buf) -> {}, it -> new ActivateGearMsg(), ActivateGearMsg::handle);
-        INSTANCE.registerMessage(nextID(), SyncServerGearMsg.class, SyncServerGearMsg::encode, SyncServerGearMsg::decode, SyncServerGearMsg::handle);
+        INSTANCE.registerMessage(nextID(), buyUpgradeMsg.class, buyUpgradeMsg::encode, buyUpgradeMsg::decode, buyUpgradeMsg::handle);
 
         //These are messages from Ars nouveau edited
         INSTANCE.registerMessage(nextID(), PacketUpdateSpellbook.class, PacketUpdateSpellbook::toBytes, PacketUpdateSpellbook::new, PacketUpdateSpellbook::handle);

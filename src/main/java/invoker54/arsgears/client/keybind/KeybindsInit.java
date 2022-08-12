@@ -64,7 +64,7 @@ public class KeybindsInit {
                     return;
             }
             //Make sure the player is GearTier Iron or higher
-            if (cap.GetTier().ordinal() < GearTier.IRON.ordinal()) return;
+            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
 
             ModGuiSpellBook.open(itemStack);
         })));
@@ -82,7 +82,7 @@ public class KeybindsInit {
             CombatGearCap cap = CombatGearCap.getCap(gearStack);
             if (cap == null) return;
 
-            if (cap.GetTier().ordinal() < GearTier.IRON.ordinal()) return;
+            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) return;
 
             if (ClientUtil.mC.screen == null){
                 ClientUtil.mC.setScreen(new ModGuiRadialMenu(gearStack));
