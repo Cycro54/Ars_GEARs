@@ -62,7 +62,7 @@ public class DrawGuiEvent {
         MatrixStack stack = event.getMatrixStack();
 
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        spell.recipe.add(0, MethodTouch.INSTANCE);
+        //spell.recipe.add(0, MethodTouch.INSTANCE);
         SpellResolver spellResolver = new SpellResolver(new SpellContext(spell, player));
         IMana cap = ManaCapability.getMana(player).resolve().get();
         int cost = CombatGearItem.SpellM.getInitialCost(spell);

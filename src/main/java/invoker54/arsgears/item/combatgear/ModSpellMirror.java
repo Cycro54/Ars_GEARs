@@ -71,14 +71,14 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
 
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        spell.recipe.add(0, MethodSelf.INSTANCE);
+        //spell.recipe.add(0, MethodSelf.INSTANCE);
         SpellResolver resolver = new SpellResolver(new SpellContext(spell, player));
 
         //Get the cap
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         //Make sure the player can even cast the spell
-        boolean flag = resolver.canCast(player);
+        boolean flag = resolver.withSilent(true).canCast(player);
         //This is if the item is still on cooldown
         boolean flag2 = CombatGearItem.getCooldown(player, itemTag, SpellBook.getMode(itemTag), true) <= 0;
         //This is if the spell has no glyphs after the Touch glyph
@@ -103,7 +103,7 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
 
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        spell.recipe.add(0, MethodSelf.INSTANCE);
+        //spell.recipe.add(0, MethodSelf.INSTANCE);
         //Get the spell resolver
         SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
                 withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));

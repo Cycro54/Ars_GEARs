@@ -1,5 +1,6 @@
 package invoker54.arsgears.capability.gear;
 
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.gear.utilgear.GearProvider;
 import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.item.GearTier;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,12 +41,23 @@ public class GearCap implements IGearCap {
     }
 
     public GearCap(){
-        //Starter Sword
-        itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
-        //Starter Bow
-        itemTags[1].putString("id", WOODEN_MOD_BOW.getRegistryName().toString());
-        //Starter Mirror
-        itemTags[2].putString("id", WOODEN_MOD_MIRROR.getRegistryName().toString());
+
+        if (this instanceof CombatGearCap) {
+            //Starter Sword
+            itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
+            //Starter Bow
+            itemTags[1].putString("id", WOODEN_MOD_BOW.getRegistryName().toString());
+            //Starter Mirror
+            itemTags[2].putString("id", WOODEN_MOD_MIRROR.getRegistryName().toString());
+        }
+        else {
+            //Starter Sword
+            itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
+            //Starter Bow
+            itemTags[1].putString("id", WOODEN_MOD_BOW.getRegistryName().toString());
+            //Starter Mirror
+            itemTags[2].putString("id", WOODEN_MOD_MIRROR.getRegistryName().toString());
+        }
     }
 
     @Override
@@ -54,37 +67,29 @@ public class GearCap implements IGearCap {
 
     @Override
     public void cycleItem(ItemStack gearStack, PlayerEntity player) {
-       //Save important current tag shtuff
-        saveTag(gearStack.getOrCreateTag());
-        //Cycle the selected item
-       selectedItem = (selectedItem == 2 ? 0 : ++selectedItem);
-       //Change the current itemstack
-        ItemStack oldStack = gearStack;
-//        switch (selectedItem) {
-//            default:
-//                gearStack = new ItemStack(WOODEN_MOD_SWORD);
-//                ArsUtil.replaceItemStack(player, oldStack, gearStack);
-//                break;
-//            case 1:
-//                gearStack = new ItemStack(WOODEN_MOD_BOW);
-//                ArsUtil.replaceItemStack(player, oldStack, gearStack);
-//                break;
-//            case 2:
-//                gearStack = new ItemStack(WOODEN_MOD_MIRROR);
-//                ArsUtil.replaceItemStack(player, oldStack, gearStack);
-//                break;
-//        }
-        //grab the data from the old itemStack
-        //Make a new itemstack with tag provided by Oldstack and the capability
-//        LOGGER.warn("WHATS GEARSTACKS ID BEFORE? " + (gearStack.serializeNBT().getString("id")));
-        gearStack = ItemStack.of(readTag(oldStack.serializeNBT()));
-//
-//        LOGGER.warn("WHATS CAPABILITY ID? " + (readTag(new CompoundNBT()).getString("id")));
-//        LOGGER.warn("WHATS OLDSTACKS ID? " + (oldStack.serializeNBT().getString("id")));
-//        LOGGER.warn("WHATS GEARSTACKS ID? " + (gearStack.serializeNBT().getString("id")));
+        int prevSelect = getSelectedItem();
+
+        //Have to make the changes now if I wish to keep them
+        selectedItem = (selectedItem == 2 ? 0 : ++selectedItem);
+
+        CompoundNBT mainNBT = gearStack.serializeNBT();
+        CompoundNBT tagNBT = gearStack.getOrCreateTag();
+
+        //Save important current tag shtuff (while also removing the saved stuff from the mainNBT)
+        saveTag(mainNBT, tagNBT, getTag(prevSelect));
+
+        //Now load important current tag shtuff
+        loadTag(mainNBT, tagNBT, getTag(getSelectedItem()));
+
+        //Place tagNBT back into the mainNBT (just in case it wasn't in there already)
+        mainNBT.put("tag", tagNBT);
 
         //Make sure to set the tracked combat item or else it will change
         PlayerDataCap cap = PlayerDataCap.getCap(player);
+
+        //make a new item with the modified mainNBT
+        gearStack = ItemStack.of(mainNBT);
+
         cap.upgradeCombatGear(gearStack);
     }
 
@@ -93,38 +98,34 @@ public class GearCap implements IGearCap {
         return itemTags[gearCycle];
     }
 
-    protected CompoundNBT saveTag(CompoundNBT stackTag){
-        //Only certain data is stored in this not all of it
-        CompoundNBT capTag = getTag(selectedItem);
-
-        if(stackTag.contains("Enchantments")) {
+    protected CompoundNBT saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
+        if(tagNBT.contains("Enchantments")) {
             //Save the stuff
-            capTag.put("Enchantments", stackTag.get("Enchantments"));
+            capNBT.put("Enchantments", tagNBT.get("Enchantments"));
             //Now remove the stuff
-            stackTag.remove("Enchantments");
+            tagNBT.remove("Enchantments");
         }
 
         //id is the actual item
-        if (stackTag.contains("id")){
-            capTag.putString("id", stackTag.getString("id"));
+        if (mainNBT.contains("id")){
+            capNBT.putString("id", mainNBT.getString("id"));
+            LOGGER.debug("WHATS THE OLD ID? " + mainNBT.getString("id"));
         }
 
-        return capTag;
+        return capNBT;
     }
-    protected CompoundNBT readTag(CompoundNBT stackTag){
-        CompoundNBT capTag = itemTags[selectedItem];
-
-        if(capTag.contains("Enchantments")) {
+    protected CompoundNBT loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
+        if(capNBT.contains("Enchantments")) {
             //Read the shtuff
-            stackTag.put("Enchantments", capTag.get("Enchantments"));
+            tagNBT.put("Enchantments", capNBT.get("Enchantments"));
         }
 
         //id is the actual item
-        if (capTag.contains("id")){
-            stackTag.putString("id", capTag.getString("id"));
+        if (capNBT.contains("id")){
+            mainNBT.putString("id", capNBT.getString("id"));
+            LOGGER.debug("WHATS THE NEW ID? " + capNBT.getString("id"));
         }
-
-        return stackTag;
+        return mainNBT;
     }
 
     @Override

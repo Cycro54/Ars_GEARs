@@ -90,7 +90,7 @@ public class PlayerDataCap implements IPlayerCap {
 
         LOGGER.info("I am setting the held combat gear");
         //Set the item stack as the held_combat_gear (this doesn't change the itemstack in the players inv)
-        combat_gear_tracked = combat_gear_copy.copy();
+        combat_gear_tracked = ItemStack.EMPTY;
     }
 
     @Override

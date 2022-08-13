@@ -74,7 +74,7 @@ public class ActivateBowEvent {
 
         CompoundNBT itemTag = gearStack.getOrCreateTag();
 
-        spell.recipe.add(0, MethodProjectile.INSTANCE);
+        //spell.recipe.add(0, MethodProjectile.INSTANCE);
         //This will stop the bow from activating if the player doesn't have enough mana
         boolean flag = new SpellResolver(new SpellContext(spell, player)).canCast(player);
         //This is if the spell has no glyphs after the Touch glyph

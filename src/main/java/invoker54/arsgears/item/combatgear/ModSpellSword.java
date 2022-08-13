@@ -75,7 +75,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
 
         //Grabing spell code shtuff
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        spell.recipe.add(0, MethodTouch.INSTANCE);
+        //spell.recipe.add(0, MethodTouch.INSTANCE);
         SpellResolver resolver = new SpellResolver(new SpellContext(spell, player));
 
         //Get the cap
@@ -102,6 +102,10 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
         //First grab the itemstack
         ItemStack gearStack = playerIn.getItemInHand(handIn);
 
+        if(worldIn.isClientSide || !gearStack.hasTag()){
+            return ActionResult.fail(gearStack);
+        }
+
         //Next, Grab its capability
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
@@ -113,7 +117,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
 
         //get the spell stuff set up
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        spell.recipe.add(0, MethodTouch.INSTANCE);
+        //spell.recipe.add(0, MethodTouch.INSTANCE);
         //Get the spell resolver
         SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
                 withColors(getSpellColor(itemTag, getMode(itemTag))));
@@ -210,7 +214,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
             //This is the spell sweep upgrade
             if (cap.isSweep) spell.setCost(0);
 
-            spell.recipe.add(0, MethodTouch.INSTANCE);
+            //spell.recipe.add(0, MethodTouch.INSTANCE);
             //Get the spell resolver
             SpellResolver resolver = new SpellResolver((new SpellContext(spell, playerIn)).
                     withColors(getSpellColor(itemTag, getMode(itemTag))));

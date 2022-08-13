@@ -170,7 +170,7 @@ public class ModGuiRadialMenu extends Screen {
 
         RenderHelper.turnBackOn();
         RenderSystem.popMatrix();
-        for(int i = 0; i < numberOfSlices; i++){
+        for(int i = 0; i < numberOfSlices; ++i){
             //ItemStack stack = new ItemStack(Blocks.DIRT);
             double startAngle = Math.floor(((float)i/numberOfSlices) * 360f);
             startAngle = Math.toRadians(startAngle);
@@ -183,7 +183,7 @@ public class ModGuiRadialMenu extends Screen {
             //Can't do cast type, cast method isn't applied till after the spell is cast
             String resourceIcon = "";
 //            String castType = "";
-            for(AbstractSpellPart p : SpellBook.getRecipeFromTag(tag, i).recipe){
+            for(AbstractSpellPart p : SpellBook.getRecipeFromTag(tag, i + 1).recipe){
 //                if(p instanceof AbstractCastMethod)
 //                    castType = p.getIcon();
 

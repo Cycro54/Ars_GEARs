@@ -12,6 +12,9 @@ import com.hollingsworth.arsnouveau.client.gui.book.GuiFamiliarScreen;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
+import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
+import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
+import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.spell.validation.CombinedSpellValidator;
 import com.hollingsworth.arsnouveau.common.spell.validation.GlyphMaxTierValidator;
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
@@ -493,8 +496,16 @@ public class ModGuiSpellBook extends BaseBook {
             ModCraftingButton slot = craftingCells.get(i);
             slot.clear();
 
-            if (spell_recipe == null) continue;
-            if (spellIndex >= spell_recipe.size()) continue;
+            boolean flag = false;
+            while (!flag && spellIndex < spell_recipe.size()) {
+                if (spell_recipe.get(spellIndex) instanceof AbstractCastMethod) {
+                    spellIndex++;
+                    continue;
+                }
+
+                flag = true;
+            }
+            if (!flag) break;
 
             //Assign this slot a Spell part using Spell index
             slot.spellTag = spell_recipe.get(spellIndex).getTag();
@@ -539,6 +550,21 @@ public class ModGuiSpellBook extends BaseBook {
                     ids.add(slot.spellTag);
                 }
             }
+
+            //This is where I add the method of casting
+            CombatGearCap gearCap = CombatGearCap.getCap(ClientUtil.mC.player.getMainHandItem());
+            switch (gearCap.getSelectedItem()){
+                default:
+                    ids.add(0, MethodTouch.INSTANCE.getTag());
+                    break;
+                case 1:
+                    ids.add(0, MethodProjectile.INSTANCE.getTag());
+                    break;
+                case 2:
+                    ids.add(0, MethodSelf.INSTANCE.getTag());
+                    break;
+            }
+
             NetworkHandler.INSTANCE.sendToServer(
                     new PacketUpdateSpellbook(ids.toString(), this.selected_cast_slot, this.spell_name.getValue()));
         }

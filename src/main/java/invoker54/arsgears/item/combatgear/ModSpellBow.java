@@ -85,10 +85,14 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
 
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemStack = playerIn.getItemInHand(handIn);
+        ItemStack gearStack = playerIn.getItemInHand(handIn);
+
+        if(worldIn.isClientSide || !gearStack.hasTag()){
+            return ActionResult.fail(gearStack);
+        }
 
         playerIn.startUsingItem(handIn);
-        return ActionResult.consume(itemStack);
+        return ActionResult.consume(gearStack);
         //return super.use(worldIn, playerIn, handIn);
     }
 
@@ -133,7 +137,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
                 //Grab the spell (I added this)
                 Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
                 //Add the needed projectile cast method (if there is a spell)
-                if(!spell.isEmpty()) spell.recipe.add(0, MethodProjectile.INSTANCE);
+                //if(!spell.isEmpty()) spell.recipe.add(0, MethodProjectile.INSTANCE);
                 CompoundNBT itemTag = gearStack.getOrCreateTag();
                 SpellResolver spellResolver = new SpellResolver((new SpellContext(spell, playerentity)).
                         withColors(getSpellColor(gearStack.getOrCreateTag(), getMode(gearStack.getOrCreateTag()))));
