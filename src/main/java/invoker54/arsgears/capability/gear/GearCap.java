@@ -35,11 +35,7 @@ public class GearCap implements IGearCap {
     protected CompoundNBT[] itemTags = new CompoundNBT[]{new CompoundNBT(), new CompoundNBT(), new CompoundNBT()};
 
     public static GearCap getCap(ItemStack item){
-        GearCap cap = item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
-
-        if (!(cap instanceof CombatGearCap)) return null;
-
-        return cap;
+        return item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
     }
 
     public GearCap(){

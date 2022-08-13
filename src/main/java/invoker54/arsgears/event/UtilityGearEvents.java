@@ -43,9 +43,6 @@ public class UtilityGearEvents {
         //If it STILL equals null, that means there is not a utility Gear equipped
         if (itemCap == null || itemCap instanceof CombatGearCap) return;
 
-        LOGGER.debug("Whats the item instance? " + (itemCap.getClass()));
-        LOGGER.debug("Are they combat gear cap? " + (itemCap instanceof CombatGearCap));
-
         if (focusedGear.isEmpty()) return;
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
@@ -59,8 +56,9 @@ public class UtilityGearEvents {
     @SubscribeEvent
     public static void onDrop(ItemTossEvent event){
         ItemStack oldStack = event.getEntityItem().getItem();
+        GearCap cap = GearCap.getCap(oldStack);
 
-        if (GearCap.getCap(oldStack) == null) return;
+        if (cap == null || cap instanceof CombatGearCap) return;
 
         ItemStack newStack = new ItemStack(ItemInit.WOOD_UTILITY_GEAR);
 

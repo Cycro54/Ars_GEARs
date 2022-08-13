@@ -61,13 +61,13 @@ public class ItemInit {
     
     public static final Item WOOD_UTILITY_GEAR = addItem(new UtilGearItem(GearTier.WOOD, getDefault(true)), "utility/wood_utility_gear");
     public static final Item UTILITY_RUNE_1 = 
-            addItem(new UpgradeRune(GearTier.STONE, STONE_PAXEL, STONE_FISHING_ROD, STONE_HOE, false, getDefault(true)), "utility/utility_rune_1");
+            addItem(new UpgradeRune(GearTier.STONE, STONE_PAXEL, STONE_FISHING_ROD, STONE_HOE, true, getDefault(true)), "utility/utility_rune_1");
     public static final Item UTILITY_RUNE_2 = 
-            addItem(new UpgradeRune(GearTier.IRON, IRON_PAXEL, IRON_FISHING_ROD, IRON_HOE, false, getDefault(true)), "utility/utility_rune_2");
+            addItem(new UpgradeRune(GearTier.IRON, IRON_PAXEL, IRON_FISHING_ROD, IRON_HOE, true, getDefault(true)), "utility/utility_rune_2");
     public static final Item UTILITY_RUNE_3 = 
-            addItem(new UpgradeRune(GearTier.DIAMOND, DIAMOND_PAXEL, DIAMOND_FISHING_ROD, DIAMOND_HOE, false, getDefault(true)), "utility/utility_rune_3");
+            addItem(new UpgradeRune(GearTier.DIAMOND, DIAMOND_PAXEL, DIAMOND_FISHING_ROD, DIAMOND_HOE, true, getDefault(true)), "utility/utility_rune_3");
     public static final Item UTILITY_RUNE_4 = 
-            addItem(new UpgradeRune(GearTier.ARCANE, ARCANE_PAXEL, ARCANE_FISHING_ROD, ARCANE_HOE, false, getDefault(true)), "utility/utility_rune_4");
+            addItem(new UpgradeRune(GearTier.ARCANE, ARCANE_PAXEL, ARCANE_FISHING_ROD, ARCANE_HOE, true, getDefault(true)), "utility/utility_rune_4");
     //endregion
 
     //region This is for the Combat Gear (I will keep the combat gear item to use for changing into the other items
