@@ -9,15 +9,15 @@ import net.minecraft.util.LazyValue;
 import java.util.function.Supplier;
 
 public enum GearTier implements IItemTier {
-    WOOD(0,119,1,0.0F,0, null),
+    WOOD(0,119,2,0.0F,0, null),
 
-    STONE(1,263,3,1.0F,0, null),
+    STONE(1,263,4,1.0F,0, null),
 
-    IRON(2,599,5,2.0F,0, null),
+    IRON(2,599,6,2.0F,0, null),
 
-    DIAMOND(3,1059,7,3.0F,0, null),
+    DIAMOND(3,1059,8,3.0F,0, null),
 
-    ARCANE(8,1561,9,4.0F,0, null);
+    ARCANE(8,1561,10,4.0F,0, null);
 
     private final int harvestLevel;
     private final int maxUses;

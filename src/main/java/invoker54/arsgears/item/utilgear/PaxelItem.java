@@ -21,12 +21,17 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
+import static invoker54.arsgears.item.utilgear.UtilGearItem.UTIL_GEAR_CAP;
+
 public class PaxelItem extends ToolItem {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     //AxeItem stuff
     private static final Set<Material> AXE_DIGGABLE_MATERIALS = Sets.newHashSet(Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.VEGETABLE);
@@ -36,10 +41,11 @@ public class PaxelItem extends ToolItem {
 
     //ShovelItem stuff
     private static final Set<Block> SHOVEL_EFFECTIVE_ON = Sets.newHashSet(Blocks.CLAY, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.FARMLAND, Blocks.GRASS_BLOCK, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.RED_SAND, Blocks.SNOW_BLOCK, Blocks.SNOW, Blocks.SOUL_SAND, Blocks.GRASS_PATH, Blocks.WHITE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE_POWDER, Blocks.LIME_CONCRETE_POWDER, Blocks.PINK_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER, Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER, Blocks.BLACK_CONCRETE_POWDER, Blocks.SOUL_SOIL);
+    private static final Set<Block> DIGGABLES = Sets.newHashSet(Blocks.CLAY, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.FARMLAND, Blocks.GRASS_BLOCK, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.RED_SAND, Blocks.SNOW_BLOCK, Blocks.SNOW, Blocks.SOUL_SAND, Blocks.GRASS_PATH, Blocks.WHITE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE_POWDER, Blocks.LIME_CONCRETE_POWDER, Blocks.PINK_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER, Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER, Blocks.BLACK_CONCRETE_POWDER, Blocks.SOUL_SOIL);
 
 
     public PaxelItem(IItemTier tier, float attackDamageIn, float attackSpeedIn, Item.Properties builder) {
-        super(attackDamageIn, attackSpeedIn, tier, combineSets(), builder
+        super(attackDamageIn, attackSpeedIn, tier, DIGGABLES, builder
                 .addToolType(net.minecraftforge.common.ToolType.AXE, tier.getLevel())
                 .addToolType(net.minecraftforge.common.ToolType.PICKAXE, tier.getLevel())
                 .addToolType(net.minecraftforge.common.ToolType.SHOVEL, tier.getLevel()));}
@@ -134,7 +140,7 @@ public class PaxelItem extends ToolItem {
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         Material material = state.getMaterial();
         //Below is PickaxeItem code
-        return material == Material.METAL || material == Material.HEAVY_METAL || material == Material.STONE ? this.speed
+        return (material == Material.METAL || material == Material.HEAVY_METAL || material == Material.STONE) ? this.speed
                 //Below is AxeItem code
                 : (AXE_DIGGABLE_MATERIALS.contains(material) ? this.speed : super.getDestroySpeed(stack, state));
 
@@ -152,5 +158,22 @@ public class PaxelItem extends ToolItem {
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelAutoInv, upgrades));
         if (upgrades.contains(GearUpgrades.paxelRadialMine))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelRadialMine, upgrades));
+    }
+
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        CompoundNBT cNBT = stack.getOrCreateTag();
+
+        CompoundNBT capNBT = GearCap.getCap(stack).serializeNBT();
+
+        cNBT.put(UTIL_GEAR_CAP, capNBT);
+        return cNBT;
+    }
+
+    @Override
+    public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
+        super.readShareTag(stack, nbt);
+        GearCap.getCap(stack).deserializeNBT(nbt.getCompound(UTIL_GEAR_CAP));
     }
 }

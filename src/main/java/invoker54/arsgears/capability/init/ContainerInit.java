@@ -1,4 +1,4 @@
-package invoker54.arsgears.init;
+package invoker54.arsgears.capability.init;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.client.gui.container.GearContainer;

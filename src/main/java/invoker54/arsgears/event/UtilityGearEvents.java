@@ -2,8 +2,10 @@ package invoker54.arsgears.event;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.item.utilgear.PaxelItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
@@ -22,25 +24,29 @@ public class UtilityGearEvents {
         if(event.side == LogicalSide.CLIENT) return;
         //Make sure it's the last phase (only needs to run once)
         //if(event.phase == TickEvent.Phase.END) return;
-
         //I need the player
         PlayerEntity player = event.player;
         //The player capability
         PlayerDataCap cap = PlayerDataCap.getCap(player);
         //the tracked item in the capability
         ItemStack trackedGear = cap.getUtilityGear();
-        //Check hands for utilty gear
-        ItemStack focusedGear = ArsUtil.getHeldGearCap(player, true);
+        //Check hands for utility gear, spell sword, bow, or mirror
+        ItemStack focusedGear = player.getMainHandItem();
+        GearCap itemCap = GearCap.getCap(focusedGear);
+        if (itemCap == null) {
+            focusedGear = player.getOffhandItem();
+            itemCap = GearCap.getCap(focusedGear);
+        }
 
-        //make sure we have a focused gear
+        //If it STILL equals null, that means there is not utility Gear equipped
+        if (itemCap == null) return;
+
         if (focusedGear.isEmpty()) return;
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
         if (trackedGear != focusedGear) {
-            //LOGGER.info("THEY WERENT THE SAME");
             ArsUtil.replaceItemStack(player, focusedGear, cap.getUtilityGear());
         }
-
         //Finally, sync the data between the copy and the trackedGear
         cap.syncUtilityGearData();
     }

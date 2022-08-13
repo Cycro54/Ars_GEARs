@@ -37,8 +37,8 @@ public class CombatGearItem extends Item {
     public static int bowInt = 1;
     public static int mirrorInt = 2;
 
-    public CombatGearItem(Item.Properties builder) {
-        super(builder);
+    public CombatGearItem(GearTier tier, Item.Properties builder) {
+        super(builder.durability(tier.getUses()));
     }
     public static boolean checkInvTick(ItemStack gearStack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (worldIn.isClientSide()) return false;
@@ -68,10 +68,10 @@ public class CombatGearItem extends Item {
         GearTier tier = cap.getTier();
 
         if (tier.ordinal() < GearTier.IRON.ordinal()) return false;
-        if (GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() == 0) return false;
 
         getHoverText(gearStack, toolTip);
-        return true;
+
+        return GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() != 0;
     }
     @OnlyIn(Dist.CLIENT)
     public static List<ITextComponent> getHoverText(final ItemStack gearStack, final List<ITextComponent> tooltip) {

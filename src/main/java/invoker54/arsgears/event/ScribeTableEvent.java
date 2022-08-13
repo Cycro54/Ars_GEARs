@@ -4,8 +4,6 @@ import com.hollingsworth.arsnouveau.setup.BlockRegistry;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.ClientOnly;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
 import net.minecraftforge.api.distmarker.Dist;

@@ -1,7 +1,8 @@
-package invoker54.arsgears.item.utilgear;
+package invoker54.arsgears.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import invoker54.arsgears.item.utilgear.ModFishingRodItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -11,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -47,8 +47,7 @@ public class CustomFishRenderer extends EntityRenderer<FishingBobberEntity> {
             p_225623_4_.popPose();
             int i = playerentity.getMainArm() == HandSide.RIGHT ? 1 : -1;
             ItemStack itemstack = playerentity.getMainHandItem();
-            if (!(itemstack.getItem() instanceof UtilGearItem) &&
-            itemstack.getItem() != Items.FISHING_ROD) {
+            if (!(itemstack.getItem() instanceof ModFishingRodItem)) {
                 i = -i;
             }
 

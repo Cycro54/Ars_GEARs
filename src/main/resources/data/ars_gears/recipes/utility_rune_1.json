@@ -10,7 +10,7 @@
       "item": "minecraft:stone"
     },
     "B": {
-      "item": "ars_gears:stone_paxel"
+      "item": "ars_gears:utility/stone_paxel"
     },
     "C": {
       "item": "minecraft:stone_hoe"
@@ -23,6 +23,6 @@
     }
   },
   "result": {
-    "item": "ars_gears:utility_rune_1"
+    "item": "ars_gears:utility/utility_rune_1"
   }
 }

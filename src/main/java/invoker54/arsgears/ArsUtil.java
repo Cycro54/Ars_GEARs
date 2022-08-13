@@ -11,16 +11,15 @@ import sun.awt.geom.AreaOp;
 
 public class ArsUtil {
     private static final Logger LOGGER = LogManager.getLogger();
-
-//    public static ItemStack getHeldItem(LivingEntity entity, Class<?> CLASS){
-//        if (entity.getMainHandItem().getItem().getClass() == CLASS){
-//            return entity.getMainHandItem();
-//        }
-//        else if(entity.getOffhandItem().getItem().getClass() == CLASS){
-//            return entity.getOffhandItem();
-//        }
-//        else return ItemStack.EMPTY;
-//    }
+    public static ItemStack getHeldItem(LivingEntity entity, Class<?> CLASS){
+        if (entity.getMainHandItem().getItem().getClass() == CLASS){
+            return entity.getMainHandItem();
+        }
+        else if(entity.getOffhandItem().getItem().getClass() == CLASS){
+            return entity.getOffhandItem();
+        }
+        else return ItemStack.EMPTY;
+    }
 
     public static void replaceItemStack(PlayerEntity player, ItemStack oldItemStack, ItemStack newItemStack){
         LOGGER.debug("Old Item: " + oldItemStack.getDisplayName().getString());

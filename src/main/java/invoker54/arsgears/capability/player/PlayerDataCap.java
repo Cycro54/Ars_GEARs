@@ -1,7 +1,6 @@
 package invoker54.arsgears.capability.player;
 
-import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.init.ItemInit;
+import invoker54.arsgears.capability.init.ItemInit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,7 +25,7 @@ public class PlayerDataCap implements IPlayerCap {
     private ItemStack combat_gear_copy;
     private ItemStack combat_gear_tracked;
     public PlayerDataCap(){
-        utility_gear_copy = new ItemStack(ItemInit.WOOD_UTILITY_GEAR);
+        utility_gear_copy = new ItemStack(ItemInit.WOOD_PAXEL);
         utility_gear_tracked = ItemStack.EMPTY;
         
         combat_gear_copy = new ItemStack(ItemInit.WOODEN_MOD_SWORD);
@@ -65,13 +64,11 @@ public class PlayerDataCap implements IPlayerCap {
         if (ItemStack.matches(utility_gear_tracked, utility_gear_copy)) return;
         //if (held_utility_gear.equals(utility_gear_copy, false)) return null;
 
-        //This also makes sure the tracked item isn't null
-        if (utility_gear_tracked.getItem() != utility_gear_copy.getItem()) return;
+        if (utility_gear_tracked.isEmpty()) return;
 
         //Now copy the held utility gear data over to the utility gear copy
         CompoundNBT cNBT = utility_gear_tracked.serializeNBT();
-        utility_gear_copy.deserializeNBT(cNBT);
-
+        utility_gear_copy = ItemStack.of(cNBT);
         LOGGER.info("I AM SYNCING THE UTILITY GEAR DATA RIGHT NOW");
     }
 

@@ -1,11 +1,14 @@
-package invoker54.arsgears.capability.gear.utilgear;
+package invoker54.arsgears.capability.gear;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellBow;
 import invoker54.arsgears.item.combatgear.ModSpellSword;
+import invoker54.arsgears.item.utilgear.PaxelItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
+import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -36,9 +39,17 @@ public class GearCapEvents {
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(false));
         }
 
-
         //For Util gear stuff
         else if (item instanceof UtilGearItem){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+        else if (item instanceof PaxelItem){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+        else if (item instanceof FishingRodItem){
+            event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
+        }
+        else if (item instanceof HoeItem){
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
         }
     }

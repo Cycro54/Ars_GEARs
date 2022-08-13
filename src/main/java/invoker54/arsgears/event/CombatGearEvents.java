@@ -2,14 +2,12 @@ package invoker54.arsgears.event;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.init.ItemInit;
+import invoker54.arsgears.capability.init.ItemInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;

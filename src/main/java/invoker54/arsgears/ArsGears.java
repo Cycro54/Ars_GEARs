@@ -1,14 +1,14 @@
 package invoker54.arsgears;
 
 import invoker54.arsgears.client.keybind.KeybindsInit;
-import invoker54.arsgears.init.CapInit;
-import invoker54.arsgears.init.ContainerInit;
-import invoker54.arsgears.item.utilgear.CustomFishRenderer;
+import invoker54.arsgears.capability.init.CapInit;
+import invoker54.arsgears.capability.init.ContainerInit;
+import invoker54.arsgears.capability.init.EntityInit;
+import invoker54.arsgears.client.render.CustomFishRenderer;
 import invoker54.arsgears.network.NetworkHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.entity.EntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -64,7 +64,7 @@ public class ArsGears {
         KeybindsInit.registerKeys(event);
 
         /** TODO I have to make a seperate fishing class and rod for the Utility gear */
-        RenderingRegistry.registerEntityRenderingHandler(EntityType.FISHING_BOBBER, CustomFishRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityInit.FISHING_BOBBER, CustomFishRenderer::new);
 
         ContainerInit.initialize();
     }

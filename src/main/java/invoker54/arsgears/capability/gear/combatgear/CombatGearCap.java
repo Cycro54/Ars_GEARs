@@ -1,7 +1,7 @@
 package invoker54.arsgears.capability.gear.combatgear;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.utilgear.GearProvider;
+import invoker54.arsgears.capability.gear.GearProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,8 +21,12 @@ public class CombatGearCap extends GearCap implements ICombatGear {
 
     public boolean isSweep = false;
 
-    public static CombatGearCap getCap(ItemStack item){
-       return (CombatGearCap) item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
+    public static CombatGearCap getCap(ItemStack item) {
+        GearCap cap = item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
+
+        if (cap instanceof CombatGearCap) return (CombatGearCap) cap;
+
+        return null;
     }
 
     @Override

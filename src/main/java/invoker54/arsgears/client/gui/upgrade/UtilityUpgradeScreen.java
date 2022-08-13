@@ -2,11 +2,8 @@ package invoker54.arsgears.client.gui.upgrade;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

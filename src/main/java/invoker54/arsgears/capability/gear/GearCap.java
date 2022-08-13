@@ -1,7 +1,6 @@
 package invoker54.arsgears.capability.gear;
 
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.capability.gear.utilgear.GearProvider;
 import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.item.GearTier;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,13 +9,12 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-import static invoker54.arsgears.init.ItemInit.*;
+import static invoker54.arsgears.capability.init.ItemInit.*;
 
 public class GearCap implements IGearCap {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -41,7 +39,6 @@ public class GearCap implements IGearCap {
     }
 
     public GearCap(){
-
         if (this instanceof CombatGearCap) {
             //Starter Sword
             itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
@@ -51,12 +48,12 @@ public class GearCap implements IGearCap {
             itemTags[2].putString("id", WOODEN_MOD_MIRROR.getRegistryName().toString());
         }
         else {
-            //Starter Sword
-            itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
-            //Starter Bow
-            itemTags[1].putString("id", WOODEN_MOD_BOW.getRegistryName().toString());
-            //Starter Mirror
-            itemTags[2].putString("id", WOODEN_MOD_MIRROR.getRegistryName().toString());
+            //Starter Paxel
+            itemTags[0].putString("id", WOOD_PAXEL.getRegistryName().toString());
+            //Starter Fishing Rod
+            itemTags[1].putString("id", WOOD_FISHING_ROD.getRegistryName().toString());
+            //Starter Hoe
+            itemTags[2].putString("id", WOOD_HOE.getRegistryName().toString());
         }
     }
 
