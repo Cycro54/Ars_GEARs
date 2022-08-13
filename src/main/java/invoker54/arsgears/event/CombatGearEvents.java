@@ -4,7 +4,7 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.capability.init.ItemInit;
+import invoker54.arsgears.init.ItemInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
@@ -23,7 +23,7 @@ public class CombatGearEvents {
         //make sure it's server side
         if(event.side == LogicalSide.CLIENT) return;
         //Make sure it's the last phase (only needs to run once)
-        //if(event.phase == TickEvent.Phase.END) return;
+        if(event.phase == TickEvent.Phase.END) return;
         //I need the player
         PlayerEntity player = event.player;
         //The player capability
@@ -45,7 +45,6 @@ public class CombatGearEvents {
 
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
         if (trackedGear != focusedGear) {
-            //LOGGER.info("THEY WERENT THE SAME");
             ArsUtil.replaceItemStack(player, focusedGear, cap.getCombatGear());
         }
         //Finally, sync the data between the copy and the trackedGear

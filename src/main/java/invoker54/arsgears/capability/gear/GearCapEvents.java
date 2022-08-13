@@ -5,6 +5,8 @@ import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellBow;
 import invoker54.arsgears.item.combatgear.ModSpellSword;
+import invoker54.arsgears.item.utilgear.ModFishingRodItem;
+import invoker54.arsgears.item.utilgear.ModHoeItem;
 import invoker54.arsgears.item.utilgear.PaxelItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.FishingRodItem;
@@ -46,10 +48,10 @@ public class GearCapEvents {
         else if (item instanceof PaxelItem){
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
         }
-        else if (item instanceof FishingRodItem){
+        else if (item instanceof ModFishingRodItem){
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
         }
-        else if (item instanceof HoeItem){
+        else if (item instanceof ModHoeItem){
             event.addCapability(GearProvider.CAP_GEAR_LOC, new GearProvider(true));
         }
     }

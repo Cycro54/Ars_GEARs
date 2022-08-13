@@ -5,10 +5,12 @@ import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.utilgear.PaxelItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
@@ -23,7 +25,7 @@ public class UtilityGearEvents {
         //make sure it's server side
         if(event.side == LogicalSide.CLIENT) return;
         //Make sure it's the last phase (only needs to run once)
-        //if(event.phase == TickEvent.Phase.END) return;
+        if(event.phase == TickEvent.Phase.END) return;
         //I need the player
         PlayerEntity player = event.player;
         //The player capability
@@ -33,13 +35,16 @@ public class UtilityGearEvents {
         //Check hands for utility gear, spell sword, bow, or mirror
         ItemStack focusedGear = player.getMainHandItem();
         GearCap itemCap = GearCap.getCap(focusedGear);
-        if (itemCap == null) {
+        if (itemCap == null || itemCap instanceof CombatGearCap) {
             focusedGear = player.getOffhandItem();
             itemCap = GearCap.getCap(focusedGear);
         }
 
-        //If it STILL equals null, that means there is not utility Gear equipped
-        if (itemCap == null) return;
+        //If it STILL equals null, that means there is not a utility Gear equipped
+        if (itemCap == null || itemCap instanceof CombatGearCap) return;
+
+        LOGGER.debug("Whats the item instance? " + (itemCap.getClass()));
+        LOGGER.debug("Are they combat gear cap? " + (itemCap instanceof CombatGearCap));
 
         if (focusedGear.isEmpty()) return;
 
@@ -49,5 +54,18 @@ public class UtilityGearEvents {
         }
         //Finally, sync the data between the copy and the trackedGear
         cap.syncUtilityGearData();
+    }
+
+    @SubscribeEvent
+    public static void onDrop(ItemTossEvent event){
+        ItemStack oldStack = event.getEntityItem().getItem();
+
+        if (GearCap.getCap(oldStack) == null) return;
+
+        ItemStack newStack = new ItemStack(ItemInit.WOOD_UTILITY_GEAR);
+
+        newStack.deserializeNBT(oldStack.serializeNBT());
+
+        event.getEntityItem().setItem(newStack);
     }
 }

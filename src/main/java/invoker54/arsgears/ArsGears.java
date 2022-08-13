@@ -1,9 +1,9 @@
 package invoker54.arsgears;
 
 import invoker54.arsgears.client.keybind.KeybindsInit;
-import invoker54.arsgears.capability.init.CapInit;
-import invoker54.arsgears.capability.init.ContainerInit;
-import invoker54.arsgears.capability.init.EntityInit;
+import invoker54.arsgears.init.CapInit;
+import invoker54.arsgears.init.ContainerInit;
+import invoker54.arsgears.init.EntityInit;
 import invoker54.arsgears.client.render.CustomFishRenderer;
 import invoker54.arsgears.network.NetworkHandler;
 import net.minecraft.block.Block;

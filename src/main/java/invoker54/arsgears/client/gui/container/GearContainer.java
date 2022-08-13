@@ -1,7 +1,7 @@
 package invoker54.arsgears.client.gui.container;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.init.ContainerInit;
+import invoker54.arsgears.init.ContainerInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;

@@ -1,4 +1,4 @@
-package invoker54.arsgears.capability.init;
+package invoker54.arsgears.init;
 
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;

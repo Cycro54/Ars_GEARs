@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-import static invoker54.arsgears.capability.init.ItemInit.*;
+import static invoker54.arsgears.init.ItemInit.*;
 
 public class GearCap implements IGearCap {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -35,7 +35,11 @@ public class GearCap implements IGearCap {
     protected CompoundNBT[] itemTags = new CompoundNBT[]{new CompoundNBT(), new CompoundNBT(), new CompoundNBT()};
 
     public static GearCap getCap(ItemStack item){
-        return item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
+        GearCap cap = item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
+
+        if (!(cap instanceof CombatGearCap)) return null;
+
+        return cap;
     }
 
     public GearCap(){
@@ -73,10 +77,12 @@ public class GearCap implements IGearCap {
         CompoundNBT tagNBT = gearStack.getOrCreateTag();
 
         //Save important current tag shtuff (while also removing the saved stuff from the mainNBT)
+        LOGGER.debug("WHATS mainNBT id BEFORE edit? " + (mainNBT.getString("id")));
         saveTag(mainNBT, tagNBT, getTag(prevSelect));
 
         //Now load important current tag shtuff
         loadTag(mainNBT, tagNBT, getTag(getSelectedItem()));
+        LOGGER.debug("WHATS mainNBT id AFTER edite? " + (mainNBT.getString("id")));
 
         //Place tagNBT back into the mainNBT (just in case it wasn't in there already)
         mainNBT.put("tag", tagNBT);
@@ -87,7 +93,12 @@ public class GearCap implements IGearCap {
         //make a new item with the modified mainNBT
         gearStack = ItemStack.of(mainNBT);
 
-        cap.upgradeCombatGear(gearStack);
+        if (CombatGearCap.getCap(gearStack) == null) {
+            cap.upgradeUtilityGear(gearStack);
+        }
+        else {
+            cap.upgradeCombatGear(gearStack);
+        }
     }
 
     @Override

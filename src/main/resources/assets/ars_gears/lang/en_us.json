@@ -4,14 +4,17 @@
   
   "__comment": "This is for UTILITY item names",
   "item.ars_gears.utility.wood_utility_gear": "Utility GEAR (Wood)",
+  "item.ars_gears.utility.wood_paxel_fake": "(Ingredient) Wooden Paxel",
   "item.ars_gears.utility.wood_paxel": "Wooden Paxel",
   "item.ars_gears.utility.wood_fishing_rod": "Fishing Rod",
   "item.ars_gears.utility.wood_hoe": "Wooden Hoe",
 
+  "item.ars_gears.utility.stone_paxel_fake": "(Ingredient) Stone Paxel",
   "item.ars_gears.utility.stone_paxel": "Stone Paxel",
   "item.ars_gears.utility.stone_fishing_rod": "Fishing Rod",
   "item.ars_gears.utility.stone_hoe": "Stone Hoe",
 
+  "item.ars_gears.utility.iron_paxel_fake": "(Ingredient) Iron Paxel",
   "item.ars_gears.utility.iron_paxel": "Iron Paxel",
   "item.ars_gears.utility.iron_fishing_rod": "Fishing Rod",
   "item.ars_gears.utility.iron_hoe": "Iron Hoe",

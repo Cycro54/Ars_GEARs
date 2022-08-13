@@ -1,4 +1,4 @@
-package invoker54.arsgears.capability.init;
+package invoker54.arsgears.init;
 
 import com.hollingsworth.arsnouveau.ArsNouveau;
 import invoker54.arsgears.ArsGears;
@@ -7,6 +7,8 @@ import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellBow;
 import invoker54.arsgears.item.combatgear.ModSpellSword;
+import invoker54.arsgears.item.utilgear.ModFishingRodItem;
+import invoker54.arsgears.item.utilgear.ModHoeItem;
 import invoker54.arsgears.item.utilgear.PaxelItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
 import invoker54.arsgears.item.GearTier;
@@ -33,12 +35,10 @@ public class ItemInit {
     }
 
     //region This is for the Utility Gear
-    //Fake paxels
+    //Fake paxels (for crafting)
     public static final Item WOOD_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/wood_paxel_fake");
     public static final Item STONE_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/stone_paxel_fake");
     public static final Item IRON_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/iron_paxel_fake");
-    public static final Item DIAMOND_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/diamond_paxel_fake");
-    public static final Item ARCANE_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/arcane_paxel_fake");
     
     //Paxel
     public static final Item WOOD_PAXEL = addItem(new PaxelItem(GearTier.WOOD, 1, -2.8F, getDefault(false)), "utility/wood_paxel");
@@ -47,17 +47,17 @@ public class ItemInit {
     public static final Item DIAMOND_PAXEL = addItem(new PaxelItem(GearTier.DIAMOND, 1, -2.8F, getDefault(false)), "utility/diamond_paxel");
     public static final Item ARCANE_PAXEL = addItem(new PaxelItem(GearTier.ARCANE, 1, -2.8F, getDefault(false)), "utility/arcane_paxel");
     //Fishing Rod
-    public static final Item WOOD_FISHING_ROD = addItem(new FishingRodItem(getDefault(false).durability(GearTier.WOOD.getUses())), "utility/wood_fishing_rod");
-    public static final Item STONE_FISHING_ROD = addItem(new FishingRodItem(getDefault(false).durability(GearTier.STONE.getUses())), "utility/stone_fishing_rod");
-    public static final Item IRON_FISHING_ROD = addItem(new FishingRodItem(getDefault(false).durability(GearTier.IRON.getUses())), "utility/iron_fishing_rod");
-    public static final Item DIAMOND_FISHING_ROD = addItem(new FishingRodItem(getDefault(false).durability(GearTier.DIAMOND.getUses())), "utility/diamond_fishing_rod");
-    public static final Item ARCANE_FISHING_ROD = addItem(new FishingRodItem(getDefault(false).durability(GearTier.ARCANE.getUses())), "utility/arcane_fishing_rod");
+    public static final Item WOOD_FISHING_ROD = addItem(new ModFishingRodItem(getDefault(false).durability(GearTier.WOOD.getUses())), "utility/wood_fishing_rod");
+    public static final Item STONE_FISHING_ROD = addItem(new ModFishingRodItem(getDefault(false).durability(GearTier.STONE.getUses())), "utility/stone_fishing_rod");
+    public static final Item IRON_FISHING_ROD = addItem(new ModFishingRodItem(getDefault(false).durability(GearTier.IRON.getUses())), "utility/iron_fishing_rod");
+    public static final Item DIAMOND_FISHING_ROD = addItem(new ModFishingRodItem(getDefault(false).durability(GearTier.DIAMOND.getUses())), "utility/diamond_fishing_rod");
+    public static final Item ARCANE_FISHING_ROD = addItem(new ModFishingRodItem(getDefault(false).durability(GearTier.ARCANE.getUses())), "utility/arcane_fishing_rod");
     //Hoe
-    public static final Item WOOD_HOE = addItem(new HoeItem(GearTier.WOOD, 0, -3.0F, getDefault(false)), "utility/wood_hoe");
-    public static final Item STONE_HOE = addItem(new HoeItem(GearTier.STONE, -1, -2.0F, getDefault(false)), "utility/stone_hoe");
-    public static final Item IRON_HOE = addItem(new HoeItem(GearTier.IRON, -2, -1.0F, getDefault(false)), "utility/iron_hoe");
-    public static final Item DIAMOND_HOE = addItem(new HoeItem(GearTier.DIAMOND, -3, 0.0F, getDefault(false)), "utility/diamond_hoe");
-    public static final Item ARCANE_HOE = addItem(new HoeItem(GearTier.ARCANE, -4, 0.0F, getDefault(false)), "utility/arcane_hoe");
+    public static final Item WOOD_HOE = addItem(new ModHoeItem(GearTier.WOOD, 0, -3.0F, getDefault(false)), "utility/wood_hoe");
+    public static final Item STONE_HOE = addItem(new ModHoeItem(GearTier.STONE, -1, -2.0F, getDefault(false)), "utility/stone_hoe");
+    public static final Item IRON_HOE = addItem(new ModHoeItem(GearTier.IRON, -2, -1.0F, getDefault(false)), "utility/iron_hoe");
+    public static final Item DIAMOND_HOE = addItem(new ModHoeItem(GearTier.DIAMOND, -3, 0.0F, getDefault(false)), "utility/diamond_hoe");
+    public static final Item ARCANE_HOE = addItem(new ModHoeItem(GearTier.ARCANE, -4, 0.0F, getDefault(false)), "utility/arcane_hoe");
     
     public static final Item WOOD_UTILITY_GEAR = addItem(new UtilGearItem(GearTier.WOOD, getDefault(true)), "utility/wood_utility_gear");
     public static final Item UTILITY_RUNE_1 = 

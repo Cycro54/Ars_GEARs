@@ -1,6 +1,6 @@
 package invoker54.arsgears.capability.player;
 
-import invoker54.arsgears.capability.init.ItemInit;
+import invoker54.arsgears.init.ItemInit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
