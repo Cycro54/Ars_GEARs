@@ -22,7 +22,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.*;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
@@ -65,7 +64,7 @@ public class ModGuiSpellBook extends BaseBook {
     public boolean sneakHeld = false;
     public Spell currSpell;
 
-    private int selected_cast_slot;
+    public int selected_cast_slot;
     public TextFieldWidget spell_name;
     public NoShadowTextField searchBar;
     public CompoundNBT spell_book_tag;
@@ -546,7 +545,7 @@ public class ModGuiSpellBook extends BaseBook {
 
     public void onCreateClick(Button button) {
         validate();
-        float cooldown = CombatGearItem.getCooldown(minecraft.player, gearStack.getOrCreateTag(), page + 1, true);
+        float cooldown = CombatGearItem.getCooldown(minecraft.player, gearStack.getOrCreateTag(), selected_cast_slot, true);
         if (validationErrors.isEmpty() && cooldown <= 0) {
             List<String> ids = new ArrayList<>();
             for (ModCraftingButton slot : craftingCells) {
@@ -609,8 +608,7 @@ public class ModGuiSpellBook extends BaseBook {
         drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/gui/create_paper.png"), 216, 179, 0, 0, 56, 15,56,15, stack);
 
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = PlayerDataCap.getCap(player).getCombatGear();
-        float coolDown = CombatGearItem.getCooldown(player, gearStack.getOrCreateTag(), page + 1, true);
+        float coolDown = CombatGearItem.getCooldown(player, gearStack.getOrCreateTag(), selected_cast_slot, true);
 
         if (validationErrors.isEmpty() && coolDown <= 0) {
             minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.create"), 233, 183, -8355712);

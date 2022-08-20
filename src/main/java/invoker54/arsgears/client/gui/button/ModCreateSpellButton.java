@@ -31,7 +31,7 @@ public class ModCreateSpellButton extends ModGuiImageButton {
         if (visible) {
             PlayerEntity player = ClientUtil.mC.player;
             ItemStack gearStack = PlayerDataCap.getCap(player).getCombatGear();
-            float coolDown = CombatGearItem.getCooldown(player, gearStack.getOrCreateTag(), parent.page + 1, true);
+            float coolDown = CombatGearItem.getCooldown(player, gearStack.getOrCreateTag(), parent.selected_cast_slot, true);
             if (parent.validationErrors.isEmpty() && coolDown <= 0) {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             } else {
