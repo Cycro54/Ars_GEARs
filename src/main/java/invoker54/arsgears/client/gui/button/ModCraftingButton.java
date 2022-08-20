@@ -11,11 +11,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.event.enchanting.EnchantmentLevelSetEvent;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import javax.xml.soap.Text;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +23,7 @@ public class ModCraftingButton extends ModGuiImageButton {
     public String spellTag;
     public String resourceIcon;
     public int stack = 0;
+    public boolean isAugment = false;
     public List<SpellValidationError> validationErrors;
 
     public ModCraftingButton(ModGuiSpellBook parent, int x, int y, int slotNum, Button.IPressable onPress) {
@@ -40,6 +39,7 @@ public class ModCraftingButton extends ModGuiImageButton {
         this.spellTag = "";
         this.resourceIcon = "";
         this.stack = 0;
+        this.isAugment = false;
         this.validationErrors.clear();
     }
 
@@ -56,10 +56,14 @@ public class ModCraftingButton extends ModGuiImageButton {
                 if (flag) {
                     this.playDownSound(Minecraft.getInstance().getSoundManager());
 
-                    if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) this.onClick(xMouse, yMouse);
-                    else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                        if (parent.sneakHeld) stack = parent.maxAugmentStack;
-                        else stack += (stack == parent.maxAugmentStack) ? 0 : 1;
+                    if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) this.onClick(xMouse, yMouse);
+                    else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                        if (isAugment) {
+                            if (parent.sneakHeld) stack = parent.maxAugmentStack;
+                            else {
+                                stack += (stack == parent.maxAugmentStack) ? 0 : 1;
+                            }
+                        }
                         parent.validate();
                     }
                     return true;

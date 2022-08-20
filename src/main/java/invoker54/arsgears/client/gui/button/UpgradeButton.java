@@ -4,8 +4,13 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.client.ClientUtil;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +22,17 @@ public class UpgradeButton extends Button{
     ResourceLocation image;
     public Irequirement requirement;
     ITextComponent optionalMsg;
+    TranslationTextComponent description;
+    int descColor = new java.awt.Color(143, 90, 232,255).getRGB();
     ClientUtil.Bounds bounds;
     int price;
     public boolean purchased = false;
 
-    public UpgradeButton(int x, int y, int width, int height, String name, ResourceLocation image,
+    public UpgradeButton(int x, int y, int width, int height, String name, TranslationTextComponent desc, ResourceLocation image,
                          ClientUtil.Bounds bounds, int price, Irequirement requirement, IPressable onPress) {
 
         super(x, y, width, height, ITextComponent.nullToEmpty(name), onPress);
+        this.description = desc;
         this.image = image;
         this.requirement = requirement;
         this.visible = true;
@@ -74,6 +82,10 @@ public class UpgradeButton extends Button{
         //Players XP
         textList.add(ITextComponent.nullToEmpty("Your XP:\247a §l" + mC.player.totalExperience));
         //Now comes the space
+        textList.add(ITextComponent.nullToEmpty("--------------"));
+        //Description
+        textList.add(description.withStyle(Style.EMPTY.withColor(Color.fromRgb(descColor))));
+        //Another space
         textList.add(ITextComponent.nullToEmpty("--------------"));
         //Finally the last tid bit of info
         textList.add(optionalMsg);

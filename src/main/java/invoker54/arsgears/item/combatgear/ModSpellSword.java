@@ -1,31 +1,36 @@
 package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.item.ICasterTool;
+import com.hollingsworth.arsnouveau.api.mana.IMana;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.api.util.MathUtil;
+import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive;
-import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
+import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.item.modSwordRenderer;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -37,8 +42,7 @@ import java.util.List;
 
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
-import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
-import static invoker54.arsgears.item.combatgear.CombatGearItem.mirrorInt;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
 public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -91,9 +95,6 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
         if ((!flag1 || !flag2 || !flag3) && cap.getActivated()){
             cap.setActivated(false);
         }
-
-        //This is for the sweep
-        cap.isSweep = false;
     }
 
     //When the player right clicks with the item (I can also use this to check if they click on an entity)
@@ -161,7 +162,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
                 //This damages the gear stack
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
                 //This sets the cooldown for the current spell
-                float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
+                float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
                 CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
                 return ActionResult.success(gearStack);
             }
@@ -176,7 +177,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
                 //This damages the gear stack
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
                 //This sets the cooldown for the current spell
-                float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
+                float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
                 CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
                 return ActionResult.success(gearStack);
             }
@@ -202,17 +203,16 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
     public boolean hurtEnemy(ItemStack gearStack, LivingEntity target, LivingEntity playerIn) {
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
         CompoundNBT itemTag = gearStack.getOrCreateTag();
-
+        
         //This is the spell sweep upgrade
-        boolean hasSpellSweep = GearUpgrades.getUpgrade(cap.getSelectedItem(), cap, GearUpgrades.swordSpellSweep) != 0;
+        boolean hasSpellSweep = GearUpgrades.getUpgrade(swordINT, cap, GearUpgrades.swordSpellSweep) > 0;
 
         //Only if the combat gear is set to active will the spell be cast.
-        if (cap.getActivated() || (hasSpellSweep && cap.isSweep)) {
+        if (cap.getActivated()) {
             cap.setActivated(false);
             Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
 
             //This is the spell sweep upgrade
-            if (cap.isSweep) spell.setCost(0);
 
             //spell.recipe.add(0, MethodTouch.INSTANCE);
             //Get the spell resolver
@@ -222,10 +222,27 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
             EntityRayTraceResult entityRes = new EntityRayTraceResult(target);
             resolver.onCastOnEntity(gearStack, playerIn, entityRes.getEntity(), Hand.MAIN_HAND);
             //This sets the cooldown for the current spell
-            float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
+            float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
             CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
+
+            if (hasSpellSweep) {
+                for (LivingEntity livingentity : playerIn.level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
+                    if (livingentity == playerIn) continue;
+                    if (livingentity == target) continue;
+                    if (playerIn.isAlliedTo(livingentity)) continue;
+                    if (livingentity instanceof ArmorStandEntity && ((ArmorStandEntity) livingentity).isMarker()) continue;
+                    if (playerIn.distanceToSqr(livingentity) > 9.0D) continue;
+
+                    resolver.spell.setCost(0);
+                    resolver.onCastOnEntity(gearStack, playerIn, livingentity, Hand.MAIN_HAND);
+                }
+            }
         }
-        cap.isSweep = true;
+
+        //This is where I will convert health to mana
+
+
+
         return super.hurtEnemy(gearStack, target, playerIn);
     }
 
@@ -269,5 +286,37 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
     @Override
     public AnimationFactory getFactory() {
         return factory;
+    }
+
+    @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
+    public static class SwordAbilities{
+
+        @SubscribeEvent
+        public static void onAttack(LivingDamageEvent event){
+            if (event.isCanceled()) return;
+
+            //Who damaged it.
+            Entity dmgSource = event.getSource().getEntity();
+            if (!(dmgSource instanceof PlayerEntity)) return;
+
+            //Gear Capability
+            ItemStack gearStack = ArsUtil.getHeldGearCap((LivingEntity) dmgSource, false, false);
+            if (gearStack.isEmpty()) return;
+            CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
+
+            //Upgrade
+            int upgrade = GearUpgrades.getUpgrade(swordINT, gearCap, GearUpgrades.swordManaSteal);
+            if (upgrade == 0) return;
+
+            //Get the damage
+            float damage = event.getAmount();
+            //Multiply it by the upgrade level
+            float manaStolen = (int) (damage * upgrade);
+
+            //Then add it to the players mana pool
+            IMana mana = ManaCapability.getMana((LivingEntity) dmgSource).resolve().get();
+            mana.addMana(manaStolen);
+        }
+
     }
 }

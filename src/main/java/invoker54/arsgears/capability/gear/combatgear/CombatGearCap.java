@@ -13,13 +13,14 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COOLDOWN;
+
 public class CombatGearCap extends GearCap implements ICombatGear {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final String ACTIVATED = "ACTIVATED";
     private boolean activated = false;
-
-    public boolean isSweep = false;
 
     public static CombatGearCap getCap(ItemStack item) {
         GearCap cap = item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
@@ -27,6 +28,12 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         if (cap instanceof CombatGearCap) return (CombatGearCap) cap;
 
         return null;
+    }
+
+    public CombatGearCap(){}
+
+    public CombatGearCap(ItemStack gearStack) {
+        super(gearStack);
     }
 
     @Override
@@ -61,6 +68,20 @@ public class CombatGearCap extends GearCap implements ICombatGear {
                 tagNBT.remove(((a)+name));
             }
         }
+        //next up is cooldowns
+        if (tagNBT.contains(COMBAT_GEAR + COOLDOWN)) {
+            CompoundNBT coolDownNBT = tagNBT.getCompound(COMBAT_GEAR + COOLDOWN);
+            CompoundNBT capCoolDowns = new CompoundNBT();
+            if (capNBT.contains(COMBAT_GEAR + COOLDOWN)) capCoolDowns = capNBT.getCompound(COMBAT_GEAR + COOLDOWN);
+            for (int a = 1; a < 3 + 1; a++) {
+                if (coolDownNBT.contains("" + a)) {
+                    //Cooldowns
+                    capCoolDowns.putFloat("" + a, coolDownNBT.getFloat("" + a));
+                    coolDownNBT.putFloat("" + a, 0);
+                }
+            }
+            capNBT.put(COMBAT_GEAR + COOLDOWN, capCoolDowns);
+        }
 
         LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
 
@@ -82,6 +103,22 @@ public class CombatGearCap extends GearCap implements ICombatGear {
                 //Spell name
                 tagNBT.putString(((a)+name), capNBT.getString(((a)+name)));
             }
+        }
+
+        //next up is cooldowns
+        if (capNBT.contains(COMBAT_GEAR + COOLDOWN)) {
+            CompoundNBT capCoolDowns = capNBT.getCompound(COMBAT_GEAR + COOLDOWN);
+            CompoundNBT tagCooldowns = new CompoundNBT();
+            for (int a = 1; a < 3 + 1; a++) {
+                if (capCoolDowns.contains("" + a)) {
+                    //Cooldowns
+                    tagCooldowns.putFloat("" + a, capCoolDowns.getFloat("" + a));
+                }
+                else {
+                    tagCooldowns.putFloat("" + a, 0);
+                }
+            }
+            tagNBT.put(COMBAT_GEAR + COOLDOWN, tagCooldowns);
         }
 
         return super.loadTag(mainNBT, tagNBT, capNBT);

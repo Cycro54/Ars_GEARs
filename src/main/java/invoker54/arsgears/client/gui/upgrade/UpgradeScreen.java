@@ -69,7 +69,7 @@ public class UpgradeScreen extends Screen {
     //int colorDeny = new Color(101, 7, 7,255).getRGB();
 
     //This is the base xp expected (xp level 33 which is 1758)
-    int baseXP = 1758;
+    int baseXP = 1000;
     //These are the max amount of slots for each upgrade
     int maxLvl = 4;
 
@@ -229,7 +229,6 @@ public class UpgradeScreen extends Screen {
     }
     public void scroll(double xDistance, double yDistance) {
         this.scrollX = (float) MathHelper.clamp(this.scrollX + xDistance, -imageWidth/2f, imageWidth/2f);
-        LOGGER.debug("SCROLL X IS AT " + scrollX);
 
         this.scrollY = (float) MathHelper.clamp(this.scrollY + yDistance, -imageHeight/2f, imageHeight/2f);
 
@@ -269,7 +268,7 @@ public class UpgradeScreen extends Screen {
         //Then multiply it with the baseXP
         price = price * baseXP;
         //This increases a tiny bit if the upgrade is rare
-        price = (price * (1 + ((maxLvl - totalLevels) * 0.1f)));
+        price = (price * (1 + ((maxLvl - totalLevels) * 0.2f)));
         //Now make sure to grab the previous buttons and subtract their price from this price
         for (UpgradeButton button : categories.get(category)){
             if (button == null) continue;
@@ -311,8 +310,9 @@ public class UpgradeScreen extends Screen {
         UpdatePositions();
     }
 
-    public void createCustomUpgrade(int gearCycle, String upgradeName, int[] upgradeLvl, ResourceLocation image){
+    public void createCustomUpgrade(int gearCycle, String upgradeName, String descName, int[] upgradeLvl, ResourceLocation image){
         String catName = GearUpgrades.getName(upgradeName).getString();
+        TranslationTextComponent desc = new TranslationTextComponent("ars_gears.upgrades." + descName + ".desc");
 
         if (categories.containsKey(catName)){
             LOGGER.error("DUPLICATE NAME FOUND " + catName);
@@ -369,12 +369,12 @@ public class UpgradeScreen extends Screen {
                 //Make sure they bought the previous upgrade
                 else if (finalPrevButton != null && finalPrevButton.purchased == false) {
                     button.active = false;
-                    return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
+                    return ITextComponent.nullToEmpty("\247cYou must purchase the previous upgrade");
                 }
                 //Make sure the gear capability is at this tier
                 else if (playerTier < upgradeTier) {
                     button.active = false;
-                    return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
+                    return ITextComponent.nullToEmpty("\247cYou must upgrade to tier " + (GearTier.values()[upgradeTier]));
                 }
                 //Make sure they can afford it
                 else if (button.getPrice() > player.totalExperience) {
@@ -405,12 +405,13 @@ public class UpgradeScreen extends Screen {
                 button.active = false;
             };
 
-            prevButton = createUpgrade(catName, image, price, iRequire, iPress);
+            prevButton = createUpgrade(catName, image, price, desc, iRequire, iPress);
         }
     }
 
-    public void createEnchantUpgrade(int cycleInt, Enchantment enchantment, int[] upgradeLvl, ResourceLocation image){
+    public void createEnchantUpgrade(int cycleInt, Enchantment enchantment, String descName, int[] upgradeLvl, ResourceLocation image){
         String catName = new TranslationTextComponent(enchantment.getDescriptionId()).getString();
+        TranslationTextComponent desc = new TranslationTextComponent("ars_gears.upgrades." + descName + ".desc");
 
         if (categories.containsKey(catName)){
             LOGGER.error("DUPLICATE NAME FOUND " + catName);
@@ -468,12 +469,12 @@ public class UpgradeScreen extends Screen {
                 //Make sure they bought the previous upgrade
                 else if (finalPrevButton != null && finalPrevButton.purchased == false) {
                     button.active = false;
-                    return ITextComponent.nullToEmpty("\247cYou must purchase\nthe previous upgrade");
+                    return ITextComponent.nullToEmpty("\247cYou must purchase the previous upgrade");
                 }
                 //Make sure the gear capability is at this tier
                 else if (playerTier < upgradeTier) {
                     button.active = false;
-                    return ITextComponent.nullToEmpty("\247cYou must upgrade\nto tier " + (GearTier.values()[upgradeTier]));
+                    return ITextComponent.nullToEmpty("\247cYou must upgrade to tier " + (GearTier.values()[upgradeTier]));
                 }
                 //Make sure they can afford it
                 else if (button.getPrice() > player.totalExperience) {
@@ -510,7 +511,7 @@ public class UpgradeScreen extends Screen {
             };
             
             //Grab the button just made to use in the next iteration
-            prevButton = createUpgrade(catName, image, price, iRequire, iPress);
+            prevButton = createUpgrade(catName, image, price, desc, iRequire, iPress);
         }
     }
     
@@ -519,7 +520,7 @@ public class UpgradeScreen extends Screen {
 
         return GearCap.getCap(gearStack);
     }
-    public UpgradeButton createUpgrade(String category, ResourceLocation image, int price, UpgradeButton.Irequirement require, Button.IPressable purchaseFunc){
+    public UpgradeButton createUpgrade(String category, ResourceLocation image, int price, TranslationTextComponent desc, UpgradeButton.Irequirement require, Button.IPressable purchaseFunc){
         if (!categories.containsKey(category)) categories.put(category, new ArrayList<>());
 
         int index = 0;
@@ -528,7 +529,7 @@ public class UpgradeScreen extends Screen {
         }
 
        UpgradeButton button = new UpgradeButton(0,0, buttonSize, buttonSize,
-               category + " " + (index + 1), image, this.bounds, price,require, purchaseFunc);
+               category + " " + (index + 1), desc, image, this.bounds, price, require, purchaseFunc);
 
        addButton(button);
 

@@ -107,7 +107,7 @@ public class ModGuiColorScreen extends BaseBook {
 
     public void onSaveClick(Button button){
         NetworkHandler.INSTANCE.sendToServer(new PacketUpdateSpellColors(slot, red, green, blue));
-        ItemStack gearStack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false, false);
         if(!gearStack.isEmpty()){
             CompoundNBT tag = gearStack.hasTag() ? gearStack.getTag() : new CompoundNBT();
             SpellBook.setSpellColor(tag, new ParticleColor.IntWrapper((int) red * 255, (int) green * 255, (int) blue * 255), slot);

@@ -56,8 +56,8 @@ public class ActivateBowEvent {
         if (!ClientUtil.mC.options.keyUse.isDown()) return;
 
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false);
-        CombatGearCap cap = CombatGearCap.getCap(ArsUtil.getHeldGearCap(player, false));
+        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false, false);
+        CombatGearCap cap = CombatGearCap.getCap(ArsUtil.getHeldGearCap(player, false, false));
 
         if (cap == null) return;
 
@@ -76,7 +76,7 @@ public class ActivateBowEvent {
 
         //spell.recipe.add(0, MethodProjectile.INSTANCE);
         //This will stop the bow from activating if the player doesn't have enough mana
-        boolean flag = new SpellResolver(new SpellContext(spell, player)).canCast(player);
+        boolean flag = (new SpellResolver(new SpellContext(spell, player)).canCast(player) || player.abilities.instabuild);
         //This is if the spell has no glyphs after the Touch glyph
         boolean flag2 = spell.recipe.size() != 1;
         if (!flag2) PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));

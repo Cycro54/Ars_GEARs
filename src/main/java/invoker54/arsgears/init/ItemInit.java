@@ -2,17 +2,15 @@ package invoker54.arsgears.init;
 
 import com.hollingsworth.arsnouveau.ArsNouveau;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.UpgradeRune;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellBow;
+import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellSword;
-import invoker54.arsgears.item.utilgear.ModFishingRodItem;
-import invoker54.arsgears.item.utilgear.ModHoeItem;
-import invoker54.arsgears.item.utilgear.PaxelItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
-import invoker54.arsgears.item.GearTier;
-import net.minecraft.item.*;
+import invoker54.arsgears.item.utilgear.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,7 +37,16 @@ public class ItemInit {
     public static final Item WOOD_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/wood_paxel_fake");
     public static final Item STONE_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/stone_paxel_fake");
     public static final Item IRON_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/iron_paxel_fake");
-    
+
+    //Bait types
+    public static final Item BAIT_PORK = addItem(new BaitItem(getDefault(true)), "bait_pork");
+    public static final Item BAIT_BEEF = addItem(new BaitItem(getDefault(true)), "bait_beef");
+    public static final Item BAIT_CHICKEN = addItem(new BaitItem(getDefault(true)), "bait_chicken");
+    public static final Item BAIT_MUTTON = addItem(new BaitItem(getDefault(true)), "bait_mutton");
+    public static final Item BAIT_RABBIT = addItem(new BaitItem(getDefault(true)), "bait_rabbit");
+    public static final Item BAIT_ROTTEN_FLESH = addItem(new BaitItem(getDefault(true)), "bait_rotten_flesh");
+    public static final Item STARBUNCLE_BAIT = addItem(new BaitItem(getDefault(true)), "starbuncle_bait");
+
     //Paxel
     public static final Item WOOD_PAXEL = addItem(new PaxelItem(GearTier.WOOD, 1, -2.8F, getDefault(false)), "utility/wood_paxel");
     public static final Item STONE_PAXEL = addItem(new PaxelItem(GearTier.STONE, 1, -2.8F, getDefault(false)), "utility/stone_paxel");

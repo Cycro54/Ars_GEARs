@@ -80,8 +80,17 @@ public class UpgradeRune extends Item {
             tag2.putString("id", ForgeRegistries.ITEMS.getKey(gear2).toString());
             //Make sure to rune the upgrade method, or else it may revert back to an old itemstack
             CompoundNBT currentItemTag = gearStack.serializeNBT();
-            currentItemTag.merge(gearCap.getTag(gearCap.getSelectedItem()));
-
+            switch (gearCap.getSelectedItem()){
+                default:
+                    currentItemTag.merge(tag0);
+                    break;
+                case 1:
+                    currentItemTag.merge(tag1);
+                    break;
+                case 2:
+                    currentItemTag.merge(tag2);
+                    break;
+            }
 
             //UTILITY
             if (forUtility){

@@ -2,9 +2,9 @@ package invoker54.arsgears.network.message.edited;
 
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.network.Networking;
-import com.hollingsworth.arsnouveau.common.network.PacketUpdateBookGUI;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
+import invoker54.arsgears.network.NetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -39,16 +39,14 @@ public class PacketUpdateSpellbook {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ((NetworkEvent.Context)ctx.get()).enqueueWork(() -> {
             if (((NetworkEvent.Context)ctx.get()).getSender() != null) {
-                ItemStack stack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false);
+                ItemStack stack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false, false);
                 if (stack != null && this.spellRecipe != null) {
                     CompoundNBT tag = stack.getOrCreateTag();
                     SpellBook.setRecipe(tag, this.spellRecipe, this.cast_slot);
                     SpellBook.setSpellName(tag, this.spellName, this.cast_slot);
                     SpellBook.setMode(tag, this.cast_slot);
                     stack.setTag(tag);
-                    Networking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> {
-                        return ((NetworkEvent.Context)ctx.get()).getSender();
-                    }), new PacketUpdateBookGUI(tag));
+                    NetworkHandler.sendToPlayer(ctx.get().getSender(), new PacketUpdateBookGUI(tag));
                 }
             }
 

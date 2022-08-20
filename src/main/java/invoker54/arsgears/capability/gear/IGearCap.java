@@ -5,12 +5,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.Map;
-
 public interface IGearCap extends INBTSerializable<CompoundNBT> {
     int getSelectedItem();
 
     void cycleItem(ItemStack gearStack, PlayerEntity player);
 
-    CompoundNBT getTag(int itemToUpdate);
+    CompoundNBT getTag(int gearCycle);
 }

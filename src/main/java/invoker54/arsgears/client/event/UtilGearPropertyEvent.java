@@ -24,11 +24,9 @@ public class UtilGearPropertyEvent {
     public static void propertyOverrideRegistry(FMLClientSetupEvent event) {
         //This changes the selected item model
         IItemPropertyGetter UtilityChanger = (itemStack, clientWorld, entity) -> {
-            LOGGER.debug("ENTITY NULL? " + (entity == null));
             if (entity == null) {
                 return 0.0F;
             } else {
-                LOGGER.debug("IS WE CARRYING MODFISHROD? " + !(ArsUtil.getHeldItem(entity, ModFishingRodItem.class).isEmpty()));
                 boolean flag = !(ArsUtil.getHeldItem(entity, ModFishingRodItem.class).isEmpty());
 
                 return flag && entity instanceof PlayerEntity && ((PlayerEntity)entity).fishing != null ? 1.0F : 0.0F;

@@ -23,6 +23,7 @@ public class GearCap implements IGearCap {
     private final String TIER = "TIER";
 
     private GearTier gearTier = GearTier.WOOD;
+    private ItemStack gearStack;
 
     public GearTier getTier(){
         return gearTier;
@@ -38,7 +39,10 @@ public class GearCap implements IGearCap {
         return item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
     }
 
-    public GearCap(){
+    public GearCap(){}
+
+    public GearCap(ItemStack gearStack){
+        this.gearStack = gearStack;
         if (this instanceof CombatGearCap) {
             //Starter Sword
             itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
@@ -74,10 +78,10 @@ public class GearCap implements IGearCap {
 
         //Save important current tag shtuff (while also removing the saved stuff from the mainNBT)
         LOGGER.debug("WHATS mainNBT id BEFORE edit? " + (mainNBT.getString("id")));
-        saveTag(mainNBT, tagNBT, getTag(prevSelect));
+        saveTag(mainNBT, tagNBT, itemTags[prevSelect]);
 
         //Now load important current tag shtuff
-        loadTag(mainNBT, tagNBT, getTag(getSelectedItem()));
+        loadTag(mainNBT, tagNBT, itemTags[selectedItem]);
         LOGGER.debug("WHATS mainNBT id AFTER edite? " + (mainNBT.getString("id")));
 
         //Place tagNBT back into the mainNBT (just in case it wasn't in there already)
@@ -99,7 +103,7 @@ public class GearCap implements IGearCap {
 
     @Override
     public CompoundNBT getTag(int gearCycle){
-        return itemTags[gearCycle];
+        return (getSelectedItem() == gearCycle) ? this.gearStack.getOrCreateTag() : itemTags[gearCycle];
     }
 
     protected CompoundNBT saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){

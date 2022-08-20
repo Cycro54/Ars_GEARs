@@ -8,13 +8,13 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IntReferenceHolder;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 public class GearContainer extends Container {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -29,16 +29,16 @@ public class GearContainer extends Container {
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
 
     //region GEAR inventory variables
-    private static final int GEAR_INVENTORY_ROW_COUNT = 1;
-    private static final int GEAR_INVENTORY_COLUMN_COUNT = 1;
+    private static final int GEAR_INVENTORY_ROW_COUNT = 2;
+    private static final int GEAR_INVENTORY_COLUMN_COUNT = 3;
     private static final int GEAR_INVENTORY_TOTAL_COUNT = GEAR_INVENTORY_COLUMN_COUNT * GEAR_INVENTORY_ROW_COUNT;
     //endregion
 
 
-    private IntReferenceHolder foodData;
-    private IntReferenceHolder countData;
+//    private IntReferenceHolder foodData;
+//    private IntReferenceHolder countData;
     public int repairValue;
-    public int totalNeededCount;
+    public int[] foodToEat = new int[6];
     //endregion
 
     public static GearContainer createContainer(int containerID, PlayerInventory playerInventory, net.minecraft.network.PacketBuffer extraData) {
@@ -92,36 +92,45 @@ public class GearContainer extends Container {
         //endregion
 
         //region Next the Gear Inventory
-        final int GEAR_INVENTORY_XPOS = 80;
-        final int GEAR_INVENTORY_YPOS = 25;
-        addSlot(new Slot(tempInv, 0,  GEAR_INVENTORY_XPOS, GEAR_INVENTORY_YPOS));
+        final int GEAR_INVENTORY_XPOS = 62;
+        final int GEAR_INVENTORY_YPOS = 19;
+
+        // Add the rest of the player's inventory to the gui
+        for (int y = 0; y < GEAR_INVENTORY_ROW_COUNT; y++) {
+            for (int x = 0; x < GEAR_INVENTORY_COLUMN_COUNT; x++) {
+                int slotNumber = y * GEAR_INVENTORY_COLUMN_COUNT + x;
+                int xpos = GEAR_INVENTORY_XPOS + x * SLOT_X_SPACING;
+                int ypos = GEAR_INVENTORY_YPOS + y * SLOT_Y_SPACING;
+                addSlot(new Slot(tempInv, slotNumber,  xpos, ypos));
+            }
+        }
         //endregion
 
-        //This is the totalNeededfood
-        foodData = addDataSlot(new IntReferenceHolder() {
-            @Override
-            public int get() {
-                return repairValue;
-            }
-
-            @Override
-            public void set(int value) {
-                repairValue = value;
-            }
-        });
-
-        //This is the totalNeededCount
-        countData = addDataSlot(new IntReferenceHolder() {
-            @Override
-            public int get() {
-                return totalNeededCount;
-            }
-
-            @Override
-            public void set(int value) {
-                totalNeededCount = value;
-            }
-        });
+//        //This is the totalNeededfood
+//        foodData = addDataSlot(new IntReferenceHolder() {
+//            @Override
+//            public int get() {
+//                return repairValue;
+//            }
+//
+//            @Override
+//            public void set(int value) {
+//                repairValue = value;
+//            }
+//        });
+//
+//        //This is the totalNeededCount
+//        countData = addDataSlot(new IntReferenceHolder() {
+//            @Override
+//            public int get() {
+//                return totalNeededCount;
+//            }
+//
+//            @Override
+//            public void set(int value) {
+//                totalNeededCount = value;
+//            }
+//        });
     }
 
     // Vanilla calls this method every tick to make sure the player is still able to access the inventory, and if not closes the gui
@@ -166,34 +175,65 @@ public class GearContainer extends Container {
         this.clearContainer(player, player.level, tempInv);
     }
 
-    public void calculateNeededFood(PlayerEntity player){
-        LOGGER.debug("HEY IMMA RECALCULATE THE FOOD THING.");
+    public void calculateNeededFood(PlayerEntity player) {
         repairValue = 0;
-        totalNeededCount = 0;
-        ItemStack foodStack = slots.get(slots.size() - 1).getItem();
+        Arrays.fill(foodToEat, 0);
 
-        if (foodStack.isEmpty()) return;
-
-        if(!foodStack.getItem().isEdible()) return;
-
-        int foodValue = foodStack.getItem().getFoodProperties().getNutrition();
-
-        //Grab the utility gear
+        //Grab the gear
         ItemStack gearStack = player.getMainHandItem();
         //Grab its capability as well
         int tier = GearCap.getCap(gearStack).getTier().ordinal();
-
         int damage = gearStack.getDamageValue();
         LOGGER.debug("My damage is: " + damage);
 
-        while (repairValue < damage && totalNeededCount < foodStack.getCount()){
-            totalNeededCount += 1;
-            repairValue = (int) ((foodValue * (5/(tier+1)) * ((float)foodValue/6)) * totalNeededCount);
-        }
-        LOGGER.debug("Total needed count is: " + totalNeededCount);
-        LOGGER.debug("Total needed food is: " + repairValue);
+        for (int a = 0; a < foodToEat.length; a++){
+            ItemStack itemToInspect = tempInv.getItem(a);
+            if (itemToInspect.isEmpty()) continue;
+            if (!itemToInspect.isEdible()) continue;
 
+            int foodValue = itemToInspect.getItem().getFoodProperties().getNutrition();
+            int totalFoodValue = 0;
+            while (repairValue + totalFoodValue < damage && foodToEat[a] < itemToInspect.getCount()) {
+                foodToEat[a] += 1;
+                totalFoodValue = (int) ((foodValue * (5 / (tier + 1)) * ((float) foodValue / 6)) * foodToEat[a]);
+            }
+            repairValue += totalFoodValue;
+            if (repairValue >= damage) break;
+        }
+
+        LOGGER.debug("Total needed count is: " + Arrays.toString(foodToEat));
+        LOGGER.debug("Total needed food is: " + repairValue);
         this.broadcastChanges();
     }
+
+//    public void calculateNeededFood(PlayerEntity player){
+//        LOGGER.debug("HEY IMMA RECALCULATE THE FOOD THING.");
+//        repairValue = 0;
+//        totalNeededCount = 0;
+//        ItemStack foodStack = slots.get(slots.size() - 1).getItem();
+//
+//        if (foodStack.isEmpty()) return;
+//
+//        if(!foodStack.getItem().isEdible()) return;
+//
+//        int foodValue = foodStack.getItem().getFoodProperties().getNutrition();
+//
+//        //Grab the utility gear
+//        ItemStack gearStack = player.getMainHandItem();
+//        //Grab its capability as well
+//        int tier = GearCap.getCap(gearStack).getTier().ordinal();
+//
+//        int damage = gearStack.getDamageValue();
+//        LOGGER.debug("My damage is: " + damage);
+//
+//        while (repairValue < damage && totalNeededCount < foodStack.getCount()){
+//            totalNeededCount += 1;
+//            repairValue = (int) ((foodValue * (5/(tier+1)) * ((float)foodValue/6)) * totalNeededCount);
+//        }
+//        LOGGER.debug("Total needed count is: " + totalNeededCount);
+//        LOGGER.debug("Total needed food is: " + repairValue);
+//
+//        this.broadcastChanges();
+//    }
     
 }

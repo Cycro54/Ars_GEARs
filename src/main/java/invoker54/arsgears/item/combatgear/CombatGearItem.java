@@ -1,11 +1,13 @@
 package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.spell.AbstractAugment;
+import com.hollingsworth.arsnouveau.api.spell.AbstractEffect;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.GearUpgrades;
@@ -13,9 +15,9 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,10 +26,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
-import static com.hollingsworth.arsnouveau.common.items.SpellBook.*;
+import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 
 public class CombatGearItem extends Item {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -49,7 +50,7 @@ public class CombatGearItem extends Item {
         //If the player goes off the weapon, turn off the spell
         if (!isSelected && cap.getActivated()) cap.setActivated(false);
 
-        if (ArsUtil.getHeldGearCap(player, false).isEmpty()) return false;
+        if (ArsUtil.getHeldGearCap(player, false, false).isEmpty()) return false;
 
         //If it's set to the crafting mode, set it to the 1st spell slot instead.
         if (SpellBook.getMode(gearStack.getOrCreateTag()) == 0){SpellBook.setMode(gearStack.getOrCreateTag(),0);}
@@ -88,15 +89,38 @@ public class CombatGearItem extends Item {
         return tooltip;
     }
 
-    public static float calcCooldown(Spell spell, boolean inTicks){
-        //Every 50 mana will increase the spell cooldown by 1 second
-        return spell.getCastingCost()/50f * (inTicks ? 20 : 1);
+    public static float calcCooldown(int gearCycle, Spell spell, boolean inTicks){
+        //Every 40 mana will increase the spell cooldown by 1 second (augments will be every 100 mana)
+        //Methods won't cost a thing.
+        float coolDown = 0;
+        for (AbstractSpellPart spellPart : spell.recipe){
+            if (spellPart instanceof AbstractEffect){
+                coolDown += spellPart.getManaCost()/40f;
+            }
+            else {
+                coolDown += spellPart.getManaCost()/100F;
+            }
+        }
+
+        //This will increase the cooldown (For the bow only)
+        if (gearCycle == bowInt){
+            coolDown += (coolDown * 0.6F);
+        }
+
+        //Round to 2 decimal places
+        coolDown = Math.round(coolDown * 100)/100F;
+
+        return (coolDown * (inTicks ? 20 : 1));
     }
     public static float getCooldown(PlayerEntity playerEntity, CompoundNBT tag, int spellMode, boolean getDifference){
         if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
 
+        if (playerEntity.abilities.instabuild){
+            return 0;
+        }
+
         CompoundNBT cooldownNBT = tag.getCompound(COMBAT_GEAR + COOLDOWN);
-        float endTime = cooldownNBT.getInt("" + (spellMode));
+        float endTime = cooldownNBT.getFloat("" + (spellMode));
         return getDifference ? endTime - playerEntity.level.getGameTime() : endTime;
     }
     public static void setCooldown(CompoundNBT tag, int spellMode, float endTime){
@@ -112,7 +136,7 @@ public class CombatGearItem extends Item {
             return SpellBook.getRecipeFromTag(stack.getTag(), getMode(stack.getTag()));
         }
 
-        public static int getInitialCost(Spell spell) {
+        public static int getInitialCost(Spell spell, int gearCycle, ItemStack gearStack) {
             int cost = 0;
             if (spell.recipe != null) {
                 for (int i = 0; i < spell.recipe.size(); ++i) {
@@ -122,8 +146,32 @@ public class CombatGearItem extends Item {
                         cost += spellPiece.getAdjustedManaCost(augments);
                     }
                 }
+
+                //This will increase and decrease the mana cost (For the mirror only)
+                if (gearCycle == mirrorInt){
+                    //First get the cost times 2
+                    cost *= 2;
+
+                    //Then the mana discount
+                    int discountLvl = GearUpgrades.getUpgrade(mirrorInt, GearCap.getCap(gearStack), GearUpgrades.mirrorManaDiscount);
+                    switch (discountLvl) {
+                        default:
+                            break;
+                        case 1:
+                            cost -= (cost * 0.15F);
+                            break;
+                        case 2:
+                            cost -= (cost * 0.4F);
+                            break;
+                    }
+                }
             }
             return cost;
         }
+
+
+//        public static void onCast(ItemStack gearStack, PlayerEntity player, World world, SpellResolver resolver){
+//
+//        }
     }
 }

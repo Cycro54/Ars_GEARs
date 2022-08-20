@@ -3,7 +3,12 @@ package invoker54.arsgears.client.gui.button;
 import com.hollingsworth.arsnouveau.ArsNouveau;
 import com.hollingsworth.arsnouveau.api.spell.SpellValidationError;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -24,7 +29,10 @@ public class ModCreateSpellButton extends ModGuiImageButton {
     @Override
     public void render(MatrixStack ms, int parX, int parY, float partialTicks) {
         if (visible) {
-            if (parent.validationErrors.isEmpty()) {
+            PlayerEntity player = ClientUtil.mC.player;
+            ItemStack gearStack = PlayerDataCap.getCap(player).getCombatGear();
+            float coolDown = CombatGearItem.getCooldown(player, gearStack.getOrCreateTag(), parent.page + 1, true);
+            if (parent.validationErrors.isEmpty() && coolDown <= 0) {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             } else {
                 GL11.glColor4f(1.0F, 0.7F, 0.7F, 1.0F);
@@ -33,7 +41,7 @@ public class ModCreateSpellButton extends ModGuiImageButton {
             ModGuiSpellBook.drawFromTexture(image, x, y, u, v, width, height, image_width, image_height, ms);
 
             if (parent.isMouseInRelativeRange(parX, parY, x, y, width, height)) {
-                if (!parent.validationErrors.isEmpty()) {
+                if (!parent.validationErrors.isEmpty() || coolDown > 0) {
                     List<ITextComponent> tooltip = new ArrayList<>();
                     boolean foundGlyphErrors = false;
 
@@ -51,6 +59,9 @@ public class ModCreateSpellButton extends ModGuiImageButton {
                     // Show a single placeholder for all the per-glyph errors
                     if (foundGlyphErrors) {
                         tooltip.add(new TranslationTextComponent("ars_nouveau.spell.validation.crafting.invalid_glyphs"));
+                    }
+                    else{
+                        tooltip.add(new TranslationTextComponent("ars_gears.chat.cast_cooldown"));
                     }
 
                     parent.tooltip = tooltip;

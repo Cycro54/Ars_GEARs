@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  X",
+    " A ",
+    "X  "
+  ],
+  "key": {
+    "X": {
+      "tag": "forge:rods/wooden"
+    },
+    "A": {
+      "item": "minecraft:rabbit"
+    }
+  },
+  "result": {
+    "item": "ars_gears:bait_rabbit",
+    "count": 2
+  }
+}

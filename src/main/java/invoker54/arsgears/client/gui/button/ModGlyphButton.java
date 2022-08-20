@@ -23,6 +23,7 @@ import java.util.List;
 public class ModGlyphButton extends Button {
 
     public boolean isCraftingSlot;
+    public boolean isAugment;
     public String resourceIcon;
     public String spell_id; //Reference to a spell ID for spell crafting
     private int id;
@@ -31,8 +32,9 @@ public class ModGlyphButton extends Button {
 
     ModGuiSpellBook parent;
 
-    public ModGlyphButton(ModGuiSpellBook parent, int x, int y, boolean isCraftingSlot, String resource_image, String spell_id) {
+    public ModGlyphButton(ModGuiSpellBook parent, int x, int y, boolean isCraftingSlot, String resource_image, String spell_id, boolean isAugment) {
         super(x, y,  16, 16, ITextComponent.nullToEmpty(""), parent::onGlyphClick);
+        this.isAugment = isAugment;
         this.parent = parent;
         this.x = x;
         this.y = y;

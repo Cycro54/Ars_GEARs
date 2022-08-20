@@ -52,7 +52,7 @@ public class PacketUpdateSpellColors {
     public void handle(Supplier<NetworkEvent.Context> ctx){
         ctx.get().enqueueWork(()->{
             if(ctx.get().getSender() != null){
-                ItemStack stack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false);
+                ItemStack stack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false, false);
                 if(!stack.isEmpty()){
                     CompoundNBT tag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
                     SpellBook.setSpellColor(tag, new ParticleColor.IntWrapper(r, g, b), castSlot);

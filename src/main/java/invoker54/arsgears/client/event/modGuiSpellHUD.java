@@ -17,7 +17,7 @@ public class modGuiSpellHUD extends GuiSpellHUD {
 
     @Override
     public void drawHUD(MatrixStack ms) {
-        ItemStack stack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false);
+        ItemStack stack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false, false);
         if(!stack.isEmpty() && GearCap.getCap(stack).getTier().ordinal() > 1){
             int offsetLeft = 10;
             CompoundNBT tag = stack.getOrCreateTag();

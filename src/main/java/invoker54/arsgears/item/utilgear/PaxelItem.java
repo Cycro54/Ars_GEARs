@@ -1,7 +1,9 @@
 package invoker54.arsgears.item.utilgear;
 
 import com.google.common.collect.Sets;
+import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,26 +11,36 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static invoker54.arsgears.item.utilgear.UtilGearItem.UTIL_GEAR_CAP;
+import static invoker54.arsgears.item.utilgear.UtilGearItem.paxelInt;
 
 public class PaxelItem extends ToolItem {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -152,12 +164,12 @@ public class PaxelItem extends ToolItem {
         if (world == null) return;
 
         GearCap cap = GearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(UtilGearItem.paxelINT, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(UtilGearItem.paxelInt, cap);
 
         if (upgrades.contains(GearUpgrades.paxelAutoInv))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelAutoInv, upgrades));
-        if (upgrades.contains(GearUpgrades.paxelRadialMine))
-            tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelRadialMine, upgrades));
+//        if (upgrades.contains(GearUpgrades.paxelRadialMine))
+//            tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelRadialMine, upgrades));
     }
 
     @Nullable
@@ -175,5 +187,138 @@ public class PaxelItem extends ToolItem {
     public void readShareTag(ItemStack stack, @org.jetbrains.annotations.Nullable CompoundNBT nbt) {
         super.readShareTag(stack, nbt);
         GearCap.getCap(stack).deserializeNBT(nbt.getCompound(UTIL_GEAR_CAP));
+    }
+
+    @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
+    public static class PaxelAbilities{
+
+        /** This is the method for auto placing blocks in your inventory, and switching between fortune and Silk touch
+         * */
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onMine(BlockEvent.BreakEvent event){
+            if (event.isCanceled()) return;
+
+            PlayerEntity player = event.getPlayer();
+            ItemStack gearStack = GearCap.getCap(player.getMainHandItem()) == null ? ItemStack.EMPTY : player.getMainHandItem();
+            if (gearStack.isEmpty() || GearCap.getCap(gearStack) instanceof CombatGearCap) return;
+
+            //Lets make sure the player has this upgrade
+            int autoInvLvl = GearUpgrades.getUpgrade(paxelInt, GearCap.getCap(gearStack), GearUpgrades.paxelAutoInv);
+            int silkTouchLvl = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, gearStack);
+            if (player.isCrouching()) silkTouchLvl = 0;
+            int fortuneLvl = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, gearStack);
+
+            //Grab all the needed block details
+            BlockState state = event.getState();
+            BlockPos blockPos = event.getPos();
+            IWorld world = event.getWorld();
+
+            //Make sure we aren't on the client
+            if (world.isClientSide()) return;
+
+            //Cancel the event
+            event.setCanceled(true);
+
+            //Deal with Silk Touch
+            ItemStack gearStack1 = gearStack.copy();
+            Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(gearStack1);
+            if (!player.isCrouching() && enchants.containsKey(Enchantments.SILK_TOUCH)){
+                enchants.remove(Enchantments.SILK_TOUCH);
+                EnchantmentHelper.setEnchantments(enchants, gearStack1);
+            }
+
+            //Let's grab those drops
+            List<ItemStack> drops =
+            Block.getDrops(state, (ServerWorld) world, blockPos, world.getBlockEntity(blockPos), null, gearStack1);
+
+            //Destroy the block (this only works for piston and stairs.)
+            state.getBlock().destroy(world, blockPos, state);
+
+            boolean flag1 = state.canHarvestBlock(world, blockPos, player); // previously player.hasCorrectToolForDrops(state)
+            gearStack.mineBlock((World) world, state, blockPos, player);
+            if (gearStack.isEmpty() && !gearStack1.isEmpty())
+                ForgeEventFactory.onPlayerDestroyItem(player, gearStack1, Hand.MAIN_HAND);
+            boolean flag = state.removedByPlayer((World) world, blockPos, player, flag1, world.getFluidState(blockPos));
+
+            if (flag && flag1) {
+                player.awardStat(Stats.BLOCK_MINED.get(state.getBlock()));
+                player.causeFoodExhaustion(0.005F);
+            }
+
+            //Destroy the block
+            ((ServerWorld) world).setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+
+            int EXP = state.getExpDrop(world, blockPos, fortuneLvl, silkTouchLvl);
+            if (autoInvLvl != 0) {
+                BlockPos playerPos = new BlockPos(player.getX(), player.getY(), player.getZ());
+                state.getBlock().popExperience((ServerWorld) world, playerPos, EXP);
+                for (ItemStack drop : drops) {
+                    if (!player.addItem(drop)) {
+                        Block.popResource((World) world, blockPos, drop);
+                    }
+                }
+            }
+            else {
+                state.getBlock().popExperience((ServerWorld) world, blockPos, EXP);
+                for (ItemStack drop : drops) {
+                    Block.popResource((World) world, blockPos, drop);
+                }
+            }
+        }
+//        //This is for gaining mana and stone while mining stone
+//        @SubscribeEvent
+//        public static void onMineStone(BlockEvent.BreakEvent event){
+//            if (event.isCanceled()) return;
+//
+//            PlayerEntity player = event.getPlayer();
+//            ItemStack gearStack = ArsUtil.getHeldGearCap(player, true);
+//            if (gearStack.isEmpty()) return;
+//
+//            //Lets make sure the player has this upgrade
+//            int level = GearUpgrades.getUpgrade(paxelINT, GearCap.getCap(gearStack), GearUpgrades.paxelAutoInv);
+//
+//            if (level == 0) return;
+//
+//            //Grab all the needed block details
+//            BlockState state = event.getState();
+//            BlockPos blockPos = event.getPos();
+//            IWorld world = event.getWorld();
+//
+//            //Cancel the event
+//            event.setCanceled(true);
+//
+//            //Make sure we aren't on the client
+//            if (world.isClientSide()) return;
+//
+//            //Let's grab those drops
+//            List<ItemStack> drops =
+//            Block.getDrops(state, (ServerWorld) world, blockPos, world.getBlockEntity(blockPos));
+//
+//            //Destroy the block (this only works for piston and stairs.)
+//            state.getBlock().destroy(world, blockPos, state);
+//
+//            ItemStack itemstack = player.getMainHandItem();
+//            ItemStack itemstack1 = itemstack.copy();
+//            boolean flag1 = state.canHarvestBlock(world, blockPos, player); // previously player.hasCorrectToolForDrops(state)
+//            itemstack.mineBlock((World) world, state, blockPos, player);
+//            if (itemstack.isEmpty() && !itemstack1.isEmpty())
+//                net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemstack1, Hand.MAIN_HAND);
+//            boolean flag = state.removedByPlayer((World) world, blockPos, player, flag1, world.getFluidState(blockPos));
+//
+//            if (flag && flag1) {
+//                player.awardStat(Stats.BLOCK_MINED.get(state.getBlock()));
+//                player.causeFoodExhaustion(0.005F);
+//            }
+//
+//            int EXP = state.getExpDrop(world, blockPos, 1, 0);
+//            BlockPos playerPos = new BlockPos(player.getX(), player.getY(), player.getZ());
+//            state.getBlock().popExperience((ServerWorld) world, playerPos, EXP);
+//
+//            for (ItemStack drop : drops){
+//                if (!player.addItem(drop)){
+//                    Block.popResource((World) world, blockPos, drop);
+//                }
+//            }
+//        }
     }
 }

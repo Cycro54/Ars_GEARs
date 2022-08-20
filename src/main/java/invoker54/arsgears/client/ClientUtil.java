@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
@@ -26,7 +25,7 @@ public class ClientUtil {
     public static final Minecraft mC = Minecraft.getInstance();
     public static final TextureManager TEXTURE_MANAGER = mC.textureManager;
     public static final ItemRenderer ITEM_RENDERER = mC.getItemRenderer();
-    //private static final DecimalFormat d1 = new DecimalFormat("0.0");
+    public static final DecimalFormat d1 = new DecimalFormat("0.0");
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 

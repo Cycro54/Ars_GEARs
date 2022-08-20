@@ -3,6 +3,7 @@ package invoker54.arsgears.capability.gear;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -20,8 +21,8 @@ public class GearProvider implements ICapabilitySerializable<INBT> {
     public static final ResourceLocation CAP_GEAR_LOC = new ResourceLocation(ArsGears.MOD_ID, "cap_gear");
     public static final byte COMPOUND_NBT_ID = new CompoundNBT().getId();
 
-    public GearProvider(boolean utility){
-        GearCap = utility ? new GearCap() : new CombatGearCap();
+    public GearProvider(boolean utility, ItemStack gearStack){
+        GearCap = utility ? new GearCap(gearStack) : new CombatGearCap(gearStack);
     }
 
     //region Capability setup

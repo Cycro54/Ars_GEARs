@@ -11,20 +11,20 @@ import java.util.function.Supplier;
 
 public class FeedGearMsg {
     private int newDamageValue;
-    private int newCount;
+    private int[] foodArray;
 
-    public FeedGearMsg(int newDamageValue, int newCount){
+    public FeedGearMsg(int newDamageValue, int[] foodArray){
         this.newDamageValue = newDamageValue;
-        this.newCount = newCount;
+        this.foodArray = foodArray;
     }
 
     public static void encode(FeedGearMsg msg, PacketBuffer buffer){
         buffer.writeInt(msg.newDamageValue);
-        buffer.writeInt(msg.newCount);
+        buffer.writeVarIntArray(msg.foodArray);
     }
 
     public static FeedGearMsg decode(PacketBuffer buffer){
-        return new FeedGearMsg(buffer.readInt(), buffer.readInt());
+        return new FeedGearMsg(buffer.readInt(), buffer.readVarIntArray());
     }
 
     //This is how the Network Handler will handle the message
@@ -41,7 +41,9 @@ public class FeedGearMsg {
             if (cap == null) return;
 
             //Mess with the container
-            ((GearContainer)player.containerMenu).tempInv.getItem(0).setCount(msg.newCount);
+            for (int a = 0; a < msg.foodArray.length; a++){
+                ((GearContainer)player.containerMenu).tempInv.getItem(a).shrink(msg.foodArray[a]);
+            }
 
             //Finally set the damage value
             item.setDamageValue(msg.newDamageValue);

@@ -1,15 +1,9 @@
 package invoker54.arsgears.item.combatgear;
 
-import com.hollingsworth.arsnouveau.api.client.IDisplayMana;
 import com.hollingsworth.arsnouveau.api.item.ICasterTool;
-import com.hollingsworth.arsnouveau.api.item.IScribeable;
-import com.hollingsworth.arsnouveau.api.spell.Spell;
-import com.hollingsworth.arsnouveau.api.spell.SpellContext;
-import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
-import com.hollingsworth.arsnouveau.client.renderer.item.MirrorRenderer;
+import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.common.items.EnchantersMirror;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.item.modMirrorRenderer;
@@ -27,7 +21,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -115,20 +108,51 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
             return ActionResult.consume(gearStack);
         }
 
+        //This sets the cooldown for the current spell ( have to do this first since I wish to add the custom glyphs next)
+        float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
+
+        //Get the free glyph upgrade
+        addFreeGlyph(resolver.spell, cap);
+
         //Now let's cast the spell on the player
         resolver.onCast(gearStack, playerIn, worldIn);
-        //This sets the cooldown for the current spell
-        float cooldown = CombatGearItem.calcCooldown(resolver.spell, true) + playerIn.level.getGameTime();
         CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
         return ActionResult.success(gearStack);
-
-
 
         //Original code
 //        ItemStack stack = playerIn.getItemInHand(handIn);
 //        ISpellCaster caster = getSpellCaster(stack);
 //        caster.getSpell().setCost((int) (caster.getSpell().getCastingCost() - caster.getSpell().getCastingCost() * 0.25));
 //        return caster.castSpell(worldIn, playerIn, handIn, new TranslationTextComponent("ars_nouveau.mirror.invalid"));
+    }
+
+    public static Spell addFreeGlyph(Spell spell, CombatGearCap cap){
+        //Check if the player has free glyphs upgrade
+        int freeGlyphLvl = GearUpgrades.getUpgrade(mirrorInt, cap, GearUpgrades.mirrorFreeGlyph);
+        AbstractSpellPart foundAugment = null;
+
+        for (int a = spell.recipe.size() - 1; a > 0; a--){
+            if (spell.recipe.get(a) instanceof AbstractAugment){
+                foundAugment = spell.recipe.get(a);
+                break;
+            }
+        }
+        if (foundAugment != null) {
+            switch (freeGlyphLvl) {
+                default:
+                    break;
+                case 1:
+                    spell.add(spell.recipe.get(spell.getSpellSize() - 1), 1);
+                    break;
+                case 2:
+                    spell.add(spell.recipe.get(spell.getSpellSize() - 1), 3);
+                    break;
+                case 3:
+                    spell.add(spell.recipe.get(spell.getSpellSize() - 1), 5);
+                    break;
+            }
+        }
+        return spell;
     }
 
     @Override

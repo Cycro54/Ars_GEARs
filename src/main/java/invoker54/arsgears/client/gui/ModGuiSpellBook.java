@@ -20,7 +20,9 @@ import com.hollingsworth.arsnouveau.common.spell.validation.GlyphMaxTierValidato
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.*;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
@@ -31,6 +33,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.ChangePageButton;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -48,6 +51,8 @@ import vazkii.patchouli.api.PatchouliAPI;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static invoker54.arsgears.item.combatgear.CombatGearItem.bowInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ArsGears.MOD_ID)
 public class ModGuiSpellBook extends BaseBook {
@@ -85,15 +90,21 @@ public class ModGuiSpellBook extends BaseBook {
     int formTextRow = 0;
     int augmentTextRow = 0;
     int effectTextRow = 0;
+    ItemStack gearStack;
 
 
-    public ModGuiSpellBook(CompoundNBT tag, int tier, String unlockedSpells, int selected_cast_slot) {
+    public ModGuiSpellBook(ItemStack gearStack, int selected_cast_slot) {
         super();
         this.api = ArsNouveauAPI.getInstance();
 
-        this.max_spell_tier = tier;
-        this.spell_book_tag = tag;
-        this.unlockedSpells = SpellRecipeUtil.getSpellsFromString(unlockedSpells);
+        //Tier of my combat gear (minus 1 since I also don't want the player casting on STONE tier)
+        this.max_spell_tier = (CombatGearCap.getCap(gearStack).getTier().ordinal() - 1);
+        //The spell book tag (where all the spell book data is stored)
+        this.spell_book_tag = gearStack.getOrCreateTag();
+        this.gearStack = gearStack;
+        //Unlocked Spells
+        String stringSpells = SpellBook.getUnlockedSpellString(gearStack.getOrCreateTag());
+        this.unlockedSpells = SpellRecipeUtil.getSpellsFromString(stringSpells);
         this.selected_cast_slot = selected_cast_slot;
 
         this.castMethods = new ArrayList<>();
@@ -109,23 +120,14 @@ public class ModGuiSpellBook extends BaseBook {
         this.validationErrors = new LinkedList<>();
         this.spellValidator = new CombinedSpellValidator(
                 api.getSpellCraftingSpellValidator(),
-                new GlyphMaxTierValidator(tier)
+                new GlyphMaxTierValidator(max_spell_tier)
         );
     }
 
     public static void open(ItemStack gearStack){
-        //The spell book tag (where all the spell book data is stored)
-        CompoundNBT spell_book_tag = gearStack.getOrCreateTag();
-        //Tier of my combat gear (minus 1 since I also don't want the player casting on STONE tier)
-        int tier = (CombatGearCap.getCap(gearStack).getTier().ordinal() - 1);
-        //Unlocked Spells
-        String unlockedSpells = SpellBook.getUnlockedSpellString(spell_book_tag);
-        //The currently selected item on the combat gear
-        int gearCyle = CombatGearCap.getCap(gearStack).getSelectedItem();
-
         int cast_slot = SpellBook.getMode(gearStack.getOrCreateTag());
 
-        Minecraft.getInstance().setScreen(new ModGuiSpellBook(spell_book_tag, tier, unlockedSpells, cast_slot));
+        Minecraft.getInstance().setScreen(new ModGuiSpellBook(gearStack, cast_slot));
     }
 
     @Override
@@ -176,7 +178,6 @@ public class ModGuiSpellBook extends BaseBook {
                 craftingCells.get(a).y = (bookTop + FULL_HEIGHT - 47);
             }
         }
-
 //        addCastMethodParts();
 //        addAugmentParts();
 //        addEffectParts(0);
@@ -361,7 +362,7 @@ public class ModGuiSpellBook extends BaseBook {
             int xOffset = 20 * ((adjustedXPlaced ) % PER_ROW) + (nextPage ? 134 :0);
             int yPlace = adjustedRowsPlaced * 18 + yStart;
 
-            ModGlyphButton cell = new ModGlyphButton(this, xStart + xOffset, yPlace, false, part.getIcon(), part.tag);
+            ModGlyphButton cell = new ModGlyphButton(this, xStart + xOffset, yPlace, false, part.getIcon(), part.tag, (part instanceof AbstractAugment));
             addButton(cell);
             glyphButtons.add(cell);
             adjustedXPlaced++;
@@ -469,6 +470,7 @@ public class ModGuiSpellBook extends BaseBook {
                     b.resourceIcon = button1.resourceIcon;
                     b.spellTag = button1.spell_id;
                     b.stack++;
+                    b.isAugment = button1.isAugment;
                     validate();
                     return;
                 }
@@ -495,6 +497,7 @@ public class ModGuiSpellBook extends BaseBook {
             //This wipes any data on the current slot
             ModCraftingButton slot = craftingCells.get(i);
             slot.clear();
+            LOGGER.debug("IS THE SLOT CLEARED? " + (slot.stack == 0));
 
             boolean flag = false;
             while (!flag && spellIndex < spell_recipe.size()) {
@@ -505,7 +508,7 @@ public class ModGuiSpellBook extends BaseBook {
 
                 flag = true;
             }
-            if (!flag) break;
+            if (!flag) continue;
 
             //Assign this slot a Spell part using Spell index
             slot.spellTag = spell_recipe.get(spellIndex).getTag();
@@ -543,14 +546,14 @@ public class ModGuiSpellBook extends BaseBook {
 
     public void onCreateClick(Button button) {
         validate();
-        if (validationErrors.isEmpty()) {
+        float cooldown = CombatGearItem.getCooldown(minecraft.player, gearStack.getOrCreateTag(), page + 1, true);
+        if (validationErrors.isEmpty() && cooldown <= 0) {
             List<String> ids = new ArrayList<>();
             for (ModCraftingButton slot : craftingCells) {
                 for (int a = 0; a < slot.stack; a++) {
                     ids.add(slot.spellTag);
                 }
             }
-
             //This is where I add the method of casting
             CombatGearCap gearCap = CombatGearCap.getCap(ClientUtil.mC.player.getMainHandItem());
             switch (gearCap.getSelectedItem()){
@@ -604,7 +607,12 @@ public class ModGuiSpellBook extends BaseBook {
         drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/gui/search_paper.png"), 203, 0, 0, 0, 72, 15,72,15, stack);
         drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/gui/clear_paper.png"), 161, 179, 0, 0, 47, 15,47,15, stack);
         drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/gui/create_paper.png"), 216, 179, 0, 0, 56, 15,56,15, stack);
-        if (validationErrors.isEmpty()) {
+
+        PlayerEntity player = ClientUtil.mC.player;
+        ItemStack gearStack = PlayerDataCap.getCap(player).getCombatGear();
+        float coolDown = CombatGearItem.getCooldown(player, gearStack.getOrCreateTag(), page + 1, true);
+
+        if (validationErrors.isEmpty() && coolDown <= 0) {
             minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.create"), 233, 183, -8355712);
         } else {
             // Color code chosen to match GL11.glColor4f(1.0F, 0.7F, 0.7F, 1.0F);
@@ -620,46 +628,98 @@ public class ModGuiSpellBook extends BaseBook {
      * Validates the current spell as well as the potential for adding each glyph.
      */
     public void validate() {
-        List<AbstractSpellPart> recipe = new LinkedList<>();
-        int firstBlankSlot = -1;
+//        List<AbstractSpellPart> recipe = new LinkedList<>();
+        ArrayList<AbstractSpellPart> recipe = new ArrayList<>();
 
+        int firstBlankSlot = -1;
+        int spellIndex = 0;
         // Reset the crafting slots and build the recipe to validate
         for (int i = 0; i < craftingCells.size(); i++) {
-            ModCraftingButton b = craftingCells.get(i);
-            b.validationErrors.clear();
-            if (b.spellTag.isEmpty()) {
+            ModCraftingButton craftButton = craftingCells.get(i);
+            craftButton.validationErrors.clear();
+            if (craftButton.spellTag.isEmpty()) {
                 // The validator can cope with null. Insert it to preserve glyph indices.
                 recipe.add(null);
                 // Also note where we found the first blank.  Used later for the glyph buttons.
-                if (firstBlankSlot < 0) firstBlankSlot = i;
+                if (firstBlankSlot < 0) firstBlankSlot = spellIndex;
+
+                spellIndex++;
             } else {
                 //This will make sure the stacked spell glyphs will be counted
-                for (int a = 0; a < b.stack; a++) {
-                    recipe.add(api.getSpell_map().get(b.spellTag));
+                for (int a = 0; a < craftButton.stack; a++) {
+                    recipe.add(api.getSpell_map().get(craftButton.spellTag));
+                    spellIndex++;
                 }
             }
         }
 
         // Validate the crafting slots
         List<SpellValidationError> errors = spellValidator.validate(recipe);
-        for (SpellValidationError ve : errors) {
-            // Attach errors to the corresponding crafting slot (when applicable)
-            if (ve.getPosition() >= 0 && ve.getPosition() <= craftingCells.size()) {
-                ModCraftingButton b = craftingCells.get(ve.getPosition());
-                b.validationErrors.add(ve);
+        LOGGER.error("Where are the errors located? ");
+
+        if (errors.size() != 0) {
+            spellIndex = 0;
+            for (int a = 0; a < craftingCells.size(); a++) {
+                ModCraftingButton craftButton = craftingCells.get(a);
+                LOGGER.info("Crafting cell: " + a);
+
+                for (int b = 0; b < craftButton.stack; b++) {
+
+                    if (errors.get(errors.size() - 1).getPosition() < spellIndex) break;
+
+                    for (int c = 0; c < errors.size(); c++) {
+                        SpellValidationError error = errors.get(c);
+
+                        if (error.getPosition() == spellIndex) {
+                            craftButton.validationErrors.add(error);
+                            break;
+                        }
+                    }
+
+                    spellIndex++;
+                }
+                LOGGER.debug("END CRAFTING CELL: " + a);
+
+                if (errors.get(errors.size() - 1).getPosition() < spellIndex) break;
             }
+//        for (SpellValidationError ve : errors) {
+//            // Attach errors to the corresponding crafting slot (when applicable)
+//            LOGGER.error("What's the ERROR? " + ve.toString());
+//            LOGGER.error("What's the POSITION? " + ve.getPosition());
+//            if (ve.getPosition() >= 0 && ve.getPosition() < craftingCells.size()) {
+//                ModCraftingButton b = craftingCells.get(ve.getPosition());
+//                b.validationErrors.add(ve);
+//            }
+//
         }
         this.validationErrors = errors;
 
         List<AbstractSpellPart> copyRecipe = new LinkedList<>(recipe);
         copyRecipe.removeIf(Predicate.isEqual(null));
-        this.currSpell = new Spell(copyRecipe);
 
+        CombatGearCap cap = CombatGearCap.getCap(ArsUtil.getHeldGearCap(minecraft.player, false, false));
+        //This adds the automatically added method spell part
+        switch (cap.getSelectedItem()){
+            default:
+                copyRecipe.add(0, MethodTouch.INSTANCE);
+                break;
+            case 1:
+                copyRecipe.add(0, MethodProjectile.INSTANCE);
+                break;
+            case 2:
+                copyRecipe.add(0, MethodSelf.INSTANCE);
+                break;
+        }
+
+        this.currSpell = new Spell(copyRecipe);
+        this.currSpell.setCost(CombatGearItem.SpellM.getInitialCost(this.currSpell, cap.getSelectedItem(), gearStack));
         // Validate the glyph buttons
         // Trim the spell to the first gap, if there is a gap
         if (firstBlankSlot >= 0) {
             recipe = new ArrayList<>(recipe.subList(0, firstBlankSlot));
         }
+        LOGGER.debug("THIS IS WHAT's IN THE NEW SPELL LIST");
+        LOGGER.debug(recipe);
 
         for(ModGlyphButton button : glyphButtons){
             validateGlyphButton(recipe, button);
@@ -696,6 +756,8 @@ public class ModGuiSpellBook extends BaseBook {
         int x = bookRight - 100;
         int y = bookBottom - 55;
         int ySpacing = 11;
+        CombatGearCap cap = CombatGearCap.getCap(ArsUtil.getHeldGearCap(ClientUtil.mC.player, false, false));
+        boolean bowSelected = (cap.getSelectedItem() == bowInt);
 
         //Your mana
         int maxMana = ManaCapability.getMana(ClientUtil.mC.player).resolve().get().getMaxMana();
@@ -707,7 +769,7 @@ public class ModGuiSpellBook extends BaseBook {
         font.draw(ms, "Mana Cost: " + (cost), x, y, castColor);
         y += ySpacing;
         //And finally its cooldown
-        float cooldown = CombatGearItem.calcCooldown(currSpell, false);
+        float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), currSpell, false);
         font.draw(ms, "Cooldown: " + (cooldown), x, y, TextFormatting.DARK_GRAY.getColor());
     }
 }

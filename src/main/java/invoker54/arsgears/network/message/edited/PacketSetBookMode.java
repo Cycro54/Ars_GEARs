@@ -33,7 +33,7 @@ public class PacketSetBookMode {
                 ServerPlayerEntity sender = ctx.get().getSender();
                 if (sender == null) return;
 
-                ItemStack gearStack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false);
+                ItemStack gearStack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false, false);
                 if (!gearStack.isEmpty()) {
                     gearStack.setTag(tag);
                 }
