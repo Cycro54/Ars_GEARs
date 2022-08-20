@@ -128,7 +128,6 @@ public class ItemInit {
         for (Item item: items){
             registry.register(item);
         }
-
         LOGGER.error(WOODEN_MOD_SWORD.getRegistryName().getPath());
     }
 }

@@ -141,7 +141,7 @@ public class ModBreakEffect extends AbstractEffect {
 
     @Override
     public boolean defaultedStarterGlyph() {
-        return false;
+        return true;
     }
 
     @Override
