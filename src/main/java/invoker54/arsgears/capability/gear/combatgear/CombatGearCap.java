@@ -1,5 +1,8 @@
 package invoker54.arsgears.capability.gear.combatgear;
 
+import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
+import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
+import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.GearProvider;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
 import static invoker54.arsgears.item.combatgear.CombatGearItem.COOLDOWN;
@@ -34,6 +38,17 @@ public class CombatGearCap extends GearCap implements ICombatGear {
 
     public CombatGearCap(ItemStack gearStack) {
         super(gearStack);
+
+        //here I will grab all of the starting spells and give them to the player if they don't have em
+        List<AbstractSpellPart> spellParts = ArsNouveauAPI.getInstance().getDefaultStartingSpells();
+        List<AbstractSpellPart> unlockedParts = SpellBook.getUnlockedSpells(gearStack.getOrCreateTag());
+
+        //Now lets use the method stuff directly from the Glyph use item class
+        for (AbstractSpellPart spellPart : spellParts){
+            if (!unlockedParts.contains(spellPart)){
+                SpellBook.unlockSpell(gearStack.getOrCreateTag(), spellPart.getTag());
+            }
+        }
     }
 
     @Override

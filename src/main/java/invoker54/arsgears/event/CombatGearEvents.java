@@ -46,6 +46,8 @@ public class CombatGearEvents {
         //If the trackedGear and focusedGear don't match, set focusedGear to be the new trackedGear
         if (trackedGear != focusedGear) {
             ArsUtil.replaceItemStack(player, focusedGear, cap.getCombatGear());
+
+
         }
         //Finally, sync the data between the copy and the trackedGear
         cap.syncCombatGearData();

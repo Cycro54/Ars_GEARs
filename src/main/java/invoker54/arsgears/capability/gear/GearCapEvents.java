@@ -9,8 +9,6 @@ import invoker54.arsgears.item.utilgear.ModFishingRodItem;
 import invoker54.arsgears.item.utilgear.ModHoeItem;
 import invoker54.arsgears.item.utilgear.PaxelItem;
 import invoker54.arsgears.item.utilgear.UtilGearItem;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -24,7 +22,7 @@ public class GearCapEvents {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @SubscribeEvent
-    public static void attachUtilGearCaps(AttachCapabilitiesEvent<ItemStack> event){
+    public static void attachGearCaps(AttachCapabilitiesEvent<ItemStack> event){
         Item item = event.getObject().getItem();
 
         //For Combat gear stuff
