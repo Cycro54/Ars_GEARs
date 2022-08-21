@@ -9,8 +9,8 @@
   "item.ars_gears.bait_rotten_flesh": "Rotten Flesh Fish Bait",
 
   "__comment": "This is for some text in the ModGuiSpellbook class",
-  "ars_nouveau.spell.validation.exists.banned_glyph": "This glyph is banned: %s",
-  "ars_nouveau.spell.validation.adding.banned_glyph": "This glyph is banned: %s",
+  "ars_nouveau.spell.validation.exists.banned_glyph": "This glyph is banned %s",
+  "ars_nouveau.spell.validation.adding.banned_glyph": "This glyph is banned %s",
 
   "__comment": "This is for UTILITY item names",
   "item.ars_gears.utility.wood_utility_gear": "Utility GEAR (Wood)",

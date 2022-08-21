@@ -145,9 +145,9 @@ public class CombatGearItem extends Item {
     }
 
     public static boolean isBanned(AbstractSpellPart spellPart, boolean inSpellBook){
-        if (spellPart instanceof EffectBreak && inSpellBook) return true;
+        if (spellPart instanceof EffectBreak) return true;
 
-        if (spellPart instanceof AbstractCastMethod) return true;
+        if (spellPart instanceof AbstractCastMethod && inSpellBook) return true;
 
         return false;
     }
