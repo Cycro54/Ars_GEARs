@@ -1,6 +1,7 @@
 package invoker54.arsgears.capability.gear.combatgear;
 
 import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
+import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
@@ -38,15 +39,18 @@ public class CombatGearCap extends GearCap implements ICombatGear {
 
     public CombatGearCap(ItemStack gearStack) {
         super(gearStack);
+        CompoundNBT gearTag = gearStack.getOrCreateTag();
 
         //here I will grab all of the starting spells and give them to the player if they don't have em
         List<AbstractSpellPart> spellParts = ArsNouveauAPI.getInstance().getDefaultStartingSpells();
-        List<AbstractSpellPart> unlockedParts = SpellBook.getUnlockedSpells(gearStack.getOrCreateTag());
+        List<AbstractSpellPart> unlockedParts = SpellBook.getUnlockedSpells(gearTag);
 
-        //Now lets use the method stuff directly from the Glyph use item class
+        //Let's add all the starter spell parts
         for (AbstractSpellPart spellPart : spellParts){
+            if (spellPart instanceof AbstractCastMethod) continue;
+
             if (!unlockedParts.contains(spellPart)){
-                SpellBook.unlockSpell(gearStack.getOrCreateTag(), spellPart.getTag());
+                SpellBook.unlockSpell(gearTag, spellPart.getTag());
             }
         }
     }

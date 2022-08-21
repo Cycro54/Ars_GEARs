@@ -23,7 +23,7 @@ public class GearCap implements IGearCap {
     private final String TIER = "TIER";
 
     private GearTier gearTier = GearTier.WOOD;
-    private ItemStack gearStack;
+    protected ItemStack gearStack;
 
     public GearTier getTier(){
         return gearTier;

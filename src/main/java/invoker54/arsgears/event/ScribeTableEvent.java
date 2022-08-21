@@ -6,6 +6,7 @@ import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.ClientOnly;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,6 +18,9 @@ public class ScribeTableEvent {
     @SubscribeEvent
     public static void rightClickTable(PlayerInteractEvent.RightClickBlock event){
         if(event.getWorld().getBlockState(event.getPos()).getBlock() == BlockRegistry.SCRIBES_BLOCK){
+            if (event.getHand() == Hand.OFF_HAND) return;
+            if (!event.getPlayer().isCrouching()) return;
+
             ItemStack gearStack = event.getItemStack();
             GearCap cap = GearCap.getCap(gearStack);
 

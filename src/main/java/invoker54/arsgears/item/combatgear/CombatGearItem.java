@@ -1,11 +1,9 @@
 package invoker54.arsgears.item.combatgear;
 
-import com.hollingsworth.arsnouveau.api.spell.AbstractAugment;
-import com.hollingsworth.arsnouveau.api.spell.AbstractEffect;
-import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
-import com.hollingsworth.arsnouveau.api.spell.Spell;
+import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
+import com.hollingsworth.arsnouveau.common.spell.effect.EffectBreak;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
@@ -18,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -57,6 +56,21 @@ public class CombatGearItem extends Item {
 
         //If the item tier isn't high enough and the item is somehow activated, deactivate it.
         if (cap.getTier().ordinal() <= 1 && cap.getActivated()) cap.setActivated(false);
+
+        if (cap.getActivated()){
+            int mode = SpellBook.getMode(gearStack.getOrCreateTag());
+            Spell spell = SpellBook.getRecipeFromTag(gearStack.getOrCreateTag(), mode);
+
+            for (AbstractSpellPart spellPart: spell.recipe){
+                if (CombatGearItem.isBanned(spellPart, false)){
+                    cap.setActivated(false);
+                    String glyphName = spellPart.getLocaleName();
+                    String reason = new TranslationTextComponent("ars_gears.chat.use_glyph_banned").getString();
+                    player.sendMessage(new StringTextComponent(reason + glyphName), Util.NIL_UUID);
+                    return false;
+                }
+            }
+        }
 
         return true;
     }
@@ -128,6 +142,14 @@ public class CombatGearItem extends Item {
 
         CompoundNBT cooldownNBT = tag.getCompound(COMBAT_GEAR + COOLDOWN);
         cooldownNBT.putFloat(("" + spellMode), endTime);
+    }
+
+    public static boolean isBanned(AbstractSpellPart spellPart, boolean inSpellBook){
+        if (spellPart instanceof EffectBreak && inSpellBook) return true;
+
+        if (spellPart instanceof AbstractCastMethod) return true;
+
+        return false;
     }
 
     //These are SpellBook methods that should've been static

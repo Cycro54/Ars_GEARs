@@ -8,6 +8,10 @@
   "item.ars_gears.bait_rabbit": "Rabbit Fish Bait",
   "item.ars_gears.bait_rotten_flesh": "Rotten Flesh Fish Bait",
 
+  "__comment": "This is for some text in the ModGuiSpellbook class",
+  "ars_nouveau.spell.validation.exists.banned_glyph": "This glyph is banned: %s",
+  "ars_nouveau.spell.validation.adding.banned_glyph": "This glyph is banned: %s",
+
   "__comment": "This is for UTILITY item names",
   "item.ars_gears.utility.wood_utility_gear": "Utility GEAR (Wood)",
   "item.ars_gears.utility.wood_paxel_fake": "(Ingredient) Wooden Paxel",
@@ -78,6 +82,8 @@
   "ars_gears.chat.need_bait": "You need bait to fish",
   "ars_gears.chat.need_utility_gear": "You must have a Utility GEAR in your inventory to use break",
   "ars_gears.chat.repair_utility_gear": "You must repair your Utility GEAR.",
+  "ars_gears.chat.use_glyph_known": "You already know this spell!",
+  "ars_gears.chat.use_glyph_banned": "This glyph can't be used: ",
 
   "__comment": "This is for the GEAR upgrades",
   "ars_gears.upgrades.SWORD_MANA_STEAL": "Mana Steal",

@@ -1,6 +1,5 @@
 package invoker54.arsgears;
 
-import com.hollingsworth.arsnouveau.common.spell.effect.EffectBreak;
 import invoker54.arsgears.client.keybind.KeybindsInit;
 import invoker54.arsgears.client.render.CustomFishRenderer;
 import invoker54.arsgears.init.CapInit;
@@ -73,8 +72,6 @@ public class ArsGears {
 //        });
         //Also make the old break "dissappear"
 //        LOGGER.debug("IS THIS CONFIG PRESENT? " + ());
-        EffectBreak.INSTANCE.ENABLED.set(false);
-        EffectBreak.INSTANCE.STARTER_SPELL.set(false);
     }
 
     private void processIMC(final InterModProcessEvent event) {

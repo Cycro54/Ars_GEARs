@@ -15,6 +15,7 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodSelf;
 import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
+import com.hollingsworth.arsnouveau.common.spell.validation.BaseSpellValidationError;
 import com.hollingsworth.arsnouveau.common.spell.validation.CombinedSpellValidator;
 import com.hollingsworth.arsnouveau.common.spell.validation.GlyphMaxTierValidator;
 import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
@@ -76,9 +77,9 @@ public class ModGuiSpellBook extends BaseBook {
     public List<AbstractSpellPart> augments;
     public List<AbstractSpellPart> displayedGlyphs;
     public List<AbstractSpellPart> allEffects;
-    public List<ModGlyphButton> castMethodButtons;
-    public List<ModGlyphButton> augmentButtons;
-    public List<ModGlyphButton> effectButtons;
+//    public List<ModGlyphButton> castMethodButtons;
+//    public List<ModGlyphButton> augmentButtons;
+//    public List<ModGlyphButton> effectButtons;
     public List<ModGlyphButton> glyphButtons = new ArrayList<>();
     public int page = 0;
     public List<SpellValidationError> validationErrors;
@@ -108,14 +109,13 @@ public class ModGuiSpellBook extends BaseBook {
 
         this.castMethods = new ArrayList<>();
         this.augments = new ArrayList<>();
-        this.displayedGlyphs = new ArrayList<>();
         allEffects = new ArrayList<>();
 
 
         this.displayedGlyphs = this.unlockedSpells;
-        this.castMethodButtons = new ArrayList<>();
-        this.augmentButtons = new ArrayList<>();
-        this.effectButtons = new ArrayList<>();
+//        this.castMethodButtons = new ArrayList<>();
+//        this.augmentButtons = new ArrayList<>();
+//        this.effectButtons = new ArrayList<>();
         this.validationErrors = new LinkedList<>();
         this.spellValidator = new CombinedSpellValidator(
                 api.getSpellCraftingSpellValidator(),
@@ -311,7 +311,7 @@ public class ModGuiSpellBook extends BaseBook {
         boolean foundAugments = false;
         boolean foundEffects = false;
         List<AbstractSpellPart> sorted = new ArrayList<>();
-        sorted.addAll(displayedGlyphs.stream().filter(s -> s instanceof AbstractCastMethod).collect(Collectors.toList()));
+        //sorted.addAll(displayedGlyphs.stream().filter(s -> s instanceof AbstractCastMethod).collect(Collectors.toList()));
         sorted.addAll(displayedGlyphs.stream().filter(s -> s instanceof AbstractAugment).collect(Collectors.toList()));
         sorted.addAll(displayedGlyphs.stream().filter(s -> s instanceof AbstractEffect).collect(Collectors.toList()));
         int perPage = 58;
@@ -322,13 +322,17 @@ public class ModGuiSpellBook extends BaseBook {
 
         for(int i = 0; i < sorted.size(); i++){
             AbstractSpellPart part = sorted.get(i);
-            if(!foundForms && part instanceof AbstractCastMethod) {
-                foundForms = true;
-                adjustedRowsPlaced += 1;
-                totalRowsPlaced += 1;
-                formTextRow = page != 0 ? 0 : totalRowsPlaced;
-                adjustedXPlaced = 0;
+            if (CombatGearItem.isBanned(part, true)){
+                continue;
             }
+
+//            if(!foundForms && part instanceof AbstractCastMethod) {
+//                foundForms = true;
+//                adjustedRowsPlaced += 1;
+//                totalRowsPlaced += 1;
+//                formTextRow = page != 0 ? 0 : totalRowsPlaced;
+//                adjustedXPlaced = 0;
+//            }
 
             if(!foundAugments && part instanceof AbstractAugment){
                 foundAugments = true;
@@ -635,6 +639,7 @@ public class ModGuiSpellBook extends BaseBook {
         for (int i = 0; i < craftingCells.size(); i++) {
             ModCraftingButton craftButton = craftingCells.get(i);
             craftButton.validationErrors.clear();
+
             if (craftButton.spellTag.isEmpty()) {
                 // The validator can cope with null. Insert it to preserve glyph indices.
                 recipe.add(null);
@@ -654,7 +659,6 @@ public class ModGuiSpellBook extends BaseBook {
         // Validate the crafting slots
         List<SpellValidationError> errors = spellValidator.validate(recipe);
         LOGGER.error("Where are the errors located? ");
-
         if (errors.size() != 0) {
             spellIndex = 0;
             for (int a = 0; a < craftingCells.size(); a++) {
@@ -680,17 +684,28 @@ public class ModGuiSpellBook extends BaseBook {
 
                 if (errors.get(errors.size() - 1).getPosition() < spellIndex) break;
             }
-//        for (SpellValidationError ve : errors) {
-//            // Attach errors to the corresponding crafting slot (when applicable)
-//            LOGGER.error("What's the ERROR? " + ve.toString());
-//            LOGGER.error("What's the POSITION? " + ve.getPosition());
-//            if (ve.getPosition() >= 0 && ve.getPosition() < craftingCells.size()) {
-//                ModCraftingButton b = craftingCells.get(ve.getPosition());
-//                b.validationErrors.add(ve);
-//            }
-//
         }
         this.validationErrors = errors;
+        //Go through the crafting slots one more time for checking banned glyphs
+        for (int i = 0; i < craftingCells.size(); i++) {
+            ModCraftingButton craftButton = craftingCells.get(i);
+
+            if (craftButton.spellTag.isEmpty()) {
+                spellIndex++;
+            } else {
+                AbstractSpellPart spellPart = api.getSpell_map().get(craftButton.spellTag);
+
+                if (CombatGearItem.isBanned(spellPart, true)){
+                    SpellValidationError error = new BaseSpellValidationError(spellIndex, spellPart, "banned_glyph");
+                    craftButton.validationErrors.add(error);
+                    this.validationErrors.add(error);
+                }
+                //This will make sure the stacked spell glyphs will be counted
+                for (int a = 0; a < craftButton.stack; a++) {
+                    spellIndex++;
+                }
+            }
+        }
 
         List<AbstractSpellPart> copyRecipe = new LinkedList<>(recipe);
         copyRecipe.removeIf(Predicate.isEqual(null));
@@ -729,13 +744,19 @@ public class ModGuiSpellBook extends BaseBook {
         glyphButton.validationErrors.clear();
 
         // Simulate adding the glyph to the current spell
-        recipe.add(api.getSpell_map().get(glyphButton.spell_id));
+        AbstractSpellPart spellPart = api.getSpell_map().get(glyphButton.spell_id);
+        recipe.add(spellPart);
 
         // Filter the errors to ones referring to the simulated glyph
         glyphButton.validationErrors.addAll(
                 spellValidator.validate(recipe).stream()
                         .filter(ve -> ve.getPosition() >= recipe.size() - 1).collect(Collectors.toList())
         );
+
+        //This is my own personal check
+        if (CombatGearItem.isBanned(spellPart, true)){
+            glyphButton.validationErrors.add(new BaseSpellValidationError(recipe.size(), spellPart, "banned_glyph"));
+        }
 
         // Remove the simulated glyph to make room for the next one
         recipe.remove(recipe.size() - 1);
