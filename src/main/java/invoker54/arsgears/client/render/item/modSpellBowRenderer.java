@@ -54,7 +54,7 @@ public class modSpellBowRenderer extends FixedGeoItemRenderer<Wand> {
             laserPos = laserPos.add(down);
             ISpellCaster tool = SpellCaster.deserialize(itemStack);
 
-            int maxTime = (currentItemStack.isEmpty()) ? 7200 : currentItemStack.getItem().getUseDuration(currentItemStack);
+            int maxTime = (currentItemStack == null) ? 7200 : currentItemStack.getItem().getUseDuration(currentItemStack);
             int timeHeld = maxTime - Minecraft.getInstance().player.getUseItemRemainingTicks();
             if (timeHeld > 0 && timeHeld != maxTime && timeHeld > (ModSpellBow.getChargeDuration(currentItemStack)/2f)) {
                 float scaleAge = (float) ParticleUtil.inRange(0.05, 0.1);

@@ -51,7 +51,6 @@ import java.util.function.Predicate;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
-import static invoker54.arsgears.item.combatgear.CombatGearItem.bowInt;
 
 public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -111,7 +110,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
         //The base duration is 2 seconds (which is 40 ticks)
         float duration = 40;
 
-        int upgradeLvl = GearUpgrades.getUpgrade(bowInt, CombatGearCap.getCap(gearStack), GearUpgrades.bowSpeed);
+        int upgradeLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.bowSpeed);
         if (upgradeLvl == 0) return duration;
 
         float newTime;
@@ -206,7 +205,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
                 boolean didCastSpell = false;
 
                 //Now for the upgrades
-                int spellArrowLvl = GearUpgrades.getUpgrade(bowInt, cap, GearUpgrades.bowSpellArrow);
+                int spellArrowLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.bowSpellArrow);
 
                 if (fireSpell) {
                     //This sets the cooldown for the current spell
@@ -258,6 +257,10 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
                     //If the player has the spell arrow upgrade, and the bow is fully charged, make the arrow FAST
                     float velocity = (f * 3.0F);
                     float random = 1.0F;
+                    LOGGER.debug("F EQUALS " + f);
+                    LOGGER.debug("DOES PLAYER HAVE THE SPELL ARROW UPGRADE? " + (spellArrowLvl == 1));
+                    LOGGER.debug("firespell is " + (fireSpell));
+                    LOGGER.debug("IS THE PLAYER CROUCHING? " + (playerentity.isCrouching()));
                     if (f == 1.0F && spellArrowLvl == 1 && fireSpell && !playerentity.isCrouching()) {
                         arr.setNoGravity(true);
                         random = 0;
@@ -282,7 +285,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
 
             //Another thing from the bowItem class, shrinks the arrow stack by 1
             if (!isArrowInfinite && !playerentity.abilities.instabuild) {
-                int arrowKeepLvl = GearUpgrades.getUpgrade(bowInt, cap, GearUpgrades.bowArrowKeep);
+                int arrowKeepLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.bowArrowKeep);
                 float chanceToKeep;
                 switch (arrowKeepLvl) {
                     default:
@@ -346,7 +349,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
         if (!CombatGearItem.checkHoverText(gearStack, world, tooltip)) return;
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.bowInt, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
 
         if (upgrades.contains(GearUpgrades.bowSpeed))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.bowSpeed, upgrades));
@@ -506,7 +509,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
             CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
 
             //Cooldown reduction
-            int CDReduceLvl = GearUpgrades.getUpgrade(bowInt, gearCap, GearUpgrades.bowCooldown);
+            int CDReduceLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.bowCooldown);
 //            LOGGER.debug("HAS COOLDOWN REDUCTION? " + (CDReduceLvl != 0));
             if (CDReduceLvl == 0) return;
 

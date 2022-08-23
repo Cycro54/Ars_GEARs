@@ -1,6 +1,6 @@
 package invoker54.arsgears.item;
 
-import invoker54.arsgears.capability.gear.GearCap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -69,9 +69,9 @@ public class GearUpgrades {
         return (TranslationTextComponent) getName(upgrade).append(" " + nbt.getInt(upgrade));
     }
 
-    public static CompoundNBT getUpgrades(int gearCycle, GearCap cap) {
+    public static CompoundNBT getUpgrades(ItemStack gearStack) {
         //First grab the main compoundNBT Tag
-        CompoundNBT cNBT = cap.getTag(gearCycle);
+        CompoundNBT cNBT = gearStack.getOrCreateTag();
         //Now inside of it should be an upgrade compound, if there isn't create one.
         if (!cNBT.contains(GearUpgrades.gearUpgradeNBT)) {
             cNBT.put(GearUpgrades.gearUpgradeNBT, new CompoundNBT());
@@ -79,8 +79,8 @@ public class GearUpgrades {
         return cNBT.getCompound(GearUpgrades.gearUpgradeNBT);
     }
 
-    public static int getUpgrade(int gearCycle, GearCap cap, String upgradeName){
-        CompoundNBT upgrades = getUpgrades(gearCycle, cap);
+    public static int getUpgrade(ItemStack gearStack, String upgradeName){
+        CompoundNBT upgrades = getUpgrades(gearStack);
         return upgrades.getInt(upgradeName);
     }
 }

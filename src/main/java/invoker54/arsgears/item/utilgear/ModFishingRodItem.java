@@ -7,10 +7,8 @@ import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.entity.ModBobberEntity;
 import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.GearUpgrades;
-import net.minecraft.block.*;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.FishingRodItem;
@@ -21,25 +19,17 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
-import javax.sound.sampled.Port;
-
 import java.util.List;
-
-import static invoker54.arsgears.item.combatgear.CombatGearItem.bowInt;
-import static invoker54.arsgears.item.utilgear.UtilGearItem.fishingInt;
 
 public class ModFishingRodItem extends FishingRodItem {
 
@@ -88,9 +78,9 @@ public class ModFishingRodItem extends FishingRodItem {
 
         GearCap cap = GearCap.getCap(gearStack);
 
-        if (GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() == 0) return;
+        if (GearUpgrades.getUpgrades(gearStack).size() == 0) return;
 
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(fishingInt, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
 
         if (upgrades.contains(GearUpgrades.fishrodBaitKeep))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.fishrodBaitKeep, upgrades));
@@ -136,7 +126,7 @@ public class ModFishingRodItem extends FishingRodItem {
 
             if (!player.abilities.instabuild || baitStack.getItem() != ItemInit.STARBUNCLE_BAIT) {
                 GearCap cap = GearCap.getCap(gearStack);
-                int baitKeepLvl = GearUpgrades.getUpgrade(fishingInt, cap, GearUpgrades.fishrodBaitKeep);
+                int baitKeepLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.fishrodBaitKeep);
                 float chanceToKeep;
                 switch (baitKeepLvl){
                     default:

@@ -63,7 +63,7 @@ public class QuickCastMsg {
                 coolDown = CombatGearItem.calcCooldown(mirrorInt, spell, true);
 
                 //Get the upgrades
-                ModSpellMirror.addFreeGlyph(resolver.spell, cap);
+                ModSpellMirror.addFreeGlyph(resolver.spell, gearStack);
 
                 //Cast the spell on the player
                 resolver.onCast(gearStack, player, player.level);

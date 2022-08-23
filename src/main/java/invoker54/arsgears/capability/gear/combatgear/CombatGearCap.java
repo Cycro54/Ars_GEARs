@@ -70,7 +70,9 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     String name = "_name";
 
     @Override
-    protected CompoundNBT saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
+    protected void saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
+        super.saveTag(mainNBT, tagNBT, capNBT);
+
         //What spell mode you have selected
         if (tagNBT.contains(mode)) {
             capNBT.putInt(mode, tagNBT.getInt(mode));
@@ -103,12 +105,12 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         }
 
         LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
-
-        return super.saveTag(mainNBT, tagNBT, capNBT);
     }
 
     @Override
-    protected CompoundNBT loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
+    protected void loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
+        super.loadTag(mainNBT, tagNBT, capNBT);
+
         //What spell mode you have selected
         if (capNBT.contains(mode)){
             tagNBT.putInt(mode, capNBT.getInt(mode));
@@ -139,8 +141,6 @@ public class CombatGearCap extends GearCap implements ICombatGear {
             }
             tagNBT.put(COMBAT_GEAR + COOLDOWN, tagCooldowns);
         }
-
-        return super.loadTag(mainNBT, tagNBT, capNBT);
     }
 
     @Override

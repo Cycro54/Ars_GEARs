@@ -5,7 +5,6 @@ import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.effect.EffectBreak;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.GearUpgrades;
@@ -86,7 +85,7 @@ public class CombatGearItem extends Item {
 
         getHoverText(gearStack, toolTip);
 
-        return GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() != 0;
+        return GearUpgrades.getUpgrades(gearStack).size() != 0;
     }
     @OnlyIn(Dist.CLIENT)
     public static List<ITextComponent> getHoverText(final ItemStack gearStack, final List<ITextComponent> tooltip) {
@@ -175,7 +174,7 @@ public class CombatGearItem extends Item {
                     cost *= 2;
 
                     //Then the mana discount
-                    int discountLvl = GearUpgrades.getUpgrade(mirrorInt, GearCap.getCap(gearStack), GearUpgrades.mirrorManaDiscount);
+                    int discountLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.mirrorManaDiscount);
                     switch (discountLvl) {
                         default:
                             break;

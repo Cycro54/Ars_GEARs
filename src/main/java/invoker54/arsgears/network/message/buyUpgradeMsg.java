@@ -44,13 +44,13 @@ public class buyUpgradeMsg {
 
             if (cap == null) return;
 
-            //This writes the nbtData to the required item
-            //Let's say the data is Sharpness enchant, this will write the Enchantment to the Sword CompoundNBT in the gear capability
-            cap.getTag(msg.gearCycle).merge((CompoundNBT) msg.nbtData);
-
-            //If the player has the item equipped, make sure to sync the data
-            if (cap.getSelectedItem() == msg.gearCycle){
-                gearStack.getOrCreateTag().merge(cap.getTag(msg.gearCycle));
+            //This is for general compound saving (this is for GEAR upgrades)
+            if (msg.gearCycle == -1) {
+                gearStack.getOrCreateTag().merge((CompoundNBT) msg.nbtData);
+            }
+            //This is for specific compound saving (this is for enchants)
+            else {
+                cap.getTag(msg.gearCycle).merge((CompoundNBT) msg.nbtData);
             }
 
             //Now finally take their precious experience.

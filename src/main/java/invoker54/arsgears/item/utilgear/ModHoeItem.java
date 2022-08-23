@@ -47,9 +47,9 @@ public class ModHoeItem extends HoeItem {
 
         GearCap cap = GearCap.getCap(gearStack);
 
-        if (GearUpgrades.getUpgrades(cap.getSelectedItem(), cap).size() == 0) return;
+        if (GearUpgrades.getUpgrades(gearStack).size() == 0) return;
 
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(UtilGearItem.hoeInt, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
         if (upgrades.contains(GearUpgrades.hoeDrops))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.hoeDrops, upgrades));
         if (upgrades.contains(GearUpgrades.hoeRadius))
@@ -98,7 +98,7 @@ public class ModHoeItem extends HoeItem {
             event.setCanceled(true);
 
             //Lets make sure the player has this upgrade
-            int radiusLvl = GearUpgrades.getUpgrade(hoeInt, GearCap.getCap(gearStack), GearUpgrades.hoeRadius);
+            int radiusLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.hoeRadius);
             ArrayList<BlockPos> blockPosList = new ArrayList<>();
             blockPosList.add(blockPos);
 
@@ -123,7 +123,7 @@ public class ModHoeItem extends HoeItem {
                 }
             }
 
-            int multiplyLvl = GearUpgrades.getUpgrade(hoeInt, GearCap.getCap(gearStack), GearUpgrades.hoeDrops);
+            int multiplyLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.hoeDrops);
             //Next lets get them drops!
             for (BlockPos pos : blockPosList) {
                 //Damage the item

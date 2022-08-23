@@ -91,7 +91,7 @@ public class DrawGuiEvent {
             itemTag = gearCap.getTag(mirrorInt);
         }
 
-        int quickLvl = GearUpgrades.getUpgrade(mirrorInt, gearCap, GearUpgrades.mirrorQuickCast);
+        int quickLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.mirrorQuickCast);
 //        LOGGER.debug("DOES QUICK LEVEL EQUAL 0? " + (quickLvl == 0));
         //Make sure the player has the upgrade
         if (quickLvl == 0) return;

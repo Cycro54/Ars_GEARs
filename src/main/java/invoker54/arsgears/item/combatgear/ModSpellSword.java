@@ -205,7 +205,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
         CompoundNBT itemTag = gearStack.getOrCreateTag();
         
         //This is the spell sweep upgrade
-        boolean hasSpellSweep = GearUpgrades.getUpgrade(swordINT, cap, GearUpgrades.swordSpellSweep) > 0;
+        boolean hasSpellSweep = GearUpgrades.getUpgrade(gearStack, GearUpgrades.swordSpellSweep) > 0;
 
         //Only if the combat gear is set to active will the spell be cast.
         if (cap.getActivated()) {
@@ -252,7 +252,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
         if (!CombatGearItem.checkHoverText(gearStack, world, tooltip)) return;
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(CombatGearItem.swordINT, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
 
         if (upgrades.contains(GearUpgrades.swordManaSteal))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.swordManaSteal, upgrades));
@@ -305,7 +305,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
             CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
 
             //Upgrade
-            int upgrade = GearUpgrades.getUpgrade(swordINT, gearCap, GearUpgrades.swordManaSteal);
+            int upgrade = GearUpgrades.getUpgrade(gearStack, GearUpgrades.swordManaSteal);
             if (upgrade == 0) return;
 
             //Get the damage

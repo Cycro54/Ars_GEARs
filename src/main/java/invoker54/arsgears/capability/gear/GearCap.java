@@ -106,7 +106,7 @@ public class GearCap implements IGearCap {
         return (getSelectedItem() == gearCycle) ? this.gearStack.getOrCreateTag() : itemTags[gearCycle];
     }
 
-    protected CompoundNBT saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
+    protected void saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
         if(tagNBT.contains("Enchantments")) {
             //Save the stuff
             capNBT.put("Enchantments", tagNBT.get("Enchantments"));
@@ -119,10 +119,8 @@ public class GearCap implements IGearCap {
             capNBT.putString("id", mainNBT.getString("id"));
             LOGGER.debug("WHATS THE OLD ID? " + mainNBT.getString("id"));
         }
-
-        return capNBT;
     }
-    protected CompoundNBT loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
+    protected void loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
         if(capNBT.contains("Enchantments")) {
             //Read the shtuff
             tagNBT.put("Enchantments", capNBT.get("Enchantments"));
@@ -133,7 +131,6 @@ public class GearCap implements IGearCap {
             mainNBT.putString("id", capNBT.getString("id"));
             LOGGER.debug("WHATS THE NEW ID? " + capNBT.getString("id"));
         }
-        return mainNBT;
     }
 
     @Override

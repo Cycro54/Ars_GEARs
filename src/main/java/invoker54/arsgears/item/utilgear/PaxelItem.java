@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static invoker54.arsgears.item.utilgear.UtilGearItem.UTIL_GEAR_CAP;
-import static invoker54.arsgears.item.utilgear.UtilGearItem.paxelInt;
 
 public class PaxelItem extends ToolItem {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -164,7 +163,7 @@ public class PaxelItem extends ToolItem {
         if (world == null) return;
 
         GearCap cap = GearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(UtilGearItem.paxelInt, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
 
         if (upgrades.contains(GearUpgrades.paxelAutoInv))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.paxelAutoInv, upgrades));
@@ -203,7 +202,7 @@ public class PaxelItem extends ToolItem {
             if (gearStack.isEmpty() || GearCap.getCap(gearStack) instanceof CombatGearCap) return;
 
             //Lets make sure the player has this upgrade
-            int autoInvLvl = GearUpgrades.getUpgrade(paxelInt, GearCap.getCap(gearStack), GearUpgrades.paxelAutoInv);
+            int autoInvLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.paxelAutoInv);
             int silkTouchLvl = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, gearStack);
             if (player.isCrouching()) silkTouchLvl = 0;
             int fortuneLvl = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, gearStack);

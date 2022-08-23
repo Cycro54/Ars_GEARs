@@ -357,7 +357,7 @@ public class UpgradeScreen extends Screen {
             UpgradeButton finalPrevButton = prevButton;
             UpgradeButton.Irequirement iRequire = (button) -> {
                 //Grabs the custom upgrades for the related item
-                CompoundNBT customUpgrades = GearUpgrades.getUpgrades(gearCycle, getCap());
+                CompoundNBT customUpgrades = GearUpgrades.getUpgrades(gearStack);
                 PlayerEntity player = ClientUtil.mC.player;
 
                 //Make sure they don't have this enchant already
@@ -395,10 +395,10 @@ public class UpgradeScreen extends Screen {
             //Make the pressable
             Button.IPressable iPress = (button) -> {
                 //Place the lvl into the custom Upgrade Compount NBT with its upgradeName
-                GearUpgrades.getUpgrades(gearCycle, getCap()).putInt(upgradeName, lvl);
+                GearUpgrades.getUpgrades(gearStack).putInt(upgradeName, lvl);
 
                 //Now finally make sure to sync these changes with the server
-                NetworkHandler.INSTANCE.sendToServer(new buyUpgradeMsg(getCap().getTag(gearCycle), gearCycle, price));
+                NetworkHandler.INSTANCE.sendToServer(new buyUpgradeMsg(getCap().getTag(gearCycle), -1, price));
 
                 mC.player.giveExperiencePoints(-price);
 

@@ -1,12 +1,15 @@
 package invoker54.arsgears;
 
+import com.hollingsworth.arsnouveau.ArsNouveau;
 import invoker54.arsgears.client.keybind.KeybindsInit;
 import invoker54.arsgears.client.render.CustomFishRenderer;
+import invoker54.arsgears.client.render.edited.RenderRitualProjectile;
 import invoker54.arsgears.init.CapInit;
 import invoker54.arsgears.init.ContainerInit;
 import invoker54.arsgears.init.EntityInit;
 import invoker54.arsgears.init.GlyphInit;
 import invoker54.arsgears.network.NetworkHandler;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -59,8 +62,8 @@ public class ArsGears {
         // do something that can only be done on the client
 //        LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
         KeybindsInit.registerKeys();
-        /** TODO I have to make a seperate fishing class and rod for the Utility gear */
         RenderingRegistry.registerEntityRenderingHandler(EntityInit.FISHING_BOBBER, CustomFishRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityInit.MODDED_ORBIT, renderManager -> new RenderRitualProjectile(renderManager, new ResourceLocation(ArsNouveau.MODID, "textures/entity/spell_proj.png")));
         ContainerInit.initialize();
     }
 

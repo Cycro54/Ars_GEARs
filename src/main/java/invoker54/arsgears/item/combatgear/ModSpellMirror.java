@@ -28,7 +28,6 @@ import java.util.List;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
-import static invoker54.arsgears.item.combatgear.CombatGearItem.mirrorInt;
 
 public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
     public ModSpellMirror(IItemTier tier) {
@@ -112,7 +111,7 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
         float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
 
         //Get the free glyph upgrade
-        addFreeGlyph(resolver.spell, cap);
+        addFreeGlyph(resolver.spell, gearStack);
 
         //Now let's cast the spell on the player
         resolver.onCast(gearStack, playerIn, worldIn);
@@ -126,9 +125,9 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
 //        return caster.castSpell(worldIn, playerIn, handIn, new TranslationTextComponent("ars_nouveau.mirror.invalid"));
     }
 
-    public static Spell addFreeGlyph(Spell spell, CombatGearCap cap){
+    public static Spell addFreeGlyph(Spell spell, ItemStack gearStack){
         //Check if the player has free glyphs upgrade
-        int freeGlyphLvl = GearUpgrades.getUpgrade(mirrorInt, cap, GearUpgrades.mirrorFreeGlyph);
+        int freeGlyphLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.mirrorFreeGlyph);
         AbstractSpellPart foundAugment = null;
 
         for (int a = spell.recipe.size() - 1; a > 0; a--){
@@ -161,7 +160,7 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
         if (!CombatGearItem.checkHoverText(gearStack, world, tooltip)) return;
 
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
-        CompoundNBT upgrades = GearUpgrades.getUpgrades(mirrorInt, cap);
+        CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
 
         if (upgrades.contains(GearUpgrades.mirrorFreeGlyph))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.mirrorFreeGlyph, upgrades));
