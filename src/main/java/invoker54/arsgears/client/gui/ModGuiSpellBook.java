@@ -526,6 +526,7 @@ public class ModGuiSpellBook extends BaseBook {
                 //LOGGER.debug("What's the current stack: " + (slot.stack) + ", what's the max? " + (maxAugmentStack));
                 LOGGER.debug("Did I hit the max? " + (slot.stack == this.maxAugmentStack));
                 if (slot.stack == this.maxAugmentStack) break;
+                if (slot.stack == 1 && spell_recipe.get(spellIndex) instanceof AbstractEffect) break;
                 LOGGER.debug("Stack size: " + (slot.stack + 1));
                 //Increase the slot stack amount
                 slot.stack++;

@@ -14,6 +14,7 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -23,7 +24,12 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ModOrbProjectileEntity extends EntityProjectileSpell{
+    public static final Map<Integer, ArrayList<ModOrbProjectileEntity>> orbStacks = new HashMap<>();
     private static final Logger POGGER = LogManager.getLogger();
 //    int ticksLeft;
     private static final DataParameter<Integer> OWNER_UUID;
@@ -41,6 +47,7 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
     public float threshhold = 0;
     //If the spell should affect the attacker
     public boolean affectOther = false;
+    public LivingEntity lastEntity;
 
     public ModOrbProjectileEntity(World worldIn, double x, double y, double z) {
         super(worldIn, x, y, z);
@@ -50,12 +57,56 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
         super(worldIn, shooter);
     }
 
-    public ModOrbProjectileEntity(World world, SpellResolver resolver) {
+    public ModOrbProjectileEntity(World world, SpellResolver resolver, int ownerID) {
         super(world, resolver);
+
+        setOwnerID(ownerID);
+
+        addToList();
     }
 
     public ModOrbProjectileEntity(EntityType<ModOrbProjectileEntity> entityWardProjectileEntityType, World world) {
         super(entityWardProjectileEntityType, world);
+    }
+
+    public void addToList(){
+        if (level.isClientSide) return;
+
+        POGGER.debug("WHAT'S MY OWNERS ID? " + getOwnerID());
+
+        if (!orbStacks.containsKey(getOwnerID())){
+            POGGER.debug("I AM MAKING A NEW LIST!!!");
+            orbStacks.put(getOwnerID(), new ArrayList<>());
+        }
+
+
+        if (orbStacks.get(getOwnerID()).contains(this)) {
+            POGGER.debug("I WAS ALREADY IN THE LIST!!!");
+            return;
+        }
+
+        orbStacks.get(getOwnerID()).add(this);
+        POGGER.debug("I ADDED MYSELF TO THE LIST!!!");
+        POGGER.debug("HERES THE NEW LIST " + orbStacks.get(getOwnerID()));
+    }
+    public void removeFromList(){
+        POGGER.debug("WHATS MY ID? " + (getOwnerID()));
+        POGGER.debug("DOES MY LIST EXIST? " + (orbStacks.containsKey(getOwnerID())));
+        if (!orbStacks.containsKey(getOwnerID())) return;
+
+        POGGER.debug("I REMOVED MYSELF FROM THE LIST!!!");
+        orbStacks.get(getOwnerID()).remove(this);
+    }
+
+    public static void clearList(int ownerID){
+        if (!orbStacks.containsKey(ownerID)) return;
+
+        while (!orbStacks.get(ownerID).isEmpty()) {
+            orbStacks.get(ownerID).get(0).remove();
+            POGGER.debug("REMOVED AN ENTITY");
+        }
+
+        orbStacks.remove(ownerID);
     }
 
     //These orbs will NOT be affected by what they touch
@@ -65,8 +116,19 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
     }
 
     @Override
-    public void tick() {
-        POGGER.debug("TICKING!");
+    public void remove() {
+        removeFromList();
+        super.remove();
+    }
+
+    @Override
+    public void tick(){
+        if (!level.isClientSide && this.isAlive()){
+            if (!orbStacks.containsKey(getOwnerID())){
+                addToList();
+            }
+        }
+
         this.age++;
         if(!level.isClientSide && this.age > 60 * 20 + 30 * 20 * extraTime){
             POGGER.debug("IM TOO OLD, DELETING MYSELF!");
@@ -159,50 +221,57 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
 
         //This is for calculating threshold
         if (!level.isClientSide()){
-            LivingEntity wardEntity = ((LivingEntity)wardedEntity);
-            float currHealth = wardEntity.getHealth();
+            LivingEntity toBeAffected = ((LivingEntity)wardedEntity);
 
-            if (wardEntity.getLastDamageSource() == null) return;
-            if (!(wardEntity.getLastDamageSource().getEntity() instanceof LivingEntity)) return;
-            LivingEntity attacker = (LivingEntity) wardEntity.getLastDamageSource().getEntity();
-
+            float currHealth = toBeAffected.getHealth();
             if (currHealth < lastHealth){
                 healthLoss += (lastHealth - currHealth);
                 POGGER.debug("HEALTH LOSS IS " + (healthLoss));
             }
+            lastHealth = currHealth;
 
-            if (healthLoss >= threshhold || wardEntity.isDeadOrDying()){
-                this.onThreshold(attacker);
-                this.hasImpulse = true;
+            if (affectOther) {
+                DamageSource lastDamage = toBeAffected.getLastDamageSource();
+                //Make sure it isn't null
+                boolean flag1 = lastDamage != null;
+                //Make sure it's a LivingEntity
+                boolean flag2 = (flag1 && (lastDamage.getEntity() instanceof LivingEntity));
+                //Make sure it's not the warded entity hurting themself somehow
+                boolean flag3 = (flag2 && lastDamage.getEntity().getId() != wardedEntity.getId());
+                if (flag3){
+                    lastEntity = (LivingEntity) lastDamage.getEntity();
+                    POGGER.debug("WHATS THE LAST DAMAGE ENTITY ID " + (lastDamage.getEntity().getId()));
+                    POGGER.debug("WHATS THE LAST DAMAGE NAME " + (lastDamage.getEntity().getName().getString()));
+                    POGGER.debug("WHATS THE WARDED ENTITIES ID " + (wardedEntity.getId()));
+                    POGGER.debug("WHATS THE WARDED ENTITIES NAME " + (wardedEntity.getName().getString()));
+                    POGGER.debug("THIS IS WHO WILL FACE JUDGEMENT!: " + lastDamage.getEntity().getName().getString());
+                }
+
+                toBeAffected = lastEntity;
+
+                if (toBeAffected == null || toBeAffected.isDeadOrDying()){
+                    if (healthLoss >= threshhold) this.remove();
+                    return;
+                }
             }
 
-            lastHealth = currHealth;
+            if ((healthLoss >= threshhold || ((LivingEntity)wardedEntity).isDeadOrDying())){
+                this.onThreshold(toBeAffected);
+                this.hasImpulse = true;
+            }
         }
     }
 
-    protected void onThreshold(LivingEntity attacker) {
+    protected void onThreshold(LivingEntity toBeAffected) {
         if (level.isClientSide)
             return;
 
         if (this.spellResolver != null) {
-            EntityRayTraceResult entityRes;
-            BlockPos pos;
-
-            if (affectOther) {
-                entityRes = new EntityRayTraceResult(attacker);
-                pos = attacker.blockPosition();
-            } else {
-                Entity wardedEntity = attacker.level.getEntity(this.getOwnerID());
-                if (wardedEntity == null) {
-                    attemptRemoval();
-                    return;
-                }
-                entityRes = new EntityRayTraceResult(wardedEntity);
-                pos = wardedEntity.blockPosition();
-            }
+            EntityRayTraceResult entityRes = new EntityRayTraceResult(toBeAffected);
+            BlockPos pos = toBeAffected.blockPosition();
 
             //This is for the actual spell.
-            this.spellResolver.onResolveEffect(level, attacker, entityRes);
+            this.spellResolver.onResolveEffect(level, spellResolver.spellContext.caster, entityRes);
             //This is for effects on the client
             Networking.sendToNearby(level, pos, new PacketANEffect(PacketANEffect.EffectType.BURST,
                     pos, getParticleColorWrapper()));

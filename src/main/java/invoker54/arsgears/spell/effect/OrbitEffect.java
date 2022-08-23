@@ -42,7 +42,7 @@ public class OrbitEffect extends AbstractEffect {
         }
         //This is for flat-value based threshold
         else {
-            threshold = 10;
+            threshold = 8;
             amp = getBuffCount(augments, AugmentAmplify.class);
             damp = getBuffCount(augments, AugmentDampen.class);
         }
@@ -59,13 +59,16 @@ public class OrbitEffect extends AbstractEffect {
 
         if (entityHit == null) return;
 
+        if (world.isClientSide) return;
+
+        ModOrbProjectileEntity.clearList(entityHit.getId());
+
         for(int i = 0; i < total; i++){
-            ModOrbProjectileEntity wardProjectile = new ModOrbProjectileEntity(world, resolver);
+            //Owner Id is the one that carries the orbs...
+            ModOrbProjectileEntity wardProjectile = new ModOrbProjectileEntity(world, resolver, entityHit.getId());
             wardProjectile.lastHealth = entityHit.getHealth();
             wardProjectile.threshhold = threshold * (i + 1);
 //            LOGGER.debug("THRESHOLD FOR PROJ " + (i + 1) + " IS " + (wardProjectile.threshhold) + " HEARTS!");
-            //Owner Id is the owner of the spell...
-            wardProjectile.setOwnerID(entityHit.getId());
             wardProjectile.setOffset(i);
             wardProjectile.setAccelerates(getBuffCount(augments, AugmentAccelerate.class));
             wardProjectile.setAoe(getBuffCount(augments, AugmentAOE.class));
