@@ -7,9 +7,9 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
 import invoker54.arsgears.entity.ModOrbProjectileEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,10 +70,11 @@ public class OrbitEffect extends AbstractEffect {
             wardProjectile.threshhold = threshold * (i + 1);
 //            LOGGER.debug("THRESHOLD FOR PROJ " + (i + 1) + " IS " + (wardProjectile.threshhold) + " HEARTS!");
             wardProjectile.setOffset(i);
-            wardProjectile.setAccelerates(getBuffCount(augments, AugmentAccelerate.class));
-            wardProjectile.setAoe(getBuffCount(augments, AugmentAOE.class));
+//            wardProjectile.setAccelerates(getBuffCount(augments, AugmentAccelerate.class));
+//            wardProjectile.setAoe(getBuffCount(augments, AugmentAOE.class));
+            //            wardProjectile.setTotal(total);
             wardProjectile.extraTime = getBuffCount(augments, AugmentExtendTime.class) - getBuffCount(augments, AugmentDurationDown.class);
-            wardProjectile.setTotal(total);
+            wardProjectile.extraTime *= 5;
             wardProjectile.setColor(resolver.spellContext.colors);
             wardProjectile.affectOther = getBuffCount(augments, AugmentAOE.class) != 0;
             world.addFreshEntity(wardProjectile);
@@ -81,6 +82,12 @@ public class OrbitEffect extends AbstractEffect {
 //            LOGGER.debug("Where is the shooter: X:" + shooter.getX() + " Y:" + shooter.getY() + " Z:" + shooter.getZ());
 //            LOGGER.debug("WHERE TO FIND ENTITY: X:" + wardProjectile.getX() + " Y:" + wardProjectile.getY() + " Z:" + wardProjectile.getZ());
         }
+    }
+
+    //This effect ONLY works on entities. nothing else.
+    @Override
+    public boolean wouldSucceed(RayTraceResult rayTraceResult, World world, LivingEntity shooter, List<AbstractAugment> augments) {
+        return livingEntityHitSuccess(rayTraceResult);
     }
 
     @Override
@@ -95,11 +102,6 @@ public class OrbitEffect extends AbstractEffect {
 
         SpellResolver resolver = new SpellResolver(newContext);
         summonProjectiles(world, shooter, hitEntity, resolver, spellStats.getAugments());
-    }
-
-    @Override
-    public void onResolveBlock(BlockRayTraceResult rayTraceResult, World world, @org.jetbrains.annotations.Nullable LivingEntity shooter, SpellStats spellStats, SpellContext spellContext) {
-        spellContext.setCanceled(true);
     }
 
     @Override

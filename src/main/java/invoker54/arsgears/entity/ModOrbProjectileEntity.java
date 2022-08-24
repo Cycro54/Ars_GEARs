@@ -34,9 +34,9 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
 //    int ticksLeft;
     private static final DataParameter<Integer> OWNER_UUID;
     public static final DataParameter<Integer> OFFSET;
-    public static final DataParameter<Integer> ACCELERATES;
-    public static final DataParameter<Integer> AOE;
-    public static final DataParameter<Integer> TOTAL;
+//    public static final DataParameter<Integer> ACCELERATES;
+//    public static final DataParameter<Integer> AOE;
+//    public static final DataParameter<Integer> TOTAL;
     public int extraTime;
 
     //Your previous health amount
@@ -47,6 +47,7 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
     public float threshhold = 0;
     //If the spell should affect the attacker
     public boolean affectOther = false;
+    //Whoever damaged the warded entity last
     public LivingEntity lastEntity;
 
     public ModOrbProjectileEntity(World worldIn, double x, double y, double z) {
@@ -130,11 +131,17 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
         }
 
         this.age++;
-        if(!level.isClientSide && this.age > 60 * 20 + 30 * 20 * extraTime){
+        //40 seconds plus extra Time seconds
+        if(!level.isClientSide && this.age > 40 * 20 + 20 * extraTime){
             POGGER.debug("IM TOO OLD, DELETING MYSELF!");
             this.remove();
             return;
         }
+//        if(!level.isClientSide && this.age > 60 * 20 + 30 * 20 * extraTime){
+//            POGGER.debug("IM TOO OLD, DELETING MYSELF!");
+//            this.remove();
+//            return;
+//        }
         //if the spell resolver is null
         if(!level.isClientSide && spellResolver == null){
             POGGER.debug("I HAVE NO RESOLVER, DELETING MYSELF!");
@@ -153,10 +160,11 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
             return;
         }
         double rotateSpeed = 7.0;
-        double radiusMultiplier = 1.5 + 0.5*getAoe();
+        double radiusMultiplier = 1.5;
+//        double radiusMultiplier = 1.5 + 0.5;
 
         this.setPos(wardedEntity.getX()- radiusMultiplier * Math.sin(tickCount/rotateSpeed + getOffset()),
-                wardedEntity.getY() + 1,
+                (wardedEntity.getY() / (wardedEntity.isCrouching() ? 2 : 1)) + 1,
                 wardedEntity.getZ()- radiusMultiplier * Math.cos(tickCount/rotateSpeed + getOffset()));
 //        this.setPos(wardedEntity.getX() - Math.sin(tickCount + getOffset()),
 //                wardedEntity.getY() + 1,
@@ -201,7 +209,7 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
         //This is client side stuff, don't mess with it for now
         if(level.isClientSide && this.age > 2) {
             double deltaX = getX() - xOld;
-            double deltaY = getY() - yOld;
+            double deltaY = (getY() / (wardedEntity.isCrouching() ? 2 : 1)) - yOld;
             double deltaZ = getZ() - zOld;
             double dist = Math.ceil(Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 8);
 
@@ -307,26 +315,26 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
         return (Integer)this.entityData.get(OFFSET) * val;
     }
 
-    public void setTotal(int total) {
-        this.entityData.set(TOTAL, total);
-    }
-    public int getTotal() {
-        return (Integer)this.entityData.get(TOTAL) > 0 ? (Integer)this.entityData.get(TOTAL) : 1;
-    }
+//    public void setTotal(int total) {
+//        this.entityData.set(TOTAL, total);
+//    }
+//    public int getTotal() {
+//        return (Integer)this.entityData.get(TOTAL) > 0 ? (Integer)this.entityData.get(TOTAL) : 1;
+//    }
 
-    public void setAccelerates(int accelerates) {
-        this.entityData.set(ACCELERATES, accelerates);
-    }
-    public int getAccelerates() {
-        return (Integer)this.entityData.get(ACCELERATES);
-    }
-
-    public void setAoe(int aoe) {
-        this.entityData.set(AOE, aoe);
-    }
-    public int getAoe() {
-        return (Integer)this.entityData.get(AOE);
-    }
+//    public void setAccelerates(int accelerates) {
+//        this.entityData.set(ACCELERATES, accelerates);
+//    }
+//    public int getAccelerates() {
+//        return (Integer)this.entityData.get(ACCELERATES);
+//    }
+//
+//    public void setAoe(int aoe) {
+//        this.entityData.set(AOE, aoe);
+//    }
+//    public int getAoe() {
+//        return (Integer)this.entityData.get(AOE);
+//    }
 
 //    public int getTicksLeft() {
 //        return this.ticksLeft;
@@ -346,29 +354,29 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
         super.defineSynchedData();
         this.entityData.define(OWNER_UUID, 0);
         this.entityData.define(OFFSET, 0);
-        this.entityData.define(ACCELERATES, 0);
-        this.entityData.define(AOE, 0);
-        this.entityData.define(TOTAL, 0);
+//        this.entityData.define(ACCELERATES, 0);
+//        this.entityData.define(AOE, 0);
+//        this.entityData.define(TOTAL, 0);
     }
 
     public void addAdditionalSaveData(CompoundNBT tag) {
         super.addAdditionalSaveData(tag);
-//        tag.putInt("left", this.ticksLeft);
         tag.putInt("offset", this.getOffset());
-        tag.putInt("aoe", this.getAoe());
-        tag.putInt("accelerate", this.getAccelerates());
-        tag.putInt("total", this.getTotal());
         tag.putInt("ownerID", this.getOwnerID());
+//        tag.putInt("left", this.ticksLeft);
+//        tag.putInt("aoe", this.getAoe());
+//        tag.putInt("accelerate", this.getAccelerates());
+//        tag.putInt("total", this.getTotal());
     }
 
     public void readAdditionalSaveData(CompoundNBT tag) {
         super.readAdditionalSaveData(tag);
-//        this.ticksLeft = tag.getInt("left");
         this.setOffset(tag.getInt("offset"));
-        this.setAoe(tag.getInt("aoe"));
-        this.setAccelerates(tag.getInt("accelerate"));
         this.setOwnerID(tag.getInt("ownerID"));
-        this.setTotal(tag.getInt("total"));
+//        this.ticksLeft = tag.getInt("left");
+//        this.setAoe(tag.getInt("aoe"));
+//        this.setAccelerates(tag.getInt("accelerate"));
+//        this.setTotal(tag.getInt("total"));
     }
 
     public EntityType<?> getType() {
@@ -386,8 +394,8 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
     static {
         OWNER_UUID = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
         OFFSET = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
-        ACCELERATES = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
-        AOE = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
-        TOTAL = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
+//        ACCELERATES = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
+//        AOE = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
+//        TOTAL = EntityDataManager.defineId(ModOrbProjectileEntity.class, DataSerializers.INT);
     }
 }
