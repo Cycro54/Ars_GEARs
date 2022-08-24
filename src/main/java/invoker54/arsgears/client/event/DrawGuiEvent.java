@@ -70,7 +70,7 @@ public class DrawGuiEvent {
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
         int gearCycle = GearCap.getCap(gearStack).getSelectedItem();
 
-        renderCircle(event.getMatrixStack(), x, y, 12, spell, gearStack.getOrCreateTag(), gearStack, gearCycle, false);
+        renderCircle(stack, x, y, 12, spell, gearStack.getOrCreateTag(), gearStack, gearCycle, false);
     }
 
     @SubscribeEvent
@@ -128,7 +128,7 @@ public class DrawGuiEvent {
         PlayerEntity player = ClientUtil.mC.player;
 
         IMana cap = ManaCapability.getMana(player).resolve().get();
-        int cost = CombatGearItem.SpellM.getInitialCost(spell, gearCycle, gearStack);
+        int cost = spell.getCastingCost();
         //float costAngle = (180f * ((float) cost/cap.getMaxMana()));
         //Mana side
         float manaAngle = (float) (180 * (cap.getCurrentMana()/(float)cost));
