@@ -55,7 +55,7 @@ public class ModGuiRadialMenu extends Screen {
         super(new StringTextComponent(""));
         this.tag = gearStack.getOrCreateTag();
         //This is minus 1 because the 2nd tier (which is 1 for ordinal) cannot cast spells either & you can only have a max of 3 spells
-        this.numberOfSlices = CombatGearCap.getCap(gearStack).getTier().ordinal() - 1;
+        this.numberOfSlices = CombatGearCap.getCap(gearStack).getTier().ordinal();
         this.closing = false;
         this.minecraft = Minecraft.getInstance();
         this.selectedItem = -1;

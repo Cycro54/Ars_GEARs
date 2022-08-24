@@ -5,7 +5,6 @@ import com.hollingsworth.arsnouveau.common.spell.augment.AugmentAmplify;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentDampen;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentPierce;
 import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -22,12 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class ModUnderfootEffect  extends AbstractEffect {
-    public static ModUnderfootEffect INSTANCE = new ModUnderfootEffect();
+public class VerticalityEffect extends AbstractEffect {
+    public static VerticalityEffect INSTANCE = new VerticalityEffect();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ModUnderfootEffect() {
-        super("modded_underfoot", "Underfoot");
+    public VerticalityEffect() {
+        super("verticality", "Verticality");
     }
 
     @Override
@@ -75,12 +74,12 @@ public class ModUnderfootEffect  extends AbstractEffect {
 //                result = new BlockRayTraceResult(hitEntity.position(), Direction.DOWN, hitEntity.blockPosition().below(), true);
 //            }
 //        }
-
-        if (world.getBlockState(result.getBlockPos()).getBlock() != Blocks.AIR) {
-            result = result.withPosition(result.getBlockPos().offset(0, pierceAmount * direction, 0));
-        }
-
         resolver.onResolveEffect(world, shooter, result);
+
+        for (int a = 0; a < pierceAmount; a++) {
+            result = result.withPosition(result.getBlockPos().offset(0, (a + 1) * direction, 0));
+            resolver.onResolveEffect(world, shooter, result);
+        }
     }
 
     @Override
@@ -99,7 +98,7 @@ public class ModUnderfootEffect  extends AbstractEffect {
 
     @Override
     public int getManaCost() {
-        return 5;
+        return 20;
     }
 
     @Nonnull
@@ -111,7 +110,7 @@ public class ModUnderfootEffect  extends AbstractEffect {
 
     @Override
     public String getBookDescription() {
-        return "Targets the spell on the block beneath the player.";
+        return "A spell that targets the place above or below the entity hit.";
     }
 
     @Nullable

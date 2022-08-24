@@ -36,7 +36,7 @@ public class OrbitEffect extends AbstractEffect {
         //This is for percentage based threshold
         if (getBuffCount(augments, AugmentSensitive.class) == 0) {
             threshold = entityHit.getMaxHealth() * 0.25f;
-            float difference = entityHit.getMaxHealth() * 0.04f;
+            float difference = entityHit.getMaxHealth() * 0.05f;
             amp = getBuffCount(augments, AugmentAmplify.class) * difference;
             damp = getBuffCount(augments, AugmentDampen.class) * difference;
         }
@@ -47,7 +47,7 @@ public class OrbitEffect extends AbstractEffect {
             damp = getBuffCount(augments, AugmentDampen.class);
         }
 
-        threshold += amp - damp;
+        threshold += (amp - damp) * 2;
         LOGGER.debug("THRESHOLD IS " + (threshold) +" HEARTS");
         return MathHelper.clamp(threshold, 1, entityHit.getMaxHealth() - 1);
     }

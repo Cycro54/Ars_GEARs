@@ -79,7 +79,9 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         }
 
         //Goes through the current spells
-        for (int a = 1; a < 3 + 1; a++){
+        int amountOfSpells = this.getTier().ordinal();
+
+        for (int a = 1; a < amountOfSpells + 1; a++){
             if (tagNBT.contains((a)+recipe)){
                 //Spell itself
                 capNBT.putString(((a)+recipe), tagNBT.getString(((a)+recipe)));
@@ -94,7 +96,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
             CompoundNBT coolDownNBT = tagNBT.getCompound(COMBAT_GEAR + COOLDOWN);
             CompoundNBT capCoolDowns = new CompoundNBT();
             if (capNBT.contains(COMBAT_GEAR + COOLDOWN)) capCoolDowns = capNBT.getCompound(COMBAT_GEAR + COOLDOWN);
-            for (int a = 1; a < 3 + 1; a++) {
+            for (int a = 1; a < amountOfSpells + 1; a++) {
                 if (coolDownNBT.contains("" + a)) {
                     //Cooldowns
                     capCoolDowns.putFloat("" + a, coolDownNBT.getFloat("" + a));
@@ -117,7 +119,8 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         }
 
         //Goes through the current spells
-        for (int a = 1; a < 3 + 1; a++){
+        int amountOfSpells = this.getTier().ordinal();
+        for (int a = 1; a < amountOfSpells + 1; a++){
             if (capNBT.contains((a)+recipe)){
                 //Spell itself
                 tagNBT.putString(((a)+recipe), capNBT.getString(((a)+recipe)));
@@ -130,7 +133,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         if (capNBT.contains(COMBAT_GEAR + COOLDOWN)) {
             CompoundNBT capCoolDowns = capNBT.getCompound(COMBAT_GEAR + COOLDOWN);
             CompoundNBT tagCooldowns = new CompoundNBT();
-            for (int a = 1; a < 3 + 1; a++) {
+            for (int a = 1; a < amountOfSpells + 1; a++) {
                 if (capCoolDowns.contains("" + a)) {
                     //Cooldowns
                     tagCooldowns.putFloat("" + a, capCoolDowns.getFloat("" + a));

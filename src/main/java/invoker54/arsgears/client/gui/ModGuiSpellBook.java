@@ -202,7 +202,7 @@ public class ModGuiSpellBook extends BaseBook {
         addButton(spell_name);
         addButton(searchBar);
         // Add spell slots (these are the tabs of the book on the right)
-        for(int i = 1; i <= max_spell_tier; i++){
+        for(int i = 1; i <= max_spell_tier + 1; i++){
             ModGuiSpellSlot slot = new ModGuiSpellSlot(this,bookLeft + 281, bookTop +1 + 15 * i, i);
             if(i == selected_slot_ind) {
                 selected_slot = slot;
