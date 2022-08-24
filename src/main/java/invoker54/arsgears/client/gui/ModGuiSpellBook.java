@@ -99,14 +99,15 @@ public class ModGuiSpellBook extends BaseBook {
 
         //Tier of my combat gear (minus 1 since I also don't want the player casting on STONE tier)
         this.max_spell_tier = (CombatGearCap.getCap(gearStack).getTier().ordinal() - 1);
+        if (ClientUtil.mC.player.isCreative()) this.max_spell_tier = 3;
         //The spell book tag (where all the spell book data is stored)
         this.spell_book_tag = gearStack.getOrCreateTag();
         this.gearStack = gearStack;
         //Unlocked Spells
         String stringSpells = SpellBook.getUnlockedSpellString(gearStack.getOrCreateTag());
         this.unlockedSpells = SpellRecipeUtil.getSpellsFromString(stringSpells);
+        if (ClientUtil.mC.player.isCreative()) this.unlockedSpells = new ArrayList<>(ArsNouveauAPI.getInstance().getSpell_map().values());
         this.selected_cast_slot = selected_cast_slot;
-
         this.castMethods = new ArrayList<>();
         this.augments = new ArrayList<>();
         allEffects = new ArrayList<>();
@@ -142,39 +143,28 @@ public class ModGuiSpellBook extends BaseBook {
 
         //Max amount of times a augment may stack onto itself (This can only be opened at tier 2)
         //Also will tell us how many crafting slots are allowed.
-        switch (max_spell_tier){
-            default:
-                numLinks = 4;
-                maxAugmentStack = 3;
-                break;
-            case 2:
-                numLinks = 5;
-                maxAugmentStack = 4;
-                break;
-            case 3:
-                numLinks = 6;
-                maxAugmentStack = 5;
-                break;
-        }
+        maxAugmentStack = max_spell_tier;
+        numLinks = 4 + (2 * max_spell_tier);
+
         //Craft slots for the spell
         if (craftingCells.isEmpty()) {
             for (int i = 0; i < numLinks; i++) {
-                String icon = null;
-                String spell_id = "";
-                int offset = i >= 5 ? 14 : 0;
-                ModCraftingButton cell = new ModCraftingButton(this, bookLeft + 19 + 24 * i + offset, bookTop + FULL_HEIGHT - 47, i, this::onCraftingSlotClick);
+//                    String icon = null;
+//                    String spell_id = "";
                 //ModGlyphButton glyphButton = new ModGlyphButton(this,bookLeft + 10 + 28 * i, bookTop + FULL_HEIGHT - 24, )
-                addButton(cell);
-                craftingCells.add(cell);
-            }
+                int x = bookLeft + 19 + 24 * i + (i >= 5 ? -(24 * 5) : 0);
+                int y = (bookTop + FULL_HEIGHT - 70) + (i >= 5 ? 24 : 0);
+                ModCraftingButton cell = new ModCraftingButton(this, x, y, i, this::onCraftingSlotClick);
+                    addButton(cell);
+                    craftingCells.add(cell);
+                }
             updateCraftingSlots(selected_slot_ind);
         }
         else {
             for (int a = 0; a < craftingCells.size(); a++){
                 addButton(craftingCells.get(a));
-                int offset = a >= 5 ? 14 : 0;
-                craftingCells.get(a).x = (bookLeft + 19 + 24 * a + offset);
-                craftingCells.get(a).y = (bookTop + FULL_HEIGHT - 47);
+                craftingCells.get(a).x = (bookLeft + 19 + 24 * a + (a >= 5 ? -(24 * 5) : 0));
+                craftingCells.get(a).y = (bookTop + FULL_HEIGHT - 70) + (a >= 5 ? 24 : 0);
             }
         }
 //        addCastMethodParts();
@@ -302,12 +292,12 @@ public class ModGuiSpellBook extends BaseBook {
         augmentTextRow = 0;
         effectTextRow = 0;
         final int PER_ROW = 6;
-        final int MAX_ROWS = 6;
+        final int MAX_ROWS = 5;
         boolean nextPage = false;
         int xStart = nextPage ? bookLeft + 154 : bookLeft + 20;
         int adjustedRowsPlaced = 0;
         int yStart = bookTop + 20;
-        boolean foundForms = false;
+        //boolean foundForms = false;
         boolean foundAugments = false;
         boolean foundEffects = false;
         List<AbstractSpellPart> sorted = new ArrayList<>();
@@ -336,18 +326,31 @@ public class ModGuiSpellBook extends BaseBook {
 
             if(!foundAugments && part instanceof AbstractAugment){
                 foundAugments = true;
-                adjustedRowsPlaced += row_offset;
-                totalRowsPlaced += row_offset;
-                augmentTextRow = page != 0 ? 0 : totalRowsPlaced - 1;
+                adjustedRowsPlaced += 1;
+                totalRowsPlaced += 1;
+                augmentTextRow = page != 0 ? 0 : totalRowsPlaced;
                 adjustedXPlaced = 0;
+//                foundAugments = true;
+//                adjustedRowsPlaced += row_offset;
+//                totalRowsPlaced += row_offset;
+//                augmentTextRow = page != 0 ? 0 : totalRowsPlaced - 1;
+//                adjustedXPlaced = 0;
             } else if(!foundEffects && part instanceof AbstractEffect){
                 foundEffects = true;
+                if (foundAugments) {
+                    nextPage = true;
+                    totalRowsPlaced = 0;
+                    adjustedXPlaced = 0;
+                    adjustedRowsPlaced = 1;
+                    effectTextRow = MAX_ROWS + 1;
+                }
+                else {
                 adjustedRowsPlaced += row_offset;
                 totalRowsPlaced += row_offset;
                 effectTextRow = page != 0 ? 0 :totalRowsPlaced - 1;
                 adjustedXPlaced = 0;
+                }
             }else{
-
                 if(adjustedXPlaced >= PER_ROW){
                     adjustedRowsPlaced++;
                     totalRowsPlaced++;
@@ -516,6 +519,7 @@ public class ModGuiSpellBook extends BaseBook {
             //Assign this slot a Spell part using Spell index
             slot.spellTag = spell_recipe.get(spellIndex).getTag();
             slot.resourceIcon = spell_recipe.get(spellIndex).getIcon();
+            slot.isAugment = (spell_recipe.get(spellIndex) instanceof AbstractAugment);
             LOGGER.debug("SPELL INDEX SIZE BEFORE STACK COUNT " + spellIndex);
             //If there are Spell parts that equal the current spell part, stack em till the limit is reached or it's the end of the spell
             for (; spellIndex < spell_recipe.size(); spellIndex++){
@@ -597,15 +601,17 @@ public class ModGuiSpellBook extends BaseBook {
 
     public void drawBackgroundElements(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
         super.drawBackgroundElements(stack, mouseX, mouseY, partialTicks);
-        if(formTextRow >= 1) {
-            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.form").getString(), formTextRow > 6 ? 154 : 20 ,  5 + 18 * (formTextRow + (formTextRow == 1 ? 0 : 1)), -8355712);
-        }
+//        if(formTextRow >= 1) {
+//            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.form").getString(), formTextRow > 6 ? 154 : 20 ,  5 + 18 * (formTextRow + (formTextRow == 1 ? 0 : 1)), -8355712);
+//        }
         if(effectTextRow >= 1) {
-
-            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.effect").getString(), effectTextRow > 6 ? 154 : 20,  5 + 18 * (effectTextRow  + 1), -8355712);
+//            int effectY = 5 + 18 * (effectTextRow + 1 - (effectTextRow >= 5 ? 5 : 0));
+            int effectY = 5 + 18 * (effectTextRow + 1 - (effectTextRow >= 5 ? 6 : 0));
+            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.effect").getString(), effectTextRow > 5 ? 154 : 20, effectY, -8355712);
         }
         if(augmentTextRow >= 1) {
-            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.augment").getString(), augmentTextRow > 6 ? 154 : 20,  5 + 18 * (augmentTextRow + 1), -8355712);
+//            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.augment").getString(), augmentTextRow > 6 ? 154 : 20,  5 + 18 * (augmentTextRow + 1), -8355712);
+            minecraft.font.draw(stack, new TranslationTextComponent("ars_nouveau.spell_book_gui.augment").getString(), augmentTextRow > 6 ? 154 : 20,  5 + 18 * (augmentTextRow + (augmentTextRow == 1 ? 0 : 1)), -8355712);
         }
         drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/gui/spell_name_paper.png"), 16, 179, 0, 0, 109, 15,109,15, stack);
         drawFromTexture(new ResourceLocation(ArsNouveau.MODID, "textures/gui/search_paper.png"), 203, 0, 0, 0, 72, 15,72,15, stack);
