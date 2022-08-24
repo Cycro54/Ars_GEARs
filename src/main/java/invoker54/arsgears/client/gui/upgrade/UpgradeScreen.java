@@ -394,11 +394,11 @@ public class UpgradeScreen extends Screen {
 
             //Make the pressable
             Button.IPressable iPress = (button) -> {
-                //Place the lvl into the custom Upgrade Compount NBT with its upgradeName
+                //Place the lvl into the custom Upgrade Compound NBT with its upgradeName
                 GearUpgrades.getUpgrades(gearStack).putInt(upgradeName, lvl);
 
                 //Now finally make sure to sync these changes with the server
-                NetworkHandler.INSTANCE.sendToServer(new buyUpgradeMsg(getCap().getTag(gearCycle), -1, price));
+                NetworkHandler.INSTANCE.sendToServer(new buyUpgradeMsg(gearStack.getOrCreateTag(), -1, price));
 
                 mC.player.giveExperiencePoints(-price);
 

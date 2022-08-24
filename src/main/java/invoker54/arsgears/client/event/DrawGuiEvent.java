@@ -15,7 +15,6 @@ import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.CircleRender;
 import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -41,6 +40,7 @@ public class DrawGuiEvent {
     private static int colorRed = new Color(255, 77, 77,255).getRGB();
     private static int colorGreen = new Color(75, 232, 82,255).getRGB();
     private static int transparentGreyColor = new Color(91, 91, 91, 187).getRGB();
+    private static int transparentBlackColor = new Color(0, 0, 0, 202).getRGB();
     private static int greyColor = new Color(194, 194, 194, 236).getRGB();
     private static int blueColor = new Color(0, 140, 255, 255).getRGB();
 
@@ -70,7 +70,7 @@ public class DrawGuiEvent {
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
         int gearCycle = GearCap.getCap(gearStack).getSelectedItem();
 
-        renderCircle(stack, x, y, 12, spell, gearStack.getOrCreateTag(), gearStack, gearCycle, false);
+        renderCircle(stack, x, y, 12, spell, gearStack.getOrCreateTag(), gearStack, gearCycle);
     }
 
     @SubscribeEvent
@@ -83,13 +83,7 @@ public class DrawGuiEvent {
         if (gearStack.isEmpty()) return;
         CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
 
-        CompoundNBT itemTag;
-        if (gearStack.getItem() instanceof ModSpellMirror){
-            itemTag = gearStack.getOrCreateTag();
-        }
-        else{
-            itemTag = gearCap.getTag(mirrorInt);
-        }
+        CompoundNBT itemTag = gearCap.getTag(mirrorInt);
 
         int quickLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.mirrorQuickCast);
 //        LOGGER.debug("DOES QUICK LEVEL EQUAL 0? " + (quickLvl == 0));
@@ -106,7 +100,6 @@ public class DrawGuiEvent {
         if (!spell.isEmpty() && spell.getSpellSize() > 1){
             spell_icon = new ResourceLocation(ArsNouveau.MODID, "textures/items/" + spell.recipe.get(1).getIcon());
         }
-//        SpellResolver resolver = new SpellResolver(new SpellContext(spell, ClientUtil.mC.player));
 
         int x = 16;
         int y = event.getWindow().getGuiScaledHeight() - 32 - 16 - 16;
@@ -121,10 +114,13 @@ public class DrawGuiEvent {
         ClientUtil.TEXTURE_MANAGER.release(spell_slot_frame);
 
         //If the spell is on cooldown, or mana is low, render the mana circle
-        renderCircle(stack, x + 16, y + 16, 16, spell, itemTag, gearStack, mirrorInt, true);
+        if (!CombatGearItem.SpellM.canCast(player, spell, itemTag)) {
+            ClientUtil.blitColor(stack, x, 32, y, 32, transparentBlackColor);
+            renderCircle(stack, x + 16, y + 16, 16, spell, itemTag, gearStack, mirrorInt);
+        }
     }
 
-    public static void renderCircle(MatrixStack stack, int x, int y, float radius, Spell spell, CompoundNBT itemTag, ItemStack gearStack, int gearCycle, boolean hide){
+    public static void renderCircle(MatrixStack stack, int x, int y, float radius, Spell spell, CompoundNBT itemTag, ItemStack gearStack, int gearCycle){
         PlayerEntity player = ClientUtil.mC.player;
 
         IMana cap = ManaCapability.getMana(player).resolve().get();
@@ -148,7 +144,7 @@ public class DrawGuiEvent {
         cooldownAngle =  MathHelper.clamp(cooldownAngle, 0, 180);
         int blackColor = new Color(19, 19, 19, 255).getRGB();
 
-        if (currentCooldown <= 0 && (cap.getCurrentMana() >= cost || player.abilities.instabuild) && hide) return;
+        if (currentCooldown <= 0 && (cap.getCurrentMana() >= cost || player.abilities.instabuild)) return;
 
         //Rendering part
         RenderSystem.enableBlend();

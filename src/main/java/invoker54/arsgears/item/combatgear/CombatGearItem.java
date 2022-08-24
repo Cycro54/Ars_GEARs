@@ -1,7 +1,9 @@
 package invoker54.arsgears.item.combatgear;
 
+import com.hollingsworth.arsnouveau.api.mana.IMana;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
+import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.effect.EffectBreak;
 import invoker54.arsgears.ArsUtil;
@@ -153,7 +155,7 @@ public class CombatGearItem extends Item {
 
     //These are SpellBook methods that should've been static
     public static class SpellM {
-        public static Spell getCurrentRecipe(ItemStack stack){
+        public static Spell getCurrentRecipe(ItemStack stack) {
             return SpellBook.getRecipeFromTag(stack.getTag(), getMode(stack.getTag()));
         }
 
@@ -169,7 +171,7 @@ public class CombatGearItem extends Item {
                 }
 
                 //This will increase and decrease the mana cost (For the mirror only)
-                if (gearCycle == mirrorInt){
+                if (gearCycle == mirrorInt) {
                     //First get the cost times 2
                     cost *= 2;
 
@@ -190,9 +192,13 @@ public class CombatGearItem extends Item {
             return cost;
         }
 
+        public static boolean canCast(PlayerEntity player, Spell spell, CompoundNBT itemTag) {
+            IMana cap = ManaCapability.getMana(player).resolve().get();
+            int cost = spell.getCastingCost();
+            boolean flag1 = (cap.getCurrentMana() >= cost);
+            boolean flag2 = CombatGearItem.getCooldown(player, itemTag, SpellBook.getMode(itemTag), true) <= 0;
 
-//        public static void onCast(ItemStack gearStack, PlayerEntity player, World world, SpellResolver resolver){
-//
-//        }
+            return flag1 && flag2;
+        }
     }
 }
