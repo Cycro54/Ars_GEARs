@@ -86,6 +86,8 @@
   "ars_gears.chat.use_glyph_banned": "This glyph can't be used: ",
   "ars_gears.chat.use_glyph_cast_method": "You can't learn cast methods!",
   "ars_gears.chat.use_spell_book": "Spell Books are disabled.",
+  "ars_gears.chat.use_other_tool_jealous": "Your GEARs grow jealous.",
+  "ars_gears.chat.use_other_tool": "You must use a GEAR tool.",
 
   "__comment": "This is for the GEAR upgrades",
   "ars_gears.upgrades.SWORD_MANA_STEAL": "Mana Steal",
