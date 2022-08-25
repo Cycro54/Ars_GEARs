@@ -41,7 +41,7 @@ public class KeybindsInit {
 
     public static void registerKeys(){
         //Cycle selected item for combar and utility gear
-        cycleGear = addBind(new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
+        cycleGear = addBind(new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_R, (action) ->{
             if(action != GLFW.GLFW_PRESS) return;
 
             if(ClientUtil.mC.screen != null) return;
@@ -110,7 +110,7 @@ public class KeybindsInit {
             NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
         })));
 
-        quick_cast = addBind(new CustomKeybind("quick_cast", GLFW.GLFW_KEY_Z, (action -> {
+        quick_cast = addBind(new CustomKeybind("quick_cast", GLFW.GLFW_KEY_G, (action -> {
             if(action != GLFW.GLFW_PRESS) return;
 
             if(ClientUtil.mC.screen != null) return;

@@ -34,7 +34,7 @@ displayName = "Ars GEARs" #mandatory
 authors = "Invoker54" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description = '''
-A mod that rebalances and changes the way Ars Nouveau works
+An addon that rebalances and changes the way Ars Nouveau works
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.ars_gears]] #optional
