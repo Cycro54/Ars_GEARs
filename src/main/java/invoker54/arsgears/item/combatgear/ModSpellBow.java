@@ -1,6 +1,7 @@
 package invoker54.arsgears.item.combatgear;
 
 import com.hollingsworth.arsnouveau.api.item.ICasterTool;
+import com.hollingsworth.arsnouveau.api.item.IScribeable;
 import com.hollingsworth.arsnouveau.api.spell.*;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.entity.EntitySpellArrow;
@@ -52,7 +53,7 @@ import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
 import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
 
-public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
+public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IScribeable {
     private static final Logger LOGGER = LogManager.getLogger();
     public AnimationFactory factory = new AnimationFactory(this);
 
@@ -97,7 +98,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool {
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack gearStack = playerIn.getItemInHand(handIn);
 
-        if(worldIn.isClientSide || !gearStack.hasTag()){
+        if(worldIn.isClientSide){
             return ActionResult.fail(gearStack);
         }
 

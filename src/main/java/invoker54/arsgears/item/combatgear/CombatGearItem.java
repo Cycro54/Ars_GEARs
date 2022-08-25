@@ -58,6 +58,12 @@ public class CombatGearItem extends Item {
         //If the item tier isn't high enough and the item is somehow activated, deactivate it.
         if (cap.getTier().ordinal() <= 1 && cap.getActivated()) cap.setActivated(false);
 
+        //Make sure the player has all the glyph bonuses
+        IMana mana = ManaCapability.getMana(player).resolve().get();
+        int glyphCount = SpellBook.getUnlockedSpells(gearStack.getOrCreateTag()).size();
+        if (glyphCount != mana.getGlyphBonus()) mana.setGlyphBonus(glyphCount);
+
+        //Make sure the player isn't trying to use a banned glyph
         if (cap.getActivated()){
             int mode = SpellBook.getMode(gearStack.getOrCreateTag());
             Spell spell = SpellBook.getRecipeFromTag(gearStack.getOrCreateTag(), mode);

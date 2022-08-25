@@ -20,8 +20,7 @@ public class PlayerDataCap implements IPlayerCap {
 
     private ItemStack utility_gear_copy;
     private ItemStack utility_gear_tracked;
-    
-    
+
     private ItemStack combat_gear_copy;
     private ItemStack combat_gear_tracked;
     public PlayerDataCap(){

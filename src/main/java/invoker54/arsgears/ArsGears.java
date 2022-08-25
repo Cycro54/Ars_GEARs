@@ -1,18 +1,13 @@
 package invoker54.arsgears;
 
-import com.hollingsworth.arsnouveau.ArsNouveau;
 import invoker54.arsgears.client.keybind.KeybindsInit;
-import invoker54.arsgears.client.render.CustomFishRenderer;
-import invoker54.arsgears.client.render.edited.RenderRitualProjectile;
 import invoker54.arsgears.init.CapInit;
 import invoker54.arsgears.init.ContainerInit;
-import invoker54.arsgears.init.EntityInit;
 import invoker54.arsgears.init.GlyphInit;
+import invoker54.arsgears.init.RenderInit;
 import invoker54.arsgears.network.NetworkHandler;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -62,8 +57,7 @@ public class ArsGears {
         // do something that can only be done on the client
 //        LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
         KeybindsInit.registerKeys();
-        RenderingRegistry.registerEntityRenderingHandler(EntityInit.FISHING_BOBBER, CustomFishRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityInit.MODDED_ORBIT, renderManager -> new RenderRitualProjectile(renderManager, new ResourceLocation(ArsNouveau.MODID, "textures/entity/spell_proj.png")));
+        RenderInit.initializeRenderers();
         ContainerInit.initialize();
     }
 

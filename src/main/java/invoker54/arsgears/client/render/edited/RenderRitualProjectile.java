@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
+
 public class RenderRitualProjectile extends RenderBlank {
     public RenderRitualProjectile(EntityRendererManager renderManager, ResourceLocation entityTexture) {
         super(renderManager, entityTexture);

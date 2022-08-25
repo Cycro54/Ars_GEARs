@@ -18,7 +18,7 @@ public class ScribeTableEvent {
     @SubscribeEvent
     public static void rightClickTable(PlayerInteractEvent.RightClickBlock event){
         if(event.getWorld().getBlockState(event.getPos()).getBlock() == BlockRegistry.SCRIBES_BLOCK){
-            if (event.getHand() == Hand.OFF_HAND) return;
+            if (event.getHand() != Hand.OFF_HAND) return;
             if (!event.getPlayer().isCrouching()) return;
 
             ItemStack gearStack = event.getItemStack();

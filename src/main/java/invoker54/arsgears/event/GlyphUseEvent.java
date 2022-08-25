@@ -26,12 +26,13 @@ public class GlyphUseEvent {
 
         if (!(itemStack.getItem() instanceof Glyph)) return;
 
-        if (((Glyph)itemStack.getItem()).spellPart instanceof AbstractCastMethod) {
-            event.getPlayer().sendMessage(new StringTextComponent("You can't learn cast methods!"),  Util.NIL_UUID);
-            return;
-        }
         //If this is happening on the client, just return.
         if (event.getSide() == LogicalSide.CLIENT) return;
+
+        if (((Glyph)itemStack.getItem()).spellPart instanceof AbstractCastMethod) {
+            event.getPlayer().sendMessage(new TranslationTextComponent("ars_gears.chat.use_glyph_cast_method"),  Util.NIL_UUID);
+            return;
+        }
 
         //Grab the extra needed objects
         PlayerEntity player = event.getPlayer();
