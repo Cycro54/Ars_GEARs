@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "For all tiers after STONE tier:$(br2)You gain 1 spell slot every tier (1 start, 3 in total)$(br2)You gain 1 crafting slot every tier (4 start, 6 total)$(br2)Augment stacks increase by 1 every tier (3 start, 5 total)"
+      "text": "For all tiers after STONE tier:$(br2)You gain 1 spell slot every tier (2 start, 4 in total)$(br2)You gain 1 crafting slot every tier (6 start, 10 total)$(br2)Augment stacking increases by 1 every tier (1 start, 3 total)"
     },
     {
       "type": "text",

@@ -77,6 +77,7 @@ public class ModGlyphButton extends Button {
                     List<ITextComponent> tip = new ArrayList<>();
                     AbstractSpellPart spellPart = parent.api.getSpell_map().get(this.spell_id);
                     tip.add(new TranslationTextComponent(spellPart.getLocalizationKey()));
+
                     for (SpellValidationError ve : validationErrors) {
                         tip.add(ve.makeTextComponentAdding().withStyle(TextFormatting.RED));
                     }

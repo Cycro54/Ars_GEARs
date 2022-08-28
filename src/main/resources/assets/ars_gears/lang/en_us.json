@@ -11,6 +11,8 @@
   "__comment": "This is for some text in the ModGuiSpellbook class",
   "ars_nouveau.spell.validation.exists.banned_glyph": "This glyph is banned %s",
   "ars_nouveau.spell.validation.adding.banned_glyph": "This glyph is banned %s",
+  "ars_gears.spell_book.gui.stack_augment.increase": "§aLEFT CLICK to decrease stack§r",
+  "ars_gears.spell_book.gui.stack_augment.decrease": "§cRIGHT CLICK to increase§r",
 
   "__comment": "This is for UTILITY item names",
   "item.ars_gears.utility.wood_utility_gear": "Utility GEAR (Wood)",

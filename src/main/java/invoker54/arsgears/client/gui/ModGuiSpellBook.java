@@ -71,7 +71,7 @@ public class ModGuiSpellBook extends BaseBook {
     public CompoundNBT spell_book_tag;
     public ModGuiSpellSlot selected_slot;
     public int max_spell_tier; // Used to load spells that are appropriate tier
-    List<ModCraftingButton> craftingCells = new ArrayList<>();
+    public List<ModCraftingButton> craftingCells = new ArrayList<>();
     public List<AbstractSpellPart> unlockedSpells;
     public List<AbstractSpellPart> castMethods;
     public List<AbstractSpellPart> augments;
@@ -471,6 +471,20 @@ public class ModGuiSpellBook extends BaseBook {
         ModGlyphButton button1 = (ModGlyphButton) button;
 
         if (button1.validationErrors.isEmpty()) {
+            if (button1.isAugment) {
+                for (int a = craftingCells.size() - 1; a > 0; a--) {
+                    ModCraftingButton b = craftingCells.get(a);
+                    if (!Objects.equals(b.resourceIcon, "") && !b.isAugment) break;
+
+                    if (Objects.equals(b.resourceIcon, button1.resourceIcon)
+                            && b.stack < maxAugmentStack) {
+                        b.stack++;
+                        validate();
+                        return;
+                    }
+                }
+            }
+
             for (ModCraftingButton b : craftingCells) {
                 if (b.resourceIcon.equals("")) {
                     b.resourceIcon = button1.resourceIcon;

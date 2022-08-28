@@ -349,7 +349,7 @@ public class ModOrbProjectileEntity extends EntityProjectileSpell{
     public void setOwnerID(int uuid) {
         this.getEntityData().set(OWNER_UUID, uuid);
     }
-    
+
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(OWNER_UUID, 0);
