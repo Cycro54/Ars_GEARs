@@ -1,11 +1,9 @@
 package invoker54.arsgears.capability.gear;
 
-import com.mojang.serialization.MapLike;
-import invoker54.arsgears.capability.gear.utilgear.GearProvider;
-import invoker54.arsgears.item.GearUpgrades;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.item.GearTier;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -13,23 +11,54 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openzen.zenscript.codemodel.expression.MatchExpression;
 
 import javax.annotation.Nullable;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.SeekableByteChannel;
-import java.util.Map;
+
+import static invoker54.arsgears.init.ItemInit.*;
 
 public class GearCap implements IGearCap {
     private static final Logger LOGGER = LogManager.getLogger();
     private final String SELECTED_ITEM = "SELECTED_ITEM";
     private final String ITEM_TAG = "ITEM_TAG";
+    private final String TIER = "TIER";
+
+    private GearTier gearTier = GearTier.WOOD;
+    protected ItemStack gearStack;
+
+    public GearTier getTier(){
+        return gearTier;
+    }
+    public void setTier(GearTier gearTier){
+        this.gearTier = gearTier;
+    }
 
     private int selectedItem = 0;
     protected CompoundNBT[] itemTags = new CompoundNBT[]{new CompoundNBT(), new CompoundNBT(), new CompoundNBT()};
 
     public static GearCap getCap(ItemStack item){
-        return item.getCapability(GearProvider.CAP_GEAR).orElseThrow(NullPointerException::new);
+        return item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
+    }
+
+    public GearCap(){}
+
+    public GearCap(ItemStack gearStack){
+        this.gearStack = gearStack;
+        if (this instanceof CombatGearCap) {
+            //Starter Sword
+            itemTags[0].putString("id", WOODEN_MOD_SWORD.getRegistryName().toString());
+            //Starter Bow
+            itemTags[1].putString("id", WOODEN_MOD_BOW.getRegistryName().toString());
+            //Starter Mirror
+            itemTags[2].putString("id", WOODEN_MOD_MIRROR.getRegistryName().toString());
+        }
+        else {
+            //Starter Paxel
+            itemTags[0].putString("id", WOOD_PAXEL.getRegistryName().toString());
+            //Starter Fishing Rod
+            itemTags[1].putString("id", WOOD_FISHING_ROD.getRegistryName().toString());
+            //Starter Hoe
+            itemTags[2].putString("id", WOOD_HOE.getRegistryName().toString());
+        }
     }
 
     @Override
@@ -38,47 +67,81 @@ public class GearCap implements IGearCap {
     }
 
     @Override
-    public void cycleItem(ItemStack gearStack) {
-       //Save important current tag shtuff
-        saveTag(gearStack.getOrCreateTag());
-        //Cycle the item
-       selectedItem = (selectedItem == 2 ? 0 : ++selectedItem);
-       //Now make sure to read the shtuff
-       readTag(gearStack.getOrCreateTag());
+    public void cycleItem(ItemStack gearStack, PlayerEntity player) {
+        int prevSelect = getSelectedItem();
+
+        //Have to make the changes now if I wish to keep them
+        selectedItem = (selectedItem == 2 ? 0 : ++selectedItem);
+
+        CompoundNBT mainNBT = gearStack.serializeNBT();
+        CompoundNBT tagNBT = gearStack.getOrCreateTag();
+
+        //Save important current tag shtuff (while also removing the saved stuff from the mainNBT)
+        LOGGER.debug("WHATS mainNBT id BEFORE edit? " + (mainNBT.getString("id")));
+        saveTag(mainNBT, tagNBT, itemTags[prevSelect]);
+
+        //Now load important current tag shtuff
+        loadTag(mainNBT, tagNBT, itemTags[selectedItem]);
+        LOGGER.debug("WHATS mainNBT id AFTER edite? " + (mainNBT.getString("id")));
+
+        //Place tagNBT back into the mainNBT (just in case it wasn't in there already)
+        mainNBT.put("tag", tagNBT);
+
+        //Make sure to set the tracked combat item or else it will change
+        PlayerDataCap cap = PlayerDataCap.getCap(player);
+
+        //make a new item with the modified mainNBT
+        gearStack = ItemStack.of(mainNBT);
+
+        if (CombatGearCap.getCap(gearStack) == null) {
+            cap.upgradeUtilityGear(gearStack);
+        }
+        else {
+            cap.upgradeCombatGear(gearStack);
+        }
     }
 
     @Override
     public CompoundNBT getTag(int gearCycle){
-        return itemTags[gearCycle];
+        return (getSelectedItem() == gearCycle) ? this.gearStack.getOrCreateTag() : itemTags[gearCycle];
     }
 
-    protected CompoundNBT saveTag(CompoundNBT stackTag){
-        CompoundNBT capTag = itemTags[selectedItem];
-
-        if(stackTag.contains("Enchantments")) {
+    protected void saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
+        if(tagNBT.contains("Enchantments")) {
             //Save the stuff
-            capTag.put("Enchantments", stackTag.get("Enchantments"));
+            capNBT.put("Enchantments", tagNBT.get("Enchantments"));
             //Now remove the stuff
-            stackTag.remove("Enchantments");
+            tagNBT.remove("Enchantments");
         }
 
-        return capTag;
+        //id is the actual item
+        if (mainNBT.contains("id")){
+            capNBT.putString("id", mainNBT.getString("id"));
+            LOGGER.debug("WHATS THE OLD ID? " + mainNBT.getString("id"));
+        }
     }
-    protected CompoundNBT readTag(CompoundNBT stackTag){
-        CompoundNBT capTag = itemTags[selectedItem];
-
-        if(capTag.contains("Enchantments")) {
+    protected void loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
+        if(capNBT.contains("Enchantments")) {
             //Read the shtuff
-            stackTag.put("Enchantments", capTag.get("Enchantments"));
+            tagNBT.put("Enchantments", capNBT.get("Enchantments"));
         }
 
-        return capTag;
+        //id is the actual item
+        if (capNBT.contains("id")){
+            mainNBT.putString("id", capNBT.getString("id"));
+            LOGGER.debug("WHATS THE NEW ID? " + capNBT.getString("id"));
+        }
     }
 
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT cNBT = new CompoundNBT();
+
+        //Saves the currently selected item
         cNBT.putInt(SELECTED_ITEM, selectedItem);
+
+        //Saves the gearTier
+        cNBT.putInt(TIER, gearTier.ordinal());
 
         //This is for the item tags
         cNBT.put(ITEM_TAG + (0), itemTags[0]);
@@ -89,7 +152,11 @@ public class GearCap implements IGearCap {
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
+        //Sets the currently selected gear
         selectedItem = nbt.getInt(SELECTED_ITEM);
+
+        //Sets the gear tier
+        gearTier = GearTier.values()[nbt.getInt(TIER)];
 
         //This is for the item tags
         itemTags[0].merge(nbt.getCompound(ITEM_TAG + (0)));

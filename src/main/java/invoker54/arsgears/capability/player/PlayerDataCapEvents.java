@@ -32,6 +32,5 @@ public class PlayerDataCapEvents {
 
         //Now place the old data on the new body
         PlayerDataCap.getCap(event.getPlayer()).deserializeNBT(oldCapData);
-
     }
 }

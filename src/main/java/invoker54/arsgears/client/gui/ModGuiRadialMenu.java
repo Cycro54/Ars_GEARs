@@ -4,19 +4,14 @@ import com.hollingsworth.arsnouveau.ArsNouveau;
 import com.hollingsworth.arsnouveau.api.spell.AbstractEffect;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.client.gui.book.GuiSpellBook;
-import com.hollingsworth.arsnouveau.common.entity.EntityCarbuncle;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.brigadier.arguments.FloatArgumentType;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.edited.PacketSetBookMode;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,7 +25,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.Color;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -40,7 +34,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jline.utils.Log;
 import org.lwjgl.opengl.GL11;
 
 
@@ -58,14 +51,11 @@ public class ModGuiRadialMenu extends Screen {
     private int selectedItem;
 
     int numberOfSlices;
-    int gearCycle;
-
     public ModGuiRadialMenu(ItemStack gearStack) {
         super(new StringTextComponent(""));
         this.tag = gearStack.getOrCreateTag();
         //This is minus 1 because the 2nd tier (which is 1 for ordinal) cannot cast spells either & you can only have a max of 3 spells
-        this.numberOfSlices = ((CombatGearItem)gearStack.getItem()).getTier().ordinal() - 1;
-        this.gearCycle = CombatGearCap.getCap(gearStack).getSelectedItem();
+        this.numberOfSlices = CombatGearCap.getCap(gearStack).getTier().ordinal();
         this.closing = false;
         this.minecraft = Minecraft.getInstance();
         this.selectedItem = -1;
@@ -151,7 +141,7 @@ public class ModGuiRadialMenu extends Screen {
                 float s = (((i - 0.5f) / (float) numberOfSlices) + 0.25f) * 360;
                 float e = (((i + 0.5f) / (float) numberOfSlices) + 0.25f) * 360;
                 if (a >= s && a < e && d >= radiusIn && d < radiusOut) {
-                    selectedItem = i;
+                    selectedItem = i + 1;
                     break;
                 }
             }
@@ -160,7 +150,7 @@ public class ModGuiRadialMenu extends Screen {
         for (int i = 0; i < numberOfSlices; i++) {
             float s = (((i - 0.5f) / (float) numberOfSlices) + 0.25f) * 360;
             float e = (((i + 0.5f) / (float) numberOfSlices) + 0.25f) * 360;
-            if (selectedItem == i) {
+            if (selectedItem == i + 1) {
                 drawSlice(buffer, x, y, 10, radiusIn, radiusOut, s, e, 63, 161, 191, 60);
                 hasMouseOver = true;
                 mousedOverSlot = selectedItem;
@@ -180,7 +170,7 @@ public class ModGuiRadialMenu extends Screen {
 
         RenderHelper.turnBackOn();
         RenderSystem.popMatrix();
-        for(int i = 0; i < numberOfSlices; i++){
+        for(int i = 0; i < numberOfSlices; ++i){
             //ItemStack stack = new ItemStack(Blocks.DIRT);
             double startAngle = Math.floor(((float)i/numberOfSlices) * 360f);
             startAngle = Math.toRadians(startAngle);
@@ -193,7 +183,7 @@ public class ModGuiRadialMenu extends Screen {
             //Can't do cast type, cast method isn't applied till after the spell is cast
             String resourceIcon = "";
 //            String castType = "";
-            for(AbstractSpellPart p : SpellBook.getRecipeFromTag(tag, (3 * gearCycle)+1+i).recipe){
+            for(AbstractSpellPart p : SpellBook.getRecipeFromTag(tag, i + 1).recipe){
 //                if(p instanceof AbstractCastMethod)
 //                    castType = p.getIcon();
 
@@ -214,7 +204,7 @@ public class ModGuiRadialMenu extends Screen {
 //                        (int) posX +3 , (int) posY - 10, 0, 0, 10, 10, 10, 10,ms);
             }
             //this.itemRenderer.renderGuiItemDecorations(font, stack, (int) posX, (int) posY, String.valueOf(i + 1 + (3 * gearCycle)));
-            font.drawShadow(stack, String.valueOf(i + 1 + (3 * gearCycle)), posX + 8, posY + 8, TextFormatting.WHITE.getColor());
+            font.drawShadow(stack, String.valueOf(i + 1), posX + 8, posY + 8, TextFormatting.WHITE.getColor());
         }
 
         //LOGGER.debug("THIS IS THE SELECTED ITEM: " + (selectedItem + 1));
@@ -241,7 +231,7 @@ public class ModGuiRadialMenu extends Screen {
     @Override
     public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
         if(this.selectedItem != -1){
-            SpellBook.setMode(tag, selectedItem + (3 * gearCycle)+1);
+            SpellBook.setMode(tag, selectedItem);
             NetworkHandler.INSTANCE.sendToServer(new PacketSetBookMode(tag));
             minecraft.player.closeContainer();
         }

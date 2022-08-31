@@ -10,7 +10,7 @@
       "item": "minecraft:iron_ingot"
     },
     "B": {
-      "item": "ars_gears:iron_paxel"
+      "item": "ars_gears:utility/iron_paxel"
     },
     "C": {
       "item": "minecraft:iron_hoe"
@@ -23,6 +23,6 @@
     }
   },
   "result": {
-    "item": "ars_gears:utility_rune_2"
+    "item": "ars_gears:utility/utility_rune_2"
   }
 }

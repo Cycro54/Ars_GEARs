@@ -1,18 +1,13 @@
 package invoker54.arsgears.network.message.edited;
 
-import com.hollingsworth.arsnouveau.api.util.StackUtil;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.network.Networking;
-import com.hollingsworth.arsnouveau.common.network.PacketOpenSpellBook;
-import com.hollingsworth.arsnouveau.common.network.PacketUpdateBookGUI;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -57,7 +52,7 @@ public class PacketUpdateSpellColors {
     public void handle(Supplier<NetworkEvent.Context> ctx){
         ctx.get().enqueueWork(()->{
             if(ctx.get().getSender() != null){
-                ItemStack stack = ArsUtil.getHeldItem(ctx.get().getSender(), CombatGearItem.class);
+                ItemStack stack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false, false);
                 if(!stack.isEmpty()){
                     CompoundNBT tag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
                     SpellBook.setSpellColor(tag, new ParticleColor.IntWrapper(r, g, b), castSlot);

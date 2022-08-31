@@ -3,6 +3,7 @@ package invoker54.arsgears.network;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.network.message.*;
 import invoker54.arsgears.network.message.edited.PacketSetBookMode;
+import invoker54.arsgears.network.message.edited.PacketUpdateBookGUI;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellColors;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellbook;
 import net.minecraft.entity.player.PlayerEntity;
@@ -43,12 +44,14 @@ public class NetworkHandler {
         INSTANCE.registerMessage(nextID(), OpenGearContainerMsg.class, (message, buf) -> {}, it -> new OpenGearContainerMsg(), OpenGearContainerMsg::handle);
         INSTANCE.registerMessage(nextID(), FeedGearMsg.class, FeedGearMsg::encode, FeedGearMsg::decode, FeedGearMsg::handle);
         INSTANCE.registerMessage(nextID(), ActivateGearMsg.class, (message, buf) -> {}, it -> new ActivateGearMsg(), ActivateGearMsg::handle);
-        INSTANCE.registerMessage(nextID(), SyncServerGearMsg.class, SyncServerGearMsg::encode, SyncServerGearMsg::decode, SyncServerGearMsg::handle);
+        INSTANCE.registerMessage(nextID(), buyUpgradeMsg.class, buyUpgradeMsg::encode, buyUpgradeMsg::decode, buyUpgradeMsg::handle);
+        INSTANCE.registerMessage(nextID(), QuickCastMsg.class, (message, buf) -> {}, it -> new QuickCastMsg(), QuickCastMsg::handle);
 
         //These are messages from Ars nouveau edited
         INSTANCE.registerMessage(nextID(), PacketUpdateSpellbook.class, PacketUpdateSpellbook::toBytes, PacketUpdateSpellbook::new, PacketUpdateSpellbook::handle);
         INSTANCE.registerMessage(nextID(), PacketSetBookMode.class, PacketSetBookMode::toBytes, PacketSetBookMode::new, PacketSetBookMode::handle);
         INSTANCE.registerMessage(nextID(), PacketUpdateSpellColors.class, PacketUpdateSpellColors::toBytes, PacketUpdateSpellColors::new, PacketUpdateSpellColors::handle);
+        INSTANCE.registerMessage(nextID(), PacketUpdateBookGUI.class, PacketUpdateBookGUI::toBytes, PacketUpdateBookGUI::new, PacketUpdateBookGUI::handle);
     }
 
 

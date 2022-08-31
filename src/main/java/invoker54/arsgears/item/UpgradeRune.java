@@ -1,13 +1,11 @@
 package invoker54.arsgears.item;
 
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -19,25 +17,45 @@ import org.apache.logging.log4j.Logger;
 
 public class UpgradeRune extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
-    ToolItem gearType;
 
-    public UpgradeRune(Item gearType, Properties builder) {
+    final GearTier gearTier;
+    Item gear0;
+    Item gear1;
+    Item gear2;
+
+    boolean forUtility;
+
+    public UpgradeRune(GearTier gearTier, Item gear0, Item gear1, Item gear2, boolean forUtility, Properties builder) {
         super(builder);
-        this.gearType = (ToolItem) gearType;
+        this.gearTier = gearTier;
+        this.gear0 = gear0;
+        this.gear1 = gear1;
+        this.gear2 = gear2;
+        this.forUtility = forUtility;
     }
 
     public int getTier(){
-        return ((GearTier)gearType.getTier()).ordinal();
+        return gearTier.ordinal();
     }
 
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack runeStack = playerIn.getItemInHand(handIn);
         PlayerDataCap cap = PlayerDataCap.getCap(playerIn);
+        GearCap gearCap;
+        ItemStack gearStack;
         int playerTier;
-        if (gearType instanceof UtilGearItem){ playerTier = ((UtilGearItem)cap.getUtilityGear().getItem()).getTier().ordinal(); }
-        else { playerTier = ((CombatGearItem)cap.getCombatGear().getItem()).getTier().ordinal(); }
 
+        if (forUtility){
+            gearCap = GearCap.getCap(cap.getUtilityGear());
+            playerTier = gearCap.getTier().ordinal();
+            gearStack = cap.getUtilityGear();
+        }
+        else {
+            gearCap = GearCap.getCap(cap.getCombatGear());
+            playerTier = gearCap.getTier().ordinal();
+            gearStack = cap.getCombatGear();
+        }
 
         if (worldIn.isClientSide()) return ActionResult.consume(runeStack);
 
@@ -52,20 +70,36 @@ public class UpgradeRune extends Item {
         }
         //Now let's get to upgrading!
         else {
-            //Grab the previous stack nbt data
-            CompoundNBT cNBT;
-            if (gearType instanceof UtilGearItem) cNBT = cap.getUtilityGear().serializeNBT();
-            else cNBT = cap.getCombatGear().serializeNBT();
+            CompoundNBT tag0 = gearCap.getTag(0);
+            CompoundNBT tag1 = gearCap.getTag(1);
+            CompoundNBT tag2 = gearCap.getTag(2);
+            gearCap.setTier(gearTier);
 
-            LOGGER.warn("SO IS THIS THE UTILGEARITEM? " + (gearType instanceof UtilGearItem));
-            LOGGER.warn("HEY THIS IS NEW!!!!");
+            tag0.putString("id", ForgeRegistries.ITEMS.getKey(gear0).toString());
+            tag1.putString("id", ForgeRegistries.ITEMS.getKey(gear1).toString());
+            tag2.putString("id", ForgeRegistries.ITEMS.getKey(gear2).toString());
+            //Make sure to rune the upgrade method, or else it may revert back to an old itemstack
+            CompoundNBT currentItemTag = gearStack.serializeNBT();
+            switch (gearCap.getSelectedItem()){
+                default:
+                    currentItemTag.merge(tag0);
+                    break;
+                case 1:
+                    currentItemTag.merge(tag1);
+                    break;
+                case 2:
+                    currentItemTag.merge(tag2);
+                    break;
+            }
 
-            //Replace the id string with the upgrade item
-            cNBT.putString("id", ForgeRegistries.ITEMS.getKey(gearType).toString());
-            //Now update the gear
-
-            if (gearType instanceof UtilGearItem) cap.upgradeUtilityGear(ItemStack.of(cNBT));
-            else cap.upgradeCombatGear(ItemStack.of(cNBT));
+            //UTILITY
+            if (forUtility){
+                cap.upgradeUtilityGear(ItemStack.of(currentItemTag));
+            }
+            //COMBAT
+            else {
+                cap.upgradeCombatGear(ItemStack.of(currentItemTag));
+            }
 
             //Finally, shrink the itemStack and send the upgrade message
             PortUtil.sendMessage(playerIn, new TranslationTextComponent("ars_gears.chat.upgrade_success").append(String.valueOf(getTier() + 1)));

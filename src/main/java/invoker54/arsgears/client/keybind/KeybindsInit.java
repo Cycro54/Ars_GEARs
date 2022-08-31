@@ -3,17 +3,21 @@ package invoker54.arsgears.client.keybind;
 import com.hollingsworth.arsnouveau.client.keybindings.ModKeyBindings;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiRadialMenu;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
+import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.CycleGearMsg;
+import invoker54.arsgears.network.message.OpenGearContainerMsg;
+import invoker54.arsgears.network.message.QuickCastMsg;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -24,52 +28,55 @@ import java.util.ArrayList;
 public class KeybindsInit {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ArrayList<CustomKeybind> gearBinds = new ArrayList<>();
-    //Utility Keybinds
-    public static CustomKeybind cycleSelectedItem_utility;
 
+    //General Keybinds
+    public static CustomKeybind gearInventory;
+    public static CustomKeybind cycleGear;
 
     //Combat keybinds
     public static CustomKeybind openSpell_combat;
     public static CustomKeybind spellSelect_combat;
 
-    public static void registerKeys(FMLClientSetupEvent event){
+    public static CustomKeybind quick_cast;
+
+    public static void registerKeys(){
         //Cycle selected item for combar and utility gear
-        cycleSelectedItem_utility = new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_GRAVE_ACCENT, (action) ->{
+        cycleGear = addBind(new CustomKeybind("cycle_gear", GLFW.GLFW_KEY_R, (action) ->{
             if(action != GLFW.GLFW_PRESS) return;
 
             if(ClientUtil.mC.screen != null) return;
 
             ItemStack item = ClientUtil.mC.player.getMainHandItem();
+            GearCap cap = GearCap.getCap(item);
+            if (cap == null) return;
 
-            if(item.getItem() instanceof UtilGearItem
-                    || item.getItem() instanceof CombatGearItem) {
-                NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
-            }
-
-        });
-        gearBinds.add(cycleSelectedItem_utility);
+            NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
+        }));
 
         //Open spell book screen to configure spell
-        openSpell_combat = new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
+        openSpell_combat = addBind(new CustomKeybind(ModKeyBindings.OPEN_BOOK, (action -> {
             if(action != GLFW.GLFW_PRESS) return;
             if (ClientUtil.mC.screen != null) return;
 
             ItemStack itemStack = ClientUtil.mC.player.getMainHandItem();
-            if(itemStack.getItem() instanceof CombatGearItem) {
-                if (ClientUtil.mC.screen instanceof ModGuiSpellBook) {
+            CombatGearCap cap = CombatGearCap.getCap(itemStack);
+            if (cap == null) return;
+
+            if (ClientUtil.mC.screen instanceof ModGuiSpellBook) {
                     ClientUtil.mC.setScreen(null);
                     return;
-                }
-                //Make sure the player is tier 3 or higher
-                if (((CombatGearItem) itemStack.getItem()).getTier().ordinal() <= 1) return;
-
-                ModGuiSpellBook.open(itemStack);
             }
-        }));
-        gearBinds.add(openSpell_combat);
+            //Make sure the player is GearTier Iron or higher
+            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) {
+                ClientUtil.mC.player.sendMessage(new TranslationTextComponent("ars_gears.chat.cant_use_spells"), Util.NIL_UUID);
+                return;
+            }
+
+            ModGuiSpellBook.open(itemStack);
+        })));
 
         //Open spell select screen
-        spellSelect_combat = new CustomKeybind(ModKeyBindings.OPEN_SPELL_SELECTION, (action -> {
+        spellSelect_combat = addBind(new CustomKeybind(ModKeyBindings.OPEN_SPELL_SELECTION, (action -> {
             if (action != GLFW.GLFW_PRESS) return;
 
             if (ClientUtil.mC.screen instanceof ModGuiRadialMenu){
@@ -77,17 +84,47 @@ public class KeybindsInit {
                 return;
             }
 
-            ItemStack gearStack = ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class);
+            ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
+            CombatGearCap cap = CombatGearCap.getCap(gearStack);
+            if (cap == null) return;
 
-            if (gearStack.isEmpty()) return;
-
-            if (((CombatGearItem)gearStack.getItem()).getTier().ordinal() <= 1) return;
-
+            if (cap.getTier().ordinal() < GearTier.IRON.ordinal()) {
+                ClientUtil.mC.player.sendMessage(new TranslationTextComponent("ars_gears.chat.cant_use_spells"), Util.NIL_UUID);
+                return;
+            }
 
             if (ClientUtil.mC.screen == null){
                 ClientUtil.mC.setScreen(new ModGuiRadialMenu(gearStack));
             }
-        }));
-        gearBinds.add(spellSelect_combat);
+        })));
+
+        gearInventory = addBind(new CustomKeybind("gear_inventory", GLFW.GLFW_KEY_K, (action -> {
+            if (action != GLFW.GLFW_PRESS) return;
+
+            if (ClientUtil.mC.screen != null) return;
+
+            ItemStack item = ClientUtil.mC.player.getMainHandItem();
+            GearCap cap = GearCap.getCap(item);
+            if (cap == null) return;
+
+            NetworkHandler.INSTANCE.sendToServer(new OpenGearContainerMsg());
+        })));
+
+        quick_cast = addBind(new CustomKeybind("quick_cast", GLFW.GLFW_KEY_G, (action -> {
+            if(action != GLFW.GLFW_PRESS) return;
+
+            if(ClientUtil.mC.screen != null) return;
+
+            ItemStack item = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false, true);
+            CombatGearCap cap = CombatGearCap.getCap(item);
+            if (cap == null) return;
+
+            NetworkHandler.INSTANCE.sendToServer(new QuickCastMsg());
+        })));
+    }
+
+    public static CustomKeybind addBind(CustomKeybind keybind){
+        gearBinds.add(keybind);
+        return keybind;
     }
 }

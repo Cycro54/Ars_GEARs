@@ -1,8 +1,6 @@
 package invoker54.arsgears.item;
 
-import com.sun.corba.se.impl.legacy.connection.USLPort;
-import invoker54.arsgears.capability.gear.GearCap;
-import net.minecraft.entity.monster.VindicatorEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -20,7 +18,7 @@ public class GearUpgrades {
     //region Bow
     /** How fast you draw your bow */
     public static final String bowSpeed = "BOW_DRAW_SPEED";
-    /** Makes spell arrows travel instantaneously */
+    /** Makes spell arrows travel faster and without gravity */
     public static final String bowSpellArrow = "BOW_SPELL_ARROW";
     /** Makes the cooldown for all of your spells go down */
     public static final String bowCooldown = "BOW_COOLDOWN";
@@ -33,7 +31,7 @@ public class GearUpgrades {
     //region Mirror
     /** Make spells cost less on the mirror */
     public static final String mirrorManaDiscount = "MIRROR_MANA_DISCOUNT";
-    /** Adds free glyphs onto the end of the mirror spell */
+    /** Adds free augments where they exist on the mirror spell */
     public static final String mirrorFreeGlyph = "MIRROR_FREE_GLYPH";
     /** Ability to quickly cast a self spell on yourself WITHOUT switching to it */
     public static final String mirrorQuickCast = "MIRROR_QUICK_CAST";
@@ -45,8 +43,8 @@ public class GearUpgrades {
 //    public static final String paxelMiningPower = "PAXEL_MINING_POWER";
     /** Will automatically place mined blocks into a selected inventory */
     public static final String paxelAutoInv = "PAXEL_AUTO_INVENTORY";
-    /** This will increase the mining radius of the paxel */
-    public static final String paxelRadialMine = "PAXEL_RADIAL_MINE";
+//    /** This will increase the mining radius of the paxel */
+//    public static final String paxelRadialMine = "PAXEL_RADIAL_MINE";
     //endregion
 
     //region hoe
@@ -71,9 +69,9 @@ public class GearUpgrades {
         return (TranslationTextComponent) getName(upgrade).append(" " + nbt.getInt(upgrade));
     }
 
-    public static CompoundNBT getUpgrades(int gearCycle, GearCap cap) {
+    public static CompoundNBT getUpgrades(ItemStack gearStack) {
         //First grab the main compoundNBT Tag
-        CompoundNBT cNBT = cap.getTag(gearCycle);
+        CompoundNBT cNBT = gearStack.getOrCreateTag();
         //Now inside of it should be an upgrade compound, if there isn't create one.
         if (!cNBT.contains(GearUpgrades.gearUpgradeNBT)) {
             cNBT.put(GearUpgrades.gearUpgradeNBT, new CompoundNBT());
@@ -81,8 +79,8 @@ public class GearUpgrades {
         return cNBT.getCompound(GearUpgrades.gearUpgradeNBT);
     }
 
-    public static int getUpgrade(int gearCycle, GearCap cap, String upgradeName){
-        CompoundNBT upgrades = getUpgrades(gearCycle, cap);
+    public static int getUpgrade(ItemStack gearStack, String upgradeName){
+        CompoundNBT upgrades = getUpgrades(gearStack);
         return upgrades.getInt(upgradeName);
     }
 }

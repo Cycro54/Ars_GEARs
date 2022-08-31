@@ -13,7 +13,7 @@
       "item": "ars_gears:stick_cross"
     },
     "C": {
-      "item": "ars_gears:wood_paxel"
+      "item": "ars_gears:utility/wood_paxel"
     },
     "D": {
       "item": "minecraft:fishing_rod"
@@ -23,6 +23,6 @@
     }
   },
   "result": {
-    "item": "ars_gears:wood_utility_gear"
+    "item": "ars_gears:utility/wood_utility_gear"
   }
 }

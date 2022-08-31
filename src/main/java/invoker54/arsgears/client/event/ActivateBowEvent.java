@@ -8,6 +8,7 @@ import com.hollingsworth.arsnouveau.common.spell.method.MethodProjectile;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
@@ -55,11 +56,10 @@ public class ActivateBowEvent {
         if (!ClientUtil.mC.options.keyUse.isDown()) return;
 
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = ArsUtil.getHeldItem(player, CombatGearItem.class);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false, false);
+        CombatGearCap cap = CombatGearCap.getCap(ArsUtil.getHeldGearCap(player, false, false));
 
-        if (gearStack.isEmpty()) return;
-
-        CombatGearCap cap = CombatGearCap.getCap(gearStack);
+        if (cap == null) return;
 
         //Make sure the bow is selected
         if (cap.getSelectedItem() != CombatGearItem.bowInt) return;
@@ -74,9 +74,9 @@ public class ActivateBowEvent {
 
         CompoundNBT itemTag = gearStack.getOrCreateTag();
 
-        spell.recipe.add(0, MethodProjectile.INSTANCE);
+        //spell.recipe.add(0, MethodProjectile.INSTANCE);
         //This will stop the bow from activating if the player doesn't have enough mana
-        boolean flag = new SpellResolver(new SpellContext(spell, player)).canCast(player);
+        boolean flag = (new SpellResolver(new SpellContext(spell, player)).canCast(player) || player.abilities.instabuild);
         //This is if the spell has no glyphs after the Touch glyph
         boolean flag2 = spell.recipe.size() != 1;
         if (!flag2) PortUtil.sendMessage(player, new TranslationTextComponent("ars_nouveau.spell.validation.exists.non_empty_spell"));
@@ -86,28 +86,6 @@ public class ActivateBowEvent {
 
         //1 is the bow, make sure the player is charging it too
         if (flag && flag2 && flag3) NetworkHandler.INSTANCE.sendToServer(new ActivateGearMsg());
-    }
-
-    /**
-    This will only run if the player is using the bow in combat gear
-     */
-    @SubscribeEvent
-    public static void changeFOV(FOVUpdateEvent event){
-        float f = event.getFov();
-        PlayerEntity player = event.getEntity();
-        if (player.isUsingItem() && player.getUseItem().getItem() instanceof CombatGearItem) {
-            int i = player.getTicksUsingItem();
-            float f1 = (float)i / 20.0F;
-            if (f1 > 1.0F) {
-                f1 = 1.0F;
-            } else {
-                f1 = f1 * f1;
-            }
-
-            f *= 1.0F - f1 * 0.15F;
-        }
-
-        event.setNewfov(f);
     }
 
 }

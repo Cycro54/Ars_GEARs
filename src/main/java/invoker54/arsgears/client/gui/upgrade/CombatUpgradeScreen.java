@@ -2,23 +2,17 @@ package invoker54.arsgears.client.gui.upgrade;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.client.gui.button.UpgradeButton;
 import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import org.apache.http.conn.BasicEofSensorWatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Map;
+import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 
 import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
@@ -38,7 +32,9 @@ public class CombatUpgradeScreen extends UpgradeScreen {
     @Override
     public void tick() {
         //If the player ends up dropping the gear at some point while this screen is on, close the screen
-        if (ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class).isEmpty()) ClientUtil.mC.setScreen(null);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false, false);
+
+        if(gearStack.isEmpty()) ClientUtil.mC.setScreen(null);
     }
 
     protected ResourceLocation getImage(String location){
@@ -48,48 +44,48 @@ public class CombatUpgradeScreen extends UpgradeScreen {
     private void swordUpgrades(){
         //region Enchants
         //Sharpness
-        createEnchantUpgrade(swordINT, Enchantments.SHARPNESS, new int[]{1,2,0,4}, getImage("sharpness.png"));
+        createEnchantUpgrade(swordINT, Enchantments.SHARPNESS, "SWORD_SHARPNESS", new int[]{1,2,0,4}, getImage("sharpness.png"));
         //Sweeping Edge
-        createEnchantUpgrade(swordINT, Enchantments.SWEEPING_EDGE, new int[]{1,2,3,0}, getImage("sweep_edge.png"));
+        createEnchantUpgrade(swordINT, Enchantments.SWEEPING_EDGE, "SWORD_SWEEPING_EDGE", new int[]{1,2,3,0}, getImage("sweep_edge.png"));
         //Looting
-        createEnchantUpgrade(swordINT, Enchantments.MOB_LOOTING, new int[]{0,1,3,0}, getImage("looting.png"));
+        createEnchantUpgrade(swordINT, Enchantments.MOB_LOOTING, "SWORD_MOB_LOOTING",new int[]{0,1,3,0}, getImage("looting.png"));
         //endregion
 
         //region Custom Upgrades
         //Mana steal
-        createCustomUpgrade(swordINT, GearUpgrades.swordManaSteal, new int[]{1,0,2,0}, getImage("mana_steal.png"));
+        createCustomUpgrade(swordINT, GearUpgrades.swordManaSteal, "SWORD_MANA_STEAL",new int[]{1,0,2,0}, getImage("mana_steal.png"));
         //Spell Sweep
-        createCustomUpgrade(swordINT, GearUpgrades.swordSpellSweep, new int[]{0,0,1,0}, getImage("spell_sweep.png"));
+        createCustomUpgrade(swordINT, GearUpgrades.swordSpellSweep, "SWORD_SPELL_SWEEP",new int[]{0,0,1,0}, getImage("spell_sweep.png"));
         //endregion
     }
 
     private void bowUpgrades(){
         //region Enchants
         //Power
-        createEnchantUpgrade(bowInt, Enchantments.POWER_ARROWS, new int[]{1,2,3,0}, getImage("power.png"));
+        createEnchantUpgrade(bowInt, Enchantments.POWER_ARROWS, "BOW_POWER_ARROWS",new int[]{1,2,3,0}, getImage("power.png"));
         //endregion
 
         //region Custom Upgrades
         //Bow Speed
-        createCustomUpgrade(bowInt, GearUpgrades.bowSpeed, new int[]{1,2,3,0}, getImage("bow_speed.png"));
+        createCustomUpgrade(bowInt, GearUpgrades.bowSpeed, "BOW_SPEED",new int[]{1,2,3,0}, getImage("bow_speed.png"));
         //Spell Arrow
-        createCustomUpgrade(bowInt, GearUpgrades.bowSpellArrow, new int[]{0,1,0,0}, getImage("spell_arrow.png"));
+        createCustomUpgrade(bowInt, GearUpgrades.bowSpellArrow, "BOW_SPELL_ARROW",new int[]{0,1,0,0}, getImage("spell_arrow.png"));
         //Spell Cooldown
-        createCustomUpgrade(bowInt, GearUpgrades.bowCooldown, new int[]{0,1,0,0}, getImage("spell_cooldown.png"));
+        createCustomUpgrade(bowInt, GearUpgrades.bowCooldown, "BOW_COOLDOWN",new int[]{0,1,0,0}, getImage("spell_cooldown.png"));
         //Arrow Recycle
-        createCustomUpgrade(bowInt, GearUpgrades.bowArrowKeep, new int[]{1,0,2,0}, getImage("arrow_keep.png"));
+        createCustomUpgrade(bowInt, GearUpgrades.bowArrowKeep, "BOW_ARROW_KEEP",new int[]{1,0,2,0}, getImage("arrow_keep.png"));
         //Spell Split
-        createCustomUpgrade(bowInt, GearUpgrades.bowSpellSplit, new int[]{0,0,1,2}, getImage("spell_split.png"));
+//        createCustomUpgrade(bowInt, GearUpgrades.bowSpellSplit, new int[]{0,0,1,2}, getImage("spell_split.png"));
         //endregion
     }
     private void mirrorUpgrades(){
         //region Custom Upgrades
         //Mana Discount
-        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorManaDiscount, new int[]{0,1,2,0}, getImage("mana_discount.png"));
+        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorManaDiscount, "MIRROR_MANA_DISCOUNT",new int[]{0,1,2,0}, getImage("mana_discount.png"));
         //Extra Glyph
-        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorFreeGlyph, new int[]{0,1,2,3}, getImage("free_glyph.png"));
+        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorFreeGlyph, "MIRROR_FREE_GLYPH",new int[]{0,1,2,3}, getImage("free_glyph.png"));
         //Quick Cast
-        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorQuickCast, new int[]{0,1,0,0}, getImage("quick_cast.png"));
+        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorQuickCast, "MIRROR_QUICK_CAST",new int[]{0,1,0,0}, getImage("quick_cast.png"));
         //endregion
     }
 }

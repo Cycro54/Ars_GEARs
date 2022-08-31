@@ -1,7 +1,5 @@
 package invoker54.arsgears.network.message.edited;
 
-import com.hollingsworth.arsnouveau.api.util.StackUtil;
-import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -35,7 +33,7 @@ public class PacketSetBookMode {
                 ServerPlayerEntity sender = ctx.get().getSender();
                 if (sender == null) return;
 
-                ItemStack gearStack = ArsUtil.getHeldItem(ctx.get().getSender(), CombatGearItem.class);
+                ItemStack gearStack = ArsUtil.getHeldGearCap(ctx.get().getSender(), false, false);
                 if (!gearStack.isEmpty()) {
                     gearStack.setTag(tag);
                 }

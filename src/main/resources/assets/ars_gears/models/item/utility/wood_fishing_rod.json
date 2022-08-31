@@ -1,0 +1,11 @@
+{
+  "parent": "item/fishing_rod",
+  "overrides": [
+    {
+      "predicate": {
+        "cast": 1
+      },
+      "model": "item/fishing_rod_cast"
+    }
+  ]
+}

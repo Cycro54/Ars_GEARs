@@ -1,25 +1,25 @@
 package invoker54.arsgears.client.event;
 
+import com.hollingsworth.arsnouveau.ArsNouveau;
 import com.hollingsworth.arsnouveau.api.mana.IMana;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
-import com.hollingsworth.arsnouveau.api.spell.SpellContext;
-import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
 import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.spell.method.MethodTouch;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
+import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.CircleRender;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,13 +29,18 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
+import static invoker54.arsgears.item.combatgear.CombatGearItem.mirrorInt;
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ArsGears.MOD_ID)
 public class DrawGuiEvent {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final modGuiSpellHUD modSpellHUD = new modGuiSpellHUD();
+    private static final ResourceLocation spell_slot_fill = new ResourceLocation("ars_gears", "textures/gui/quick_cast_slot_fill.png");
+    private static final ResourceLocation spell_slot_frame = new ResourceLocation("ars_gears", "textures/gui/quick_cast_slot_frame.png");
     private static int colorRed = new Color(255, 77, 77,255).getRGB();
     private static int colorGreen = new Color(75, 232, 82,255).getRGB();
     private static int transparentGreyColor = new Color(91, 91, 91, 187).getRGB();
+    private static int transparentBlackColor = new Color(0, 0, 0, 202).getRGB();
     private static int greyColor = new Color(194, 194, 194, 236).getRGB();
     private static int blueColor = new Color(0, 140, 255, 255).getRGB();
 
@@ -52,8 +57,7 @@ public class DrawGuiEvent {
         if (ClientUtil.mC.screen != null) return;
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = ArsUtil.getHeldItem(player, CombatGearItem.class);
-        CompoundNBT itemTag = gearStack.getOrCreateTag();
+        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false, false);
 
         //If the player isn't holding the combat gear, return
         if (gearStack.isEmpty()) return;
@@ -64,10 +68,63 @@ public class DrawGuiEvent {
         MatrixStack stack = event.getMatrixStack();
 
         Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        spell.recipe.add(0, MethodTouch.INSTANCE);
-        SpellResolver spellResolver = new SpellResolver(new SpellContext(spell, player));
+        int gearCycle = GearCap.getCap(gearStack).getSelectedItem();
+
+        renderCircle(stack, x, y, 12, spell, gearStack.getOrCreateTag(), gearStack, gearCycle);
+    }
+
+    @SubscribeEvent
+    public static void renderQuickSlot(final RenderGameOverlayEvent.Post event){
+        if (ClientUtil.mC.screen != null) return;
+        if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
+        PlayerEntity player = ClientUtil.mC.player;
+
+        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false, true);
+        if (gearStack.isEmpty()) return;
+        CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
+
+        CompoundNBT itemTag = gearCap.getTag(mirrorInt);
+
+        int quickLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.mirrorQuickCast);
+//        LOGGER.debug("DOES QUICK LEVEL EQUAL 0? " + (quickLvl == 0));
+        //Make sure the player has the upgrade
+        if (quickLvl == 0) return;
+        //Now let's see if the player has a spell equipped
+//        LOGGER.debug("DOES ITEM TAG HAVE MODE STRING? " + (itemTag.contains("mode")));
+        if (!itemTag.contains("mode")) return;
+        int mode = itemTag.getInt("mode");
+
+        ResourceLocation spell_icon = spell_slot_fill;
+
+        Spell spell = SpellBook.getRecipeFromTag(itemTag, mode);
+        if (!spell.isEmpty() && spell.getSpellSize() > 1){
+            spell_icon = new ResourceLocation(ArsNouveau.MODID, "textures/items/" + spell.recipe.get(1).getIcon());
+        }
+
+        int x = 16;
+        int y = event.getWindow().getGuiScaledHeight() - 32 - 16 - 16;
+        MatrixStack stack = event.getMatrixStack();
+
+        //First the spell icon
+        ClientUtil.TEXTURE_MANAGER.bind(spell_icon);
+        ClientUtil.blitImage(stack, x, 32, y, 32, 0, 16, 0, 16, 16);
+        //Then the outline
+        ClientUtil.TEXTURE_MANAGER.bind(spell_slot_frame);
+        ClientUtil.blitImage(stack, x, 32, y, 32, 0, 16, 0, 16, 16);
+        ClientUtil.TEXTURE_MANAGER.release(spell_slot_frame);
+
+        //If the spell is on cooldown, or mana is low, render the mana circle
+        if (!CombatGearItem.SpellM.canCast(player, spell, itemTag)) {
+            ClientUtil.blitColor(stack, x, 32, y, 32, transparentBlackColor);
+            renderCircle(stack, x + 16, y + 16, 16, spell, itemTag, gearStack, mirrorInt);
+        }
+    }
+
+    public static void renderCircle(MatrixStack stack, int x, int y, float radius, Spell spell, CompoundNBT itemTag, ItemStack gearStack, int gearCycle){
+        PlayerEntity player = ClientUtil.mC.player;
+
         IMana cap = ManaCapability.getMana(player).resolve().get();
-        int cost = CombatGearItem.SpellM.getInitialCost(spell);
+        int cost = spell.getCastingCost();
         //float costAngle = (180f * ((float) cost/cap.getMaxMana()));
         //Mana side
         float manaAngle = (float) (180 * (cap.getCurrentMana()/(float)cost));
@@ -77,27 +134,30 @@ public class DrawGuiEvent {
         int color = flag ? colorGreen : colorRed;
 
         //Cooldown Side
-        float maxCooldown = CombatGearItem.calcCooldown(CombatGearItem.SpellM.getCurrentRecipe(gearStack), true);
+        float maxCooldown = CombatGearItem.calcCooldown(gearCycle, spell, true);
+//        LOGGER.debug("WHATS MAX COOLDOWN: " + maxCooldown);
         float currentCooldown = CombatGearItem.getCooldown(player, itemTag, SpellBook.getMode(itemTag), true);
+//        LOGGER.debug("WHATS CURRENT COOLDOWN: " + currentCooldown);
         float cooldownAngle = 180 * (1 - (currentCooldown/maxCooldown));
+//        LOGGER.debug("WHATS the angle going to be: " + cooldownAngle);
+        if (maxCooldown == 0) cooldownAngle = 180;
         cooldownAngle =  MathHelper.clamp(cooldownAngle, 0, 180);
         int blackColor = new Color(19, 19, 19, 255).getRGB();
+
+        if (currentCooldown <= 0 && (cap.getCurrentMana() >= cost || player.abilities.instabuild)) return;
 
         //Rendering part
         RenderSystem.enableBlend();
         //Background
-        CircleRender.drawArc(stack, x, y, 12, 0, 360, blackColor);
+        CircleRender.drawArc(stack, x, y, radius, 0, 360, blackColor);
         //Color for if you can cast the spell or not
-        CircleRender.drawArc(stack, x, y, 11,  manaAngle, 0, color);
+        CircleRender.drawArc(stack, x, y, radius - 1,  manaAngle, 0, color);
         //Cooldown
-        CircleRender.drawArc(stack, x, y, 11, 0, cooldownAngle, (cooldownAngle == 180 ? greyColor : transparentGreyColor));
-
-//        //This is the threshold line for casting
-//        CircleRender.drawArcLine(stack, x, y, 13, (180 - costAngle) + 180, colorRed);
+        CircleRender.drawArc(stack, x, y, radius - 1, 0, cooldownAngle, (cooldownAngle == 180 ? greyColor : transparentGreyColor));
 
         //The divider
-        CircleRender.drawArcLine(stack, x, y, 13, 0, blueColor);
-        CircleRender.drawArcLine(stack, x, y, 13, 180, blueColor);
+        CircleRender.drawArcLine(stack, x, y, radius, 0, blueColor);
+        CircleRender.drawArcLine(stack, x, y, radius, 180, blueColor);
         RenderSystem.disableBlend();
     }
 }

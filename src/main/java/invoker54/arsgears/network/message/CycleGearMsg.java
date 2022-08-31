@@ -1,34 +1,43 @@
 package invoker54.arsgears.network.message;
 
-import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.utilgear.UtilGearItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Supplier;
 
 public class CycleGearMsg {
     //This is how the Network Handler will handle the message
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public static void handle(CycleGearMsg msg, Supplier<NetworkEvent.Context> contextSupplier){
         NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
             ItemStack item = context.getSender().getMainHandItem();
 
-            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem(item);
+            GearCap cap = GearCap.getCap(item);
 
-            else if(item.getItem() instanceof CombatGearItem) {
-                CombatGearCap cap = CombatGearCap.getCap(item);
-
-                cap.cycleItem(item);
-
-                //This is for if the item ends up being the mirror
-                if (cap.getSelectedItem() == 2) cap.setActivated(true);
-                else cap.setActivated(false);
+            if (cap instanceof CombatGearCap) {
+                LOGGER.debug("Is this activated? " + ((CombatGearCap) cap).getActivated());
+                ((CombatGearCap) cap).setActivated(cap.getSelectedItem() == 2);
+                LOGGER.debug("Is this still activated? " + ((CombatGearCap) cap).getActivated());
             }
+
+            cap.cycleItem(item, context.getSender());
+
+//            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem(item);
+//
+//            else if(item.getItem() instanceof CombatGearItem) {
+//                CombatGearCap cap = CombatGearCap.getCap(item);
+//
+//                cap.cycleItem(item);
+//
+//                //This is for if the item ends up being the mirror
+//            }
         });
         context.setPacketHandled(true);
     }

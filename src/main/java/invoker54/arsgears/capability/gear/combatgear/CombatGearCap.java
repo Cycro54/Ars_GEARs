@@ -1,42 +1,58 @@
 package invoker54.arsgears.capability.gear.combatgear;
 
-import com.google.common.collect.Multimap;
+import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
+import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
+import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.utilgear.GearProvider;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import net.minecraft.advancements.criterion.ThrownItemPickedUpByEntityTrigger;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.brain.task.SwimTask;
-import net.minecraft.inventory.EquipmentSlotType;
+import invoker54.arsgears.capability.gear.GearProvider;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.stream.IntStream;
+import java.util.List;
+
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COOLDOWN;
 
 public class CombatGearCap extends GearCap implements ICombatGear {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final String ACTIVATED = "ACTIVATED";
     private boolean activated = false;
 
-    //To know when an attack is a sweep attack I'll tick this on for the tick the player does damage
-    public boolean isSweep = false;
+    public static CombatGearCap getCap(ItemStack item) {
+        GearCap cap = item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
 
-    public CombatGearCap(){
-        //This is setting all of the initial spell modes so that each one will start on the correct initial mode
-        itemTags[0].putInt("mode", 1);
-        itemTags[1].putInt("mode", 4);
-        itemTags[2].putInt("mode", 7);
+        if (cap instanceof CombatGearCap) return (CombatGearCap) cap;
+
+        return null;
     }
 
-    public static CombatGearCap getCap(ItemStack item){
-        return (CombatGearCap) item.getCapability(GearProvider.CAP_GEAR).orElseThrow(NullPointerException::new);
+    public CombatGearCap(){}
+
+    public CombatGearCap(ItemStack gearStack) {
+        super(gearStack);
+        CompoundNBT gearTag = gearStack.getOrCreateTag();
+
+        //here I will grab all of the starting spells and give them to the player if they don't have em
+        List<AbstractSpellPart> spellParts = ArsNouveauAPI.getInstance().getDefaultStartingSpells();
+        List<AbstractSpellPart> unlockedParts = SpellBook.getUnlockedSpells(gearTag);
+
+        //Let's add all the starter spell parts
+        for (AbstractSpellPart spellPart : spellParts){
+            if (spellPart instanceof AbstractCastMethod) continue;
+
+            if (!unlockedParts.contains(spellPart)){
+                SpellBook.unlockSpell(gearTag, spellPart.getTag());
+            }
+        }
     }
 
     @Override
@@ -49,28 +65,91 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         activated = flag;
     }
 
-    @Override
-    protected CompoundNBT saveTag(CompoundNBT stackTag) {
-        CompoundNBT capTag = super.saveTag(stackTag);
+    String mode = "mode";
+    String recipe = "recipe";
+    String name = "_name";
 
-        if (stackTag.contains("mode")){
-            capTag.putInt("mode", stackTag.getInt("mode"));
+    @Override
+    protected void saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
+        super.saveTag(mainNBT, tagNBT, capNBT);
+
+        //What spell mode you have selected
+        if (tagNBT.contains(mode)) {
+            capNBT.putInt(mode, tagNBT.getInt(mode));
         }
 
-        return capTag;
+        //Goes through the current spells
+        int amountOfSpells = this.getTier().ordinal();
+
+        for (int a = 1; a < amountOfSpells + 1; a++){
+            if (tagNBT.contains((a)+recipe)){
+                //Spell itself
+                capNBT.putString(((a)+recipe), tagNBT.getString(((a)+recipe)));
+                tagNBT.remove(((a)+recipe));
+                //Spell name
+                capNBT.putString(((a)+name), tagNBT.getString(((a)+name)));
+                tagNBT.remove(((a)+name));
+            }
+        }
+        //next up is cooldowns
+        if (tagNBT.contains(COMBAT_GEAR + COOLDOWN)) {
+            CompoundNBT coolDownNBT = tagNBT.getCompound(COMBAT_GEAR + COOLDOWN);
+            CompoundNBT capCoolDowns = new CompoundNBT();
+            if (capNBT.contains(COMBAT_GEAR + COOLDOWN)) capCoolDowns = capNBT.getCompound(COMBAT_GEAR + COOLDOWN);
+            for (int a = 1; a < amountOfSpells + 1; a++) {
+                if (coolDownNBT.contains("" + a)) {
+                    //Cooldowns
+                    capCoolDowns.putFloat("" + a, coolDownNBT.getFloat("" + a));
+                    coolDownNBT.putFloat("" + a, 0);
+                }
+            }
+            capNBT.put(COMBAT_GEAR + COOLDOWN, capCoolDowns);
+        }
+
+        LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
     }
 
     @Override
-    protected CompoundNBT readTag(CompoundNBT stackTag) {
-        //This is the capNBT
-       CompoundNBT nbt = super.readTag(stackTag);
+    protected void loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
+        super.loadTag(mainNBT, tagNBT, capNBT);
 
-       //Now we will be reading the selected spell mode for the current item
-        if (nbt.contains("mode")){
-            stackTag.putInt("mode", nbt.getInt("mode"));
+        //What spell mode you have selected
+        if (capNBT.contains(mode)){
+            tagNBT.putInt(mode, capNBT.getInt(mode));
         }
 
-        return nbt;
+        //Goes through the current spells
+        int amountOfSpells = this.getTier().ordinal();
+        for (int a = 1; a < amountOfSpells + 1; a++){
+            if (capNBT.contains((a)+recipe)){
+                //Spell itself
+                tagNBT.putString(((a)+recipe), capNBT.getString(((a)+recipe)));
+                //Spell name
+                tagNBT.putString(((a)+name), capNBT.getString(((a)+name)));
+            }
+        }
+
+        //next up is cooldowns
+        if (capNBT.contains(COMBAT_GEAR + COOLDOWN)) {
+            CompoundNBT capCoolDowns = capNBT.getCompound(COMBAT_GEAR + COOLDOWN);
+            CompoundNBT tagCooldowns = new CompoundNBT();
+            for (int a = 1; a < amountOfSpells + 1; a++) {
+                if (capCoolDowns.contains("" + a)) {
+                    //Cooldowns
+                    tagCooldowns.putFloat("" + a, capCoolDowns.getFloat("" + a));
+                }
+                else {
+                    tagCooldowns.putFloat("" + a, 0);
+                }
+            }
+            tagNBT.put(COMBAT_GEAR + COOLDOWN, tagCooldowns);
+        }
+    }
+
+    @Override
+    public void cycleItem(ItemStack gearStack, PlayerEntity player) {
+        setActivated(false);
+        super.cycleItem(gearStack, player);
     }
 
     @Override

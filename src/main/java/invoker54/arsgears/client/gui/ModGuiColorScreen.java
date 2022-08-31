@@ -5,7 +5,6 @@ import com.hollingsworth.arsnouveau.client.gui.book.BaseBook;
 import com.hollingsworth.arsnouveau.client.gui.buttons.GuiImageButton;
 import com.hollingsworth.arsnouveau.client.particle.ParticleColor;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.network.Networking;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.client.ClientUtil;
@@ -108,7 +107,7 @@ public class ModGuiColorScreen extends BaseBook {
 
     public void onSaveClick(Button button){
         NetworkHandler.INSTANCE.sendToServer(new PacketUpdateSpellColors(slot, red, green, blue));
-        ItemStack gearStack = ArsUtil.getHeldItem(ClientUtil.mC.player, CombatGearItem.class);
+        ItemStack gearStack = ArsUtil.getHeldGearCap(ClientUtil.mC.player, false, false);
         if(!gearStack.isEmpty()){
             CompoundNBT tag = gearStack.hasTag() ? gearStack.getTag() : new CompoundNBT();
             SpellBook.setSpellColor(tag, new ParticleColor.IntWrapper((int) red * 255, (int) green * 255, (int) blue * 255), slot);
