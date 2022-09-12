@@ -148,30 +148,31 @@ public class ModHoeItem extends HoeItem {
             }
         }
 
-        @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void onCropHit(BlockEvent.BreakEvent event){
-            if (event.isCanceled()) return;
-
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-            ItemStack itemStack = event.getPlayer().getUseItem();
-            boolean isHoe = (itemStack.getItem() instanceof HoeItem);
-
-            //Grab all the needed block details
-            BlockState state = event.getState();
-            BlockPos blockPos = event.getPos();
-            IWorld world = event.getWorld();
-
-            //Make sure we aren't on the client
-            if (world.isClientSide()) return;
-
-            //Make sure this is a farmable block
-            if (!(state.getBlock() instanceof CropsBlock)) return;
-
-            //Destroy the crop if the player uses something besides a hoe and destroy chance is higher than 25%
-            if (!isHoe && Math.random() > 0.25f) {
-                ((ServerWorld) world).setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
-                event.setCanceled(true);
-            }
-        }
+        /** This will be moved to the food overhaul mod I am making */
+//        @SubscribeEvent(priority = EventPriority.HIGHEST)
+//        public static void onCropHit(BlockEvent.BreakEvent event){
+//            if (event.isCanceled()) return;
+//
+//            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+//            ItemStack itemStack = event.getPlayer().getUseItem();
+//            boolean isHoe = (itemStack.getItem() instanceof HoeItem);
+//
+//            //Grab all the needed block details
+//            BlockState state = event.getState();
+//            BlockPos blockPos = event.getPos();
+//            IWorld world = event.getWorld();
+//
+//            //Make sure we aren't on the client
+//            if (world.isClientSide()) return;
+//
+//            //Make sure this is a farmable block
+//            if (!(state.getBlock() instanceof CropsBlock)) return;
+//
+//            //Destroy the crop if the player uses something besides a hoe and destroy chance is higher than 25%
+//            if (!isHoe && Math.random() > 0.25f) {
+//                ((ServerWorld) world).setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+//                event.setCanceled(true);
+//            }
+//        }
     }
 }

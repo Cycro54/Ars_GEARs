@@ -105,6 +105,7 @@ public class PlayerDataCap implements IPlayerCap {
 
     @Override
     public CompoundNBT serializeNBT() {
+        LOGGER.debug("I AM SAVING");
         CompoundNBT cNBT = new CompoundNBT();
         cNBT.put(UTILITY_GEAR_DATA, utility_gear_copy.serializeNBT());
         cNBT.put(COMBAT_GEAR_DATA, combat_gear_copy.serializeNBT());

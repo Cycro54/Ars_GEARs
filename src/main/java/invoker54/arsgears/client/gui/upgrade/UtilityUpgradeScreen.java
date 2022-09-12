@@ -65,7 +65,8 @@ public class UtilityUpgradeScreen extends UpgradeScreen {
 
         //region Custom Upgrades
         //Bait Keep
-        createCustomUpgrade(fishingInt, GearUpgrades.fishrodBaitKeep, "FISHING_BAIT_KEEP", new int[]{1,0,2,0}, getImage("fishing_bait_keep.png"));
+        /** This will be moved to the food overhaul mod I am making */
+//        createCustomUpgrade(fishingInt, GearUpgrades.fishrodBaitKeep, "FISHING_BAIT_KEEP", new int[]{1,0,2,0}, getImage("fishing_bait_keep.png"));
         //XP Gain
         createCustomUpgrade(fishingInt, GearUpgrades.fishrodXPGain, "FISHING_XP_GAIN", new int[]{1,2,0,3}, getImage("fishing_xp_gain.png"));
         //endregion

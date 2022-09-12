@@ -69,7 +69,7 @@ public class UpgradeScreen extends Screen {
     //int colorDeny = new Color(101, 7, 7,255).getRGB();
 
     //This is the base xp expected (xp level 33 which is 1758)
-    int baseXP = 1000;
+    int baseXP = 612;
     //These are the max amount of slots for each upgrade
     int maxLvl = 4;
 

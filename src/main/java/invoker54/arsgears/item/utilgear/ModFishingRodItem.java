@@ -1,11 +1,9 @@
 package invoker54.arsgears.item.utilgear;
 
-import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.entity.ModBobberEntity;
-import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -20,7 +18,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -41,12 +38,13 @@ public class ModFishingRodItem extends FishingRodItem {
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemStack = playerIn.getItemInHand(handIn);
 
-        if (ArsUtil.getItemStack(playerIn, BaitItem.class).isEmpty()) {
-            if (!worldIn.isClientSide()) {
-                PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_gears.chat.need_bait"));
-            }
-            return ActionResult.fail(itemStack);
-        }
+        /** This will be moved to the food overhaul mod I am making */
+//        if (ArsUtil.getItemStack(playerIn, BaitItem.class).isEmpty()) {
+//            if (!worldIn.isClientSide()) {
+//                PortUtil.sendMessageNoSpam(playerIn, new TranslationTextComponent("ars_gears.chat.need_bait"));
+//            }
+//            return ActionResult.fail(itemStack);
+//        }
         int j;
         if (playerIn.fishing != null) {
             if (!worldIn.isClientSide) {
@@ -82,8 +80,9 @@ public class ModFishingRodItem extends FishingRodItem {
 
         CompoundNBT upgrades = GearUpgrades.getUpgrades(gearStack);
 
-        if (upgrades.contains(GearUpgrades.fishrodBaitKeep))
-            tooltip.add(GearUpgrades.getFullName(GearUpgrades.fishrodBaitKeep, upgrades));
+        /** This will be moved to the food overhaul mod I am making */
+//        if (upgrades.contains(GearUpgrades.fishrodBaitKeep))
+//            tooltip.add(GearUpgrades.getFullName(GearUpgrades.fishrodBaitKeep, upgrades));
         if (upgrades.contains(GearUpgrades.fishrodXPGain))
             tooltip.add(GearUpgrades.getFullName(GearUpgrades.fishrodXPGain, upgrades));
     }
@@ -118,32 +117,33 @@ public class ModFishingRodItem extends FishingRodItem {
             if (!(gearStack.getItem() instanceof ModFishingRodItem)) return;
 
             //This will be used for taking the bait
-            ItemStack baitStack = ArsUtil.getItemStack(player, BaitItem.class);
-            if (baitStack.isEmpty()){
-                event.setCanceled(true);
-                return;
-            }
-
-            if (!player.abilities.instabuild || baitStack.getItem() != ItemInit.STARBUNCLE_BAIT) {
-                GearCap cap = GearCap.getCap(gearStack);
-                int baitKeepLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.fishrodBaitKeep);
-                float chanceToKeep;
-                switch (baitKeepLvl){
-                    default:
-                        chanceToKeep = 0;
-                        break;
-                    case 1:
-                        chanceToKeep = 0.2F;
-                        break;
-                    case 2:
-                        chanceToKeep = 0.4F;
-                        break;
-                }
-                //Chance to keep falls as you grow in tier (every 2 tiers)
-                chanceToKeep -= ((int)(cap.getTier().ordinal()/2f) * 0.2f);
-                float chanceToLose = (float) Math.random();
-                baitStack.shrink((chanceToLose < chanceToKeep) ? 0 : 1);
-            }
+            /** This will be moved to the food overhaul mod I am making */
+//            ItemStack baitStack = ArsUtil.getItemStack(player, BaitItem.class);
+//            if (baitStack.isEmpty()){
+//                event.setCanceled(true);
+//                return;
+//            }
+//
+//            if (!player.abilities.instabuild || baitStack.getItem() != ItemInit.STARBUNCLE_BAIT) {
+//                GearCap cap = GearCap.getCap(gearStack);
+//                int baitKeepLvl = GearUpgrades.getUpgrade(gearStack, GearUpgrades.fishrodBaitKeep);
+//                float chanceToKeep;
+//                switch (baitKeepLvl){
+//                    default:
+//                        chanceToKeep = 0;
+//                        break;
+//                    case 1:
+//                        chanceToKeep = 0.2F;
+//                        break;
+//                    case 2:
+//                        chanceToKeep = 0.4F;
+//                        break;
+//                }
+//                //Chance to keep falls as you grow in tier (every 2 tiers)
+//                chanceToKeep -= ((int)(cap.getTier().ordinal()/2f) * 0.2f);
+//                float chanceToLose = (float) Math.random();
+//                baitStack.shrink((chanceToLose < chanceToKeep) ? 0 : 1);
+//            }
 
 
             //This will be for additional xp ( I might just give the playe a bottle o' enchanting)

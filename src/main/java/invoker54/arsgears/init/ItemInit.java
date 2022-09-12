@@ -39,13 +39,14 @@ public class ItemInit {
     public static final Item IRON_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/iron_paxel_fake");
 
     //Bait types
-    public static final Item BAIT_PORK = addItem(new BaitItem(getDefault(true)), "bait_pork");
-    public static final Item BAIT_BEEF = addItem(new BaitItem(getDefault(true)), "bait_beef");
-    public static final Item BAIT_CHICKEN = addItem(new BaitItem(getDefault(true)), "bait_chicken");
-    public static final Item BAIT_MUTTON = addItem(new BaitItem(getDefault(true)), "bait_mutton");
-    public static final Item BAIT_RABBIT = addItem(new BaitItem(getDefault(true)), "bait_rabbit");
-    public static final Item BAIT_ROTTEN_FLESH = addItem(new BaitItem(getDefault(true)), "bait_rotten_flesh");
-    public static final Item STARBUNCLE_BAIT = addItem(new BaitItem(getDefault(true)), "starbuncle_bait");
+    /** This will be moved to the food overhaul mod I am making */
+//    public static final Item BAIT_PORK = addItem(new BaitItem(getDefault(true)), "bait_pork");
+//    public static final Item BAIT_BEEF = addItem(new BaitItem(getDefault(true)), "bait_beef");
+//    public static final Item BAIT_CHICKEN = addItem(new BaitItem(getDefault(true)), "bait_chicken");
+//    public static final Item BAIT_MUTTON = addItem(new BaitItem(getDefault(true)), "bait_mutton");
+//    public static final Item BAIT_RABBIT = addItem(new BaitItem(getDefault(true)), "bait_rabbit");
+//    public static final Item BAIT_ROTTEN_FLESH = addItem(new BaitItem(getDefault(true)), "bait_rotten_flesh");
+//    public static final Item STARBUNCLE_BAIT = addItem(new BaitItem(getDefault(true)), "starbuncle_bait");
 
     //Paxel
     public static final Item WOOD_PAXEL = addItem(new PaxelItem(GearTier.WOOD, 1, -2.8F, getDefault(false)), "utility/wood_paxel");

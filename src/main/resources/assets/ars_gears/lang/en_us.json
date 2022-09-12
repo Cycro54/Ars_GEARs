@@ -79,7 +79,7 @@
   "ars_gears.chat.cant_upgrade_low": "Your tier is too low",
   "ars_gears.chat.cant_upgrade_high": "You already have this upgrade",
   "ars_gears.chat.upgrade_success": "Your GEAR has been upgraded to tier ",
-  "ars_gears.chat.cant_use_spells": "Your GEAR tier must be Iron or higher to use spells",
+  "ars_gears.chat.cant_use_spells": "Your GEAR tier must be Iron or higher to use spells. Use Combat Rune to upgrade.",
   "ars_gears.chat.cast_cooldown": "Spell is on cooldown",
   "ars_gears.chat.need_bait": "You need bait to fish",
   "ars_gears.chat.need_utility_gear": "You must have a Utility GEAR in your inventory to use break",
@@ -87,7 +87,7 @@
   "ars_gears.chat.use_glyph_known": "You already know this spell!",
   "ars_gears.chat.use_glyph_banned": "This glyph can't be used: ",
   "ars_gears.chat.use_glyph_cast_method": "You can't learn cast methods!",
-  "ars_gears.chat.use_spell_book": "Spell Books are disabled.",
+  "ars_gears.chat.use_spell_book": "Spell Books are disabled by Ars Nouveau: GEARs. Use COMBAT Gear instead.",
   "ars_gears.chat.use_other_tool_jealous": "Your GEARs grow jealous.",
   "ars_gears.chat.use_other_tool": "You must use a GEAR tool.",
 

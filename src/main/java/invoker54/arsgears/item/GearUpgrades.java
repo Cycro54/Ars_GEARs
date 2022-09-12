@@ -56,7 +56,8 @@ public class GearUpgrades {
 
     //region fishing rod
     /** Decrease chance to lose bait */
-    public static final String fishrodBaitKeep = "FISHING_ROD_BAIT_KEEP";
+    /** This will be moved to the food overhaul mod I am making */
+//    public static final String fishrodBaitKeep = "FISHING_ROD_BAIT_KEEP";
     /** Gain more XP per catch */
     public static final String fishrodXPGain = "FISHING_ROD_XP_GAIN";
     //endregion

@@ -14,10 +14,9 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'maven-publish'
 
 group = 'invoker54'
-version = '0.21.0'
+version = '0.22.0'
 
 java {
     archivesBaseName = 'ars_gears'
