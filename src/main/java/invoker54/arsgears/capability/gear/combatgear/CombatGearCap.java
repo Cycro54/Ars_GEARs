@@ -6,6 +6,7 @@ import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.GearProvider;
+import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -18,8 +19,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
-import static invoker54.arsgears.item.combatgear.CombatGearItem.COOLDOWN;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
 public class CombatGearCap extends GearCap implements ICombatGear {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -106,6 +106,13 @@ public class CombatGearCap extends GearCap implements ICombatGear {
             capNBT.put(COMBAT_GEAR + COOLDOWN, capCoolDowns);
         }
 
+        //Finally, don't forget to save the upgrades too
+        if (tagNBT.contains(GearUpgrades.gearUpgradeNBT)){
+            this.getTag(swordINT).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
+            this.getTag(mirrorInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
+            this.getTag(bowInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
+        }
+
         LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
     }
 
@@ -143,6 +150,11 @@ public class CombatGearCap extends GearCap implements ICombatGear {
                 }
             }
             tagNBT.put(COMBAT_GEAR + COOLDOWN, tagCooldowns);
+        }
+
+        //Finally, don't forget to load the upgrades too
+        if (capNBT.contains(GearUpgrades.gearUpgradeNBT)){
+            tagNBT.put(GearUpgrades.gearUpgradeNBT, capNBT.get(GearUpgrades.gearUpgradeNBT));
         }
     }
 

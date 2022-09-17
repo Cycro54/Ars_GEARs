@@ -16,7 +16,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'invoker54'
-version = '0.22.0'
+version = '1.16.5-1.0.0'
 
 java {
     archivesBaseName = 'ars_gears'
@@ -181,6 +181,8 @@ dependencies {
 
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.16.3-4.0.1.0:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:1.16.3-4.0.1.0")
+
+    //Gecko lib
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.81')
 
     compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.4:7.1.0.84")

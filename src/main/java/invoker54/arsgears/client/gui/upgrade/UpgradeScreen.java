@@ -5,6 +5,7 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.button.UpgradeButton;
+import invoker54.arsgears.config.ArsGearsConfig;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.network.NetworkHandler;
@@ -79,6 +80,7 @@ public class UpgradeScreen extends Screen {
 
     @Override
     protected void init() {
+        baseXP = ArsGearsConfig.upgradeValue;
         categories.clear();
         halfWidthSpace = (width - imageWidth) /2;
         halfHeightSpace = (height - imageHeight) /2;
@@ -349,7 +351,7 @@ public class UpgradeScreen extends Screen {
                 createEmptyUpgrade(catName);
                 continue;
             }
-            ItemStack gearStack = mC.player.getMainHandItem();
+            ItemStack gearStack = mC.player.getOffhandItem();
             int playerTier = GearCap.getCap(gearStack).getTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
@@ -449,7 +451,7 @@ public class UpgradeScreen extends Screen {
                 continue;
             }
 
-            ItemStack gearStack = mC.player.getMainHandItem();
+            ItemStack gearStack = mC.player.getOffhandItem();
             int playerTier = GearCap.getCap(gearStack).getTier().ordinal();
             int upgradeTier = categories.get(catName).size() + 1;
 
@@ -516,7 +518,7 @@ public class UpgradeScreen extends Screen {
     }
     
     protected GearCap getCap(){
-        ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
+        ItemStack gearStack = ClientUtil.mC.player.getOffhandItem();
 
         return GearCap.getCap(gearStack);
     }

@@ -11,7 +11,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class buyUpgradeMsg {
-    
     public INBT nbtData;
     public int gearCycle;
     public int cost;
@@ -38,7 +37,7 @@ public class buyUpgradeMsg {
         context.enqueueWork(() -> {
             PlayerEntity player = context.getSender();
 
-            ItemStack gearStack = player.getMainHandItem();
+            ItemStack gearStack = player.getOffhandItem();
 
             GearCap cap = GearCap.getCap(gearStack);
 

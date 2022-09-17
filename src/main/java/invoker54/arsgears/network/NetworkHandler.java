@@ -46,6 +46,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(nextID(), ActivateGearMsg.class, (message, buf) -> {}, it -> new ActivateGearMsg(), ActivateGearMsg::handle);
         INSTANCE.registerMessage(nextID(), buyUpgradeMsg.class, buyUpgradeMsg::encode, buyUpgradeMsg::decode, buyUpgradeMsg::handle);
         INSTANCE.registerMessage(nextID(), QuickCastMsg.class, (message, buf) -> {}, it -> new QuickCastMsg(), QuickCastMsg::handle);
+        INSTANCE.registerMessage(nextID(), SyncConfigMsg.class, SyncConfigMsg::encode, SyncConfigMsg::decode, SyncConfigMsg::handle);
 
         //These are messages from Ars nouveau edited
         INSTANCE.registerMessage(nextID(), PacketUpdateSpellbook.class, PacketUpdateSpellbook::toBytes, PacketUpdateSpellbook::new, PacketUpdateSpellbook::handle);

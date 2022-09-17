@@ -8,6 +8,7 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.spell.effect.EffectBreak;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.config.ArsGearsConfig;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.settings.KeyBinding;
@@ -128,6 +129,16 @@ public class CombatGearItem extends Item {
             coolDown += (coolDown * 0.6F);
         }
 
+        //THIS IS THE COOLDOWN MULTIPLER
+        if (ArsGearsConfig.coolDownMultiplier != 1F){
+            coolDown *= ArsGearsConfig.coolDownMultiplier;
+        }
+
+        //THIS IS COOLDOWN VALUE CHANGE
+        if (ArsGearsConfig.coolDownValueChange != 0){
+            coolDown = (float) Math.max(0, coolDown + ArsGearsConfig.coolDownValueChange);
+        }
+
         //Round to 2 decimal places
         coolDown = Math.round(coolDown * 100)/100F;
 
@@ -136,7 +147,7 @@ public class CombatGearItem extends Item {
     public static float getCooldown(PlayerEntity playerEntity, CompoundNBT tag, int spellMode, boolean getDifference){
         if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
 
-        if (playerEntity.abilities.instabuild){
+        if (playerEntity.abilities.instabuild || ArsGearsConfig.disableCooldown){
             return 0;
         }
 

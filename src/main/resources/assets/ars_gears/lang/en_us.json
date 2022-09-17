@@ -1,12 +1,6 @@
 {
   "__comment": "This is for general item names",
   "item.ars_gears.stick_cross": "Stick Cross",
-  "item.ars_gears.bait_beef": "Beef Fish Bait",
-  "item.ars_gears.bait_chicken": "Chicken Fish Bait",
-  "item.ars_gears.bait_mutton": "Mutton Fish Bait",
-  "item.ars_gears.bait_pork": "Pork Fish Bait",
-  "item.ars_gears.bait_rabbit": "Rabbit Fish Bait",
-  "item.ars_gears.bait_rotten_flesh": "Rotten Flesh Fish Bait",
 
   "__comment": "This is for some text in the ModGuiSpellbook class",
   "ars_nouveau.spell.validation.exists.banned_glyph": "This glyph is banned %s",

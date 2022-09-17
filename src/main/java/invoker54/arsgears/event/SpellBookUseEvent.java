@@ -3,6 +3,7 @@ package invoker54.arsgears.event;
 
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.config.ArsGearsConfig;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
@@ -29,7 +30,7 @@ public class SpellBookUseEvent {
         boolean isSpellBook = (itemStack.getItem() instanceof SpellBook);
         PlayerEntity player = event.getPlayer();
 
-        if (isSpellBook) {
+        if (isSpellBook && !ArsGearsConfig.useSpellbook) {
             //If they right click on a table while sneaking, don't cancel the event
             if (!player.isCrouching()) {
                 player.sendMessage(new TranslationTextComponent("ars_gears.chat.use_spell_book"), Util.NIL_UUID);

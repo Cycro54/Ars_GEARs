@@ -1,6 +1,7 @@
 package invoker54.arsgears;
 
 import invoker54.arsgears.client.keybind.KeybindsInit;
+import invoker54.arsgears.config.ArsGearsConfig;
 import invoker54.arsgears.init.CapInit;
 import invoker54.arsgears.init.ContainerInit;
 import invoker54.arsgears.init.GlyphInit;
@@ -8,7 +9,9 @@ import invoker54.arsgears.init.RenderInit;
 import invoker54.arsgears.network.NetworkHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -43,6 +46,9 @@ public class ArsGears {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+        //This is for configs
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ArsGearsConfig.COMMON_SPEC, "ars_gears-common.toml");
     }
 
     private void setup(final FMLCommonSetupEvent event) {
