@@ -6,9 +6,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ArsGearsConfig {
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final CommonConfig COMMON;
     public static final ForgeConfigSpec COMMON_SPEC;
 
@@ -47,6 +50,7 @@ public final class ArsGearsConfig {
     public static void onConfigChanged(final ModConfig.ModConfigEvent eventConfig){
         //System.out.println("What's the config type? " + eventConfig.getConfig().getType());
         if(eventConfig.getConfig().getSpec() == ArsGearsConfig.COMMON_SPEC){
+            LOGGER.debug("CONFIG CHANGED, SENDING DATA TO PLAYERS NOW.");
             bakeCommonConfig();
             markDirty(true);
         }

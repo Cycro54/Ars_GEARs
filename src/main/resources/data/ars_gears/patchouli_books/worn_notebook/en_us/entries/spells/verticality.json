@@ -14,7 +14,7 @@
       "tier": "ONE",
       "mana_cost": "Low",
       "clay_type": "ars_nouveau:magic_clay",
-      "reagent": "minecraft:stone_pressure_plate"
+      "reagent": "minecraft:heavy_weighted_pressure_plate"
     }
   ]
 }

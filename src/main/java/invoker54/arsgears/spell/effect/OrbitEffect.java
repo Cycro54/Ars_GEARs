@@ -111,7 +111,7 @@ public class OrbitEffect extends AbstractEffect {
 
     @Override
     public ISpellTier.Tier getTier() {
-        return ISpellTier.Tier.THREE;
+        return Tier.TWO;
     }
 
     @Override

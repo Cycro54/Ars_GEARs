@@ -16,7 +16,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'invoker54'
-version = '1.16.5-1.0.0'
+version = '1.16.5-1.0.1'
 
 java {
     archivesBaseName = 'ars_gears'

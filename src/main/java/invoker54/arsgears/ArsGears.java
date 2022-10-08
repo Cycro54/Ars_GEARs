@@ -33,8 +33,8 @@ public class ArsGears {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ArsGears() {
-        registerGlyphConfigs();
         GlyphInit.registerGlyphs();
+        registerGlyphConfigs();
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading

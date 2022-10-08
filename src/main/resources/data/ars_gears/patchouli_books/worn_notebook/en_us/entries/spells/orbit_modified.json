@@ -13,7 +13,7 @@
       "recipe": "ars_nouveau:glyph_modded_orbit",
       "tier": "TWO",
       "mana_cost": "Medium",
-      "clay_type": "ars_nouveau:mythical_clay",
+      "clay_type": "ars_nouveau:marvelous_clay",
       "reagent": "ars_nouveau:glyph_projectile"
     }
   ]
