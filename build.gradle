@@ -16,10 +16,10 @@ apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'invoker54'
-version = '1.16.5-1.0.1'
+version = '1.0.2'
 
 java {
-    archivesBaseName = 'ars_gears'
+    archivesBaseName = 'ars_gears-1.16.5'
     toolchain.languageVersion = JavaLanguageVersion.of(8)
 }
 

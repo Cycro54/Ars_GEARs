@@ -10,7 +10,7 @@
       "item": "minecraft:stone"
     },
     "B": {
-      "item": "ars_gears:utility/stone_paxel"
+      "item": "ars_gears:utility/stone_paxel_fake"
     },
     "C": {
       "item": "minecraft:stone_hoe"

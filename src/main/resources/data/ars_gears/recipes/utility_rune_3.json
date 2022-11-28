@@ -2,7 +2,7 @@
   "type": "ars_nouveau:enchanting_apparatus",
   "item_1": [
     {
-      "item": "ars_gears:utility/diamond_paxel"
+      "item": "ars_gears:utility/diamond_paxel_fake"
     }
   ],
   "item_2": [

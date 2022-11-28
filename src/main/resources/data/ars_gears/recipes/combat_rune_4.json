@@ -2,17 +2,17 @@
   "type": "ars_nouveau:enchanting_apparatus",
   "item_1": [
     {
-      "item": "minecraft:diamond_block"
+      "item": "ars_nouveau:mana_gem"
     }
   ],
   "item_2": [
     {
-      "item": "minecraft:gold_block"
+      "item": "ars_nouveau:mana_gem"
     }
   ],
   "item_3": [
     {
-      "item": "minecraft:iron_block"
+      "item": "ars_nouveau:mana_gem"
     }
   ],
   "item_4": [

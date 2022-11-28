@@ -37,6 +37,7 @@ public class ItemInit {
     public static final Item WOOD_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/wood_paxel_fake");
     public static final Item STONE_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/stone_paxel_fake");
     public static final Item IRON_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/iron_paxel_fake");
+    public static final Item DIAMOND_PAXEL_FAKE = addItem(new Item(getDefault(true)), "utility/diamond_paxel_fake");
 
     //Bait types
     /** This will be moved to the food overhaul mod I am making */

@@ -10,7 +10,7 @@
       "item": "minecraft:iron_ingot"
     },
     "B": {
-      "item": "ars_gears:utility/iron_paxel"
+      "item": "ars_gears:utility/iron_paxel_fake"
     },
     "C": {
       "item": "minecraft:iron_hoe"
