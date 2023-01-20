@@ -111,12 +111,12 @@ public class CombatGearCap extends GearCap implements ICombatGear {
             capNBT.put(COMBAT_GEAR + COOLDOWN, capCoolDowns);
         }
 
-        //Finally, don't forget to save the upgrades too
-        if (tagNBT.contains(GearUpgrades.gearUpgradeNBT)){
-            this.getTag(swordINT).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
-            this.getTag(mirrorInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
-            this.getTag(bowInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
-        }
+//        //Finally, don't forget to save the upgrades too
+//        if (tagNBT.contains(GearUpgrades.gearUpgradeNBT)){
+//            this.getTag(swordINT).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
+//            this.getTag(mirrorInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
+//            this.getTag(bowInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
+//        }
 
         LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
     }
@@ -157,10 +157,10 @@ public class CombatGearCap extends GearCap implements ICombatGear {
             tagNBT.put(COMBAT_GEAR + COOLDOWN, tagCooldowns);
         }
 
-        //Finally, don't forget to load the upgrades too
-        if (capNBT.contains(GearUpgrades.gearUpgradeNBT)){
-            tagNBT.put(GearUpgrades.gearUpgradeNBT, capNBT.get(GearUpgrades.gearUpgradeNBT));
-        }
+//        //Finally, don't forget to load the upgrades too
+//        if (capNBT.contains(GearUpgrades.gearUpgradeNBT)){
+//            tagNBT.put(GearUpgrades.gearUpgradeNBT, capNBT.get(GearUpgrades.gearUpgradeNBT));
+//        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.init.SoundsInit;
+import invoker54.arsgears.item.GearUpgrades;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,6 +36,12 @@ public class QuickCastMsg {
             if (player == null) return;
 
             ItemStack gearStack = ArsUtil.getHeldGearCap(player, false, true);
+
+            //Check if the gearStack even has the quick cast upgrade
+            if (GearUpgrades.getUpgrade(gearStack, GearUpgrades.mirrorQuickCast) == 0){
+                return;
+            }
+
             CombatGearCap cap = CombatGearCap.getCap(gearStack);
             if (cap == null) return;
 

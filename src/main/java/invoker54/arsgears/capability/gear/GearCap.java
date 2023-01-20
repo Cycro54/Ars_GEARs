@@ -83,12 +83,12 @@ public class GearCap implements IGearCap {
         CompoundNBT tagNBT = gearStack.getOrCreateTag();
 
         //Save important current tag shtuff (while also removing the saved stuff from the mainNBT)
-        LOGGER.debug("WHATS mainNBT id BEFORE edit? " + (mainNBT.getString("id")));
+//        LOGGER.debug("WHATS mainNBT id BEFORE edit? " + (mainNBT.getString("id")));
         saveTag(mainNBT, tagNBT, itemTags[prevSelect]);
 
         //Now load important current tag shtuff
         loadTag(mainNBT, tagNBT, itemTags[selectedItem]);
-        LOGGER.debug("WHATS mainNBT id AFTER edite? " + (mainNBT.getString("id")));
+//        LOGGER.debug("WHATS mainNBT id AFTER edite? " + (mainNBT.getString("id")));
 
         //Place tagNBT back into the mainNBT (just in case it wasn't in there already)
         mainNBT.put("tag", tagNBT);
