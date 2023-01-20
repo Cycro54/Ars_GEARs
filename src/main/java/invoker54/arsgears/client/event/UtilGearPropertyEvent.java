@@ -5,7 +5,6 @@ import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.item.utilgear.ModFishingRodItem;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;

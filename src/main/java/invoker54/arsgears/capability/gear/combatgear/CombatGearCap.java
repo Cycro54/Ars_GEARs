@@ -6,6 +6,8 @@ import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.GearProvider;
+import invoker54.arsgears.client.ClientUtil;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,7 +25,6 @@ import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
 public class CombatGearCap extends GearCap implements ICombatGear {
     private static final Logger LOGGER = LogManager.getLogger();
-
     private final String ACTIVATED = "ACTIVATED";
     private boolean activated = false;
 
@@ -61,8 +62,12 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     }
 
     @Override
-    public void setActivated(boolean flag) {
+    public void setActivated(boolean flag, PlayerEntity player) {
         activated = flag;
+
+        if (!activated  || this.getSelectedItem() == 2) return;
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundsInit.GEAR_ACTIVATE,
+                player.getSoundSource(), 0.9F, 0.9F + (ClientUtil.mC.player.getRandom().nextFloat() * 0.3F));
     }
 
     String mode = "mode";
@@ -160,7 +165,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
 
     @Override
     public void cycleItem(ItemStack gearStack, PlayerEntity player) {
-        setActivated(false);
+        setActivated(false, player);
         super.cycleItem(gearStack, player);
     }
 

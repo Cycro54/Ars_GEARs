@@ -478,8 +478,8 @@ public class UpgradeScreen extends Screen {
                     button.active = false;
                     return ITextComponent.nullToEmpty("\247cYou must upgrade to tier " + (GearTier.values()[upgradeTier]));
                 }
-                //Make sure they can afford it
-                else if (button.getPrice() > player.totalExperience) {
+                //Make sure they can afford it (if they are not in creative
+                else if (button.getPrice() > player.totalExperience && !player.isCreative()) {
                     button.active = false;
                     return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
                 }

@@ -2,7 +2,7 @@ package invoker54.arsgears.network.message;
 
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -15,11 +15,14 @@ public class ActivateGearMsg {
         NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
+            if (context.getSender() == null) return;
+
             ItemStack item = ArsUtil.getHeldGearCap(context.getSender(), false, false);
 
             if(item != null) {
+                PlayerEntity player = context.getSender();
                 CombatGearCap cap = CombatGearCap.getCap(item);
-                cap.setActivated(!cap.getActivated());
+                cap.setActivated(!cap.getActivated(), player);
             }
         });
         context.setPacketHandled(true);

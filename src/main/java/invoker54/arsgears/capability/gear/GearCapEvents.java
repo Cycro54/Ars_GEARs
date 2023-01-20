@@ -2,8 +2,8 @@ package invoker54.arsgears.capability.gear;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellBow;
+import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import invoker54.arsgears.item.combatgear.ModSpellSword;
 import invoker54.arsgears.item.utilgear.ModFishingRodItem;
 import invoker54.arsgears.item.utilgear.ModHoeItem;

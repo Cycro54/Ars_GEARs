@@ -2,6 +2,7 @@ package invoker54.arsgears.capability.gear;
 
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearTier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -72,6 +73,11 @@ public class GearCap implements IGearCap {
 
         //Have to make the changes now if I wish to keep them
         selectedItem = (selectedItem == 2 ? 0 : ++selectedItem);
+
+        //Play a sound (Utility will be higher pitch than Combat)
+        float pitch = (0.7F + (((selectedItem + 1) / 3F) * 0.3F));
+        player.level.playSound(null, player.blockPosition(),
+                SoundsInit.GEAR_SWITCH, player.getSoundSource(), 0.8F, pitch);
 
         CompoundNBT mainNBT = gearStack.serializeNBT();
         CompoundNBT tagNBT = gearStack.getOrCreateTag();

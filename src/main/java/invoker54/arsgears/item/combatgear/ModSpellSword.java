@@ -14,6 +14,7 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.item.modSwordRenderer;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -100,7 +101,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
 
         //If the player can't afford the spell, AND the combat gear is activated, set its activation to false
         if ((!flag1 || !flag2 || !flag3) && cap.getActivated()){
-            cap.setActivated(false);
+            cap.setActivated(false, player);
         }
     }
 
@@ -165,12 +166,15 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
             EntityRayTraceResult entityRes = MathUtil.getLookedAtEntity(playerIn, 25);
             if(entityRes != null && entityRes.getEntity() instanceof LivingEntity){
                 resolver.onCastOnEntity(gearStack, playerIn, entityRes.getEntity(), handIn);
-                cap.setActivated(false);
+                cap.setActivated(false, playerIn);
                 //This damages the gear stack
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
                 //This sets the cooldown for the current spell
                 float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
                 CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
+
+                //Now play the cast sound
+                playerIn.level.playSound(null, playerIn.blockPosition(), SoundsInit.GEAR_CAST, playerIn.getSoundSource(), 1.3F, 0.8F + playerIn.getRandom().nextFloat() * 0.4F);
                 return ActionResult.success(gearStack);
             }
             //endregion
@@ -180,12 +184,15 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
             if(blockResult.getType() == RayTraceResult.Type.BLOCK || (isSensitive && blockResult instanceof BlockRayTraceResult)){
                 ItemUseContext context = new ItemUseContext(playerIn, handIn, (BlockRayTraceResult) blockResult);
                 resolver.onCastOnBlock(context);
-                cap.setActivated(false);
+                cap.setActivated(false, playerIn);
                 //This damages the gear stack
                 gearStack.setDamageValue(gearStack.getDamageValue() + 1);
                 //This sets the cooldown for the current spell
                 float cooldown = CombatGearItem.calcCooldown(cap.getSelectedItem(), resolver.spell, true) + playerIn.level.getGameTime();
                 CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
+
+                //Now play the cast sound
+                playerIn.level.playSound(null, playerIn.blockPosition(), SoundsInit.GEAR_CAST, playerIn.getSoundSource(), 1.3F, 0.8F + playerIn.getRandom().nextFloat() * 0.4F);
                 return ActionResult.success(gearStack);
             }
             //endregion
@@ -202,7 +209,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
         }
 
         //Set it to whatever it wasnt
-        cap.setActivated(!cap.getActivated());
+        cap.setActivated(!cap.getActivated(), playerIn);
         return cap.getActivated() ? ActionResult.fail(gearStack) : ActionResult.consume(gearStack);
     }
 
@@ -216,7 +223,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
 
         //Only if the combat gear is set to active will the spell be cast.
         if (cap.getActivated()) {
-            cap.setActivated(false);
+            cap.setActivated(false, (PlayerEntity) playerIn);
             Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
 
             //This is the spell sweep upgrade
@@ -244,6 +251,9 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
                     resolver.onCastOnEntity(gearStack, playerIn, livingentity, Hand.MAIN_HAND);
                 }
             }
+
+            //Now play the cast sound
+            playerIn.level.playSound(null, playerIn.blockPosition(), SoundsInit.GEAR_CAST, playerIn.getSoundSource(), 1.3F, 0.8F + playerIn.getRandom().nextFloat() * 0.4F);
         }
 
         //This is where I will convert health to mana

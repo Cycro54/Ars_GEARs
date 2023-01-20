@@ -1,7 +1,6 @@
 package invoker54.arsgears.network.message;
 
 import invoker54.arsgears.capability.player.PlayerDataCap;
-import invoker54.arsgears.capability.player.PlayerDataCapEvents;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;

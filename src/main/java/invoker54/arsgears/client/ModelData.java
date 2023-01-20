@@ -1,14 +1,8 @@
 package invoker54.arsgears.client;
 
-import com.mojang.datafixers.types.templates.Check;
 import invoker54.arsgears.ArsGears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import org.codehaus.plexus.util.cli.Arg;
-
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.zip.CheckedInputStream;
 
 public class ModelData {
 

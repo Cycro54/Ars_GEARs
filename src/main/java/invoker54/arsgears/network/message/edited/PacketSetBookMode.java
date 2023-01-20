@@ -1,7 +1,6 @@
 package invoker54.arsgears.network.message.edited;
 
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

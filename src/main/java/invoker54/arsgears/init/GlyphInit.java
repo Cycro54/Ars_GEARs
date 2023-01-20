@@ -3,8 +3,8 @@ package invoker54.arsgears.init;
 import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import invoker54.arsgears.spell.effect.ModBreakEffect;
-import invoker54.arsgears.spell.effect.VerticalityEffect;
 import invoker54.arsgears.spell.effect.OrbitEffect;
+import invoker54.arsgears.spell.effect.VerticalityEffect;
 
 import java.util.ArrayList;
 import java.util.List;

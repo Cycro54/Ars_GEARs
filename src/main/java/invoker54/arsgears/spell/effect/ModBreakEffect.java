@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.hollingsworth.arsnouveau.api.util.BlockUtil.destroyBlockSafely;
-import static invoker54.arsgears.item.utilgear.UtilGearItem.paxelInt;
+import static invoker54.arsgears.item.utilgear.UtilGearItem.paxelINT;
 
 public class ModBreakEffect extends AbstractEffect {
     public static ModBreakEffect INSTANCE = new ModBreakEffect();
@@ -66,12 +66,12 @@ public class ModBreakEffect extends AbstractEffect {
     @Override
     public void onResolveBlock(BlockRayTraceResult rayTraceResult, World world, @Nullable LivingEntity shooter, SpellStats spellStats, SpellContext spellContext) {
         ItemStack gearStack = getStack(shooter, false);
-//        if (gearStack.isEmpty()) {
-//            PortUtil.sendMessageNoSpam(shooter, new TranslationTextComponent("ars_gears.chat.need_utility_gear"));
-//            return;
-//        }
+        if (gearStack.isEmpty()) {
+            PortUtil.sendMessageNoSpam(shooter, new TranslationTextComponent("ars_gears.chat.need_utility_gear"));
+            return;
+        }
         GearCap cap = GearCap.getCap(gearStack);
-        CompoundNBT itemTag = cap.getTag(paxelInt);
+        CompoundNBT itemTag = cap.getTag(paxelINT);
 
         BlockPos pos = rayTraceResult.getBlockPos();
         BlockState state;
@@ -171,8 +171,8 @@ public class ModBreakEffect extends AbstractEffect {
                 AugmentDampen.INSTANCE,
                 AugmentPierce.INSTANCE,
                 AugmentAOE.INSTANCE,
-//                AugmentExtract.INSTANCE,
-//                AugmentFortune.INSTANCE,
+                AugmentExtract.INSTANCE,
+                AugmentFortune.INSTANCE,
                 AugmentSensitive.INSTANCE
         );
     }

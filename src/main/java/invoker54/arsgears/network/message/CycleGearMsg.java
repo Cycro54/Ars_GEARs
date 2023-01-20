@@ -23,11 +23,12 @@ public class CycleGearMsg {
 
             if (cap instanceof CombatGearCap) {
                 LOGGER.debug("Is this activated? " + ((CombatGearCap) cap).getActivated());
-                ((CombatGearCap) cap).setActivated(cap.getSelectedItem() == 2);
+                ((CombatGearCap) cap).setActivated(cap.getSelectedItem() == 2, context.getSender());
                 LOGGER.debug("Is this still activated? " + ((CombatGearCap) cap).getActivated());
             }
 
             cap.cycleItem(item, context.getSender());
+
 
 //            if (item.getItem() instanceof UtilGearItem) GearCap.getCap(item).cycleItem(item);
 //

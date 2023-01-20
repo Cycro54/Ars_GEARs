@@ -70,42 +70,46 @@ public class UpgradeRune extends Item {
         }
         //Now let's get to upgrading!
         else {
-            CompoundNBT tag0 = gearCap.getTag(0);
-            CompoundNBT tag1 = gearCap.getTag(1);
-            CompoundNBT tag2 = gearCap.getTag(2);
-            gearCap.setTier(gearTier);
-
-            tag0.putString("id", ForgeRegistries.ITEMS.getKey(gear0).toString());
-            tag1.putString("id", ForgeRegistries.ITEMS.getKey(gear1).toString());
-            tag2.putString("id", ForgeRegistries.ITEMS.getKey(gear2).toString());
-            //Make sure to rune the upgrade method, or else it may revert back to an old itemstack
-            CompoundNBT currentItemTag = gearStack.serializeNBT();
-            switch (gearCap.getSelectedItem()){
-                default:
-                    currentItemTag.merge(tag0);
-                    break;
-                case 1:
-                    currentItemTag.merge(tag1);
-                    break;
-                case 2:
-                    currentItemTag.merge(tag2);
-                    break;
-            }
-
-            //UTILITY
-            if (forUtility){
-                cap.upgradeUtilityGear(ItemStack.of(currentItemTag));
-            }
-            //COMBAT
-            else {
-                cap.upgradeCombatGear(ItemStack.of(currentItemTag));
-            }
+            transformGear(gearStack, gearCap, cap);
 
             //Finally, shrink the itemStack and send the upgrade message
             PortUtil.sendMessage(playerIn, new TranslationTextComponent("ars_gears.chat.upgrade_success").append(String.valueOf(getTier() + 1)));
             runeStack.shrink(1);
         }
 
-            return ActionResult.consume(runeStack);
+        return ActionResult.consume(runeStack);
+    }
+
+    public void transformGear(ItemStack gearStack, GearCap gearCap, PlayerDataCap playerCap){
+        CompoundNBT tag0 = gearCap.getTag(0);
+        CompoundNBT tag1 = gearCap.getTag(1);
+        CompoundNBT tag2 = gearCap.getTag(2);
+        gearCap.setTier(gearTier);
+
+        tag0.putString("id", ForgeRegistries.ITEMS.getKey(gear0).toString());
+        tag1.putString("id", ForgeRegistries.ITEMS.getKey(gear1).toString());
+        tag2.putString("id", ForgeRegistries.ITEMS.getKey(gear2).toString());
+        //Make sure to rune the upgrade method, or else it may revert back to an old itemstack
+        CompoundNBT currentItemTag = gearStack.serializeNBT();
+        switch (gearCap.getSelectedItem()){
+            default:
+                currentItemTag.merge(tag0);
+                break;
+            case 1:
+                currentItemTag.merge(tag1);
+                break;
+            case 2:
+                currentItemTag.merge(tag2);
+                break;
+        }
+
+        //UTILITY
+        if (forUtility){
+            playerCap.upgradeUtilityGear(ItemStack.of(currentItemTag));
+        }
+        //COMBAT
+        else {
+            playerCap.upgradeCombatGear(ItemStack.of(currentItemTag));
+        }
     }
 }

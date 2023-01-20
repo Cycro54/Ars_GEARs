@@ -1,7 +1,9 @@
 package invoker54.arsgears.item.utilgear;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import net.minecraft.item.*;
+import net.minecraft.item.IItemTier;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,9 +13,9 @@ import javax.annotation.Nullable;
 public class UtilGearItem extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String UTIL_GEAR_CAP = "UTIL_GEAR_CAP";
-    public static int paxelInt = 0;
-    public static int fishingInt = 1;
-    public static int hoeInt = 2;
+    public static int paxelINT = 0;
+    public static int fishingINT = 1;
+    public static int hoeINT = 2;
 
     public UtilGearItem(IItemTier tier, Item.Properties builder) {
         super(builder.durability(tier.getUses()));

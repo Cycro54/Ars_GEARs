@@ -15,6 +15,7 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.render.item.modSpellBowRenderer;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -65,6 +66,12 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
 
     @Override
     public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
+        if (!player.level.isClientSide) return;
+        LOGGER.debug("ON USE TIME IS: " + count);
+        LOGGER.debug("TIME NEEDED IS: " + getChargeDuration(stack));
+        if ((stack.getUseDuration() - count) == ((int)getChargeDuration(stack))){
+            player.playSound(SoundEvents.STONE_BUTTON_CLICK_ON, 1.0F, 1.0F);
+        }
         super.onUsingTick(stack, player, count);
     }
 
@@ -168,7 +175,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
         boolean fireSpell = false;
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
         if (cap.getActivated()) {
-            cap.setActivated(false);
+            cap.setActivated(false, playerentity);
             fireSpell = true;
         }
 
@@ -228,6 +235,9 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
                             didCastSpell = true;
                         }
                     }
+
+                    //Now play the cast sound
+                    playerIn.level.playSound(null, playerIn.blockPosition(), SoundsInit.GEAR_CAST, playerIn.getSoundSource(), 1.3F, 0.8F + playerIn.getRandom().nextFloat() * 0.4F);
                 }
                 arrows.add(abstractarrowentity);
                 //So if the player did manage to cast the spell, check if there is the splitAugment, if so, cast more arrows.

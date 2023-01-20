@@ -6,6 +6,7 @@ import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.item.combatgear.ModSpellMirror;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.function.Supplier;
 
-import static com.hollingsworth.arsnouveau.common.items.SpellBook.*;
+import static com.hollingsworth.arsnouveau.common.items.SpellBook.getMode;
+import static com.hollingsworth.arsnouveau.common.items.SpellBook.getSpellColor;
 import static invoker54.arsgears.item.combatgear.CombatGearItem.getCooldown;
 import static invoker54.arsgears.item.combatgear.CombatGearItem.mirrorInt;
 
@@ -70,6 +72,8 @@ public class QuickCastMsg {
 
                 //Then finally set the cooldown
                 CombatGearItem.setCooldown(itemTag, mode, coolDown + player.level.getGameTime());
+
+                player.level.playSound(null, player.blockPosition(), SoundsInit.GEAR_CAST, player.getSoundSource(), 1,0.8F + player.getRandom().nextFloat() * 0.4F);
             }
         });
         context.setPacketHandled(true);

@@ -2,17 +2,13 @@ package invoker54.arsgears.client.gui.upgrade;
 
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 
 import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 
@@ -48,7 +44,7 @@ public class CombatUpgradeScreen extends UpgradeScreen {
         //Sweeping Edge
         createEnchantUpgrade(swordINT, Enchantments.SWEEPING_EDGE, "SWORD_SWEEPING_EDGE", new int[]{1,2,3,0}, getImage("sweep_edge.png"));
         //Looting
-        createEnchantUpgrade(swordINT, Enchantments.MOB_LOOTING, "SWORD_MOB_LOOTING",new int[]{0,1,3,0}, getImage("looting.png"));
+        createEnchantUpgrade(swordINT, Enchantments.MOB_LOOTING, "SWORD_MOB_LOOTING",new int[]{0,1,2,3}, getImage("looting.png"));
         //endregion
 
         //region Custom Upgrades

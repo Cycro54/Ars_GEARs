@@ -1,7 +1,5 @@
 package invoker54.arsgears.network.message.edited;
 
-import com.hollingsworth.arsnouveau.ArsNouveau;
-import com.hollingsworth.arsnouveau.client.gui.book.GuiSpellBook;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
 import net.minecraft.nbt.CompoundNBT;

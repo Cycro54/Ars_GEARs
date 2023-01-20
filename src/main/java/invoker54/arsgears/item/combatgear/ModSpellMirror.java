@@ -7,6 +7,7 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.render.item.modMirrorRenderer;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearUpgrades;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -78,10 +79,10 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
 
         //If the player can afford the spell, AND the combat gear isn't activated, activate the combat gear
         if ((flag && flag2 && flag3) && !cap.getActivated()){
-            cap.setActivated(true);
+            cap.setActivated(true, player);
         }
         else if ((!flag || !flag2 || !flag3) && cap.getActivated()){
-            cap.setActivated(false);
+            cap.setActivated(false, player);
         }
     }
 
@@ -116,6 +117,10 @@ public class ModSpellMirror extends EnchantersMirror implements ICasterTool {
         //Now let's cast the spell on the player
         resolver.onCast(gearStack, playerIn, worldIn);
         CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
+
+        //Now play the cast sound
+        playerIn.level.playSound(null, playerIn.blockPosition(), SoundsInit.GEAR_CAST, playerIn.getSoundSource(), 1.3F, 0.8F + playerIn.getRandom().nextFloat() * 0.4F);
+
         return ActionResult.success(gearStack);
 
         //Original code

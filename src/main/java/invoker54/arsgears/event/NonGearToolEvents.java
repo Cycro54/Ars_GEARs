@@ -1,5 +1,6 @@
 package invoker54.arsgears.event;
 
+import com.hollingsworth.arsnouveau.ArsNouveau;
 import com.hollingsworth.arsnouveau.common.items.EnchantersMirror;
 import com.hollingsworth.arsnouveau.common.items.EnchantersSword;
 import com.hollingsworth.arsnouveau.common.items.Wand;
@@ -14,9 +15,12 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class NonGearToolEvents {
+    private static final Logger LOGGER = LogManager.getLogger();
     @SubscribeEvent
     public static void rightClick(PlayerInteractEvent.RightClickBlock event){
         PlayerEntity player = event.getPlayer();
@@ -84,15 +88,23 @@ public class NonGearToolEvents {
         //This will tell me if the item is a gear item or not
         if (GearCap.getCap(itemStack) != null) return true;
 
+        String nameSpace = item.getRegistryName().getNamespace();
+        //This will tell me if it's a Minecraft or Ars Nouveau item
+//        LOGGER.info("Does name space equal minecraft: " + nameSpace.equalsIgnoreCase("minecraft"));
+        if (!nameSpace.equalsIgnoreCase("minecraft") && !nameSpace.equalsIgnoreCase(ArsNouveau.MODID)) return true;
+
         //This is for Utility items
-        if (item instanceof ToolItem) {
-            IItemTier tier = ((ToolItem) itemStack.getItem()).getTier();
+        if (item instanceof TieredItem) {
+            IItemTier tier = ((TieredItem) itemStack.getItem()).getTier();
             if (tier == ItemTier.STONE || tier == ItemTier.WOOD) return true;
 
             if (item instanceof PickaxeItem) return ArsGearsConfig.useUtilityItems;
             if (item instanceof HoeItem) return ArsGearsConfig.useUtilityItems;
             if (item instanceof AxeItem) return ArsGearsConfig.useUtilityItems;
             if (item instanceof ShovelItem) return ArsGearsConfig.useUtilityItems;
+
+            //Except this one, this is for Minecraft swords
+            if (item instanceof SwordItem) return ArsGearsConfig.useCombatItems;
         }
         if (item instanceof FishingRodItem) return ArsGearsConfig.useUtilityItems;
 

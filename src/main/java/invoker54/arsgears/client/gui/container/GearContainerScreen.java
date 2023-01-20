@@ -6,6 +6,7 @@ import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.Ticker;
+import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.FeedGearMsg;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -74,6 +75,9 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
                 }
             }
             if (empty) return;
+
+            //Play the munch sound
+            ClientUtil.mC.player.playSound(SoundsInit.GEAR_EAT, 1,0.6F + ClientUtil.mC.player.getRandom().nextFloat() * 0.4F);
 
             //Set the damage value
             gearStack.setDamageValue(gearStack.getDamageValue() - menu.repairValue);

@@ -1,0 +1,28 @@
+{
+  "gear_eat": {
+    "subtitle": "sounds.ars_gears.gear_eat",
+    "sounds": [
+      "ars_gears:gear_eat1",
+      "ars_gears:gear_eat2",
+      "ars_gears:gear_eat3",
+      "ars_gears:gear_eat4"
+    ]
+  },
+  "gear_switch": {
+  "subtitle": "sounds.ars_gears.gear_switch",
+  "sounds": [
+    "ars_gears:gear_switch1",
+    "ars_gears:gear_switch2"
+  ]
+},  "gear_activate": {
+  "subtitle": "sounds.ars_gears.gear_activate",
+  "sounds": [
+    "ars_gears:gear_activate"
+  ]
+},  "gear_cast": {
+  "subtitle": "sounds.ars_gears.gear_cast",
+  "sounds": [
+    "ars_gears:gear_cast"
+  ]
+}
+}

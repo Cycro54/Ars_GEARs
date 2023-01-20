@@ -478,7 +478,7 @@ public class ModGuiSpellBook extends BaseBook {
 
                     if (Objects.equals(b.resourceIcon, button1.resourceIcon)
                             && b.stack < maxAugmentStack) {
-                        b.stack++;
+                        b.stack = (sneakHeld ? maxAugmentStack : b.stack + 1);
                         validate();
                         return;
                     }
@@ -489,7 +489,7 @@ public class ModGuiSpellBook extends BaseBook {
                 if (b.resourceIcon.equals("")) {
                     b.resourceIcon = button1.resourceIcon;
                     b.spellTag = button1.spell_id;
-                    b.stack++;
+                    b.stack = (sneakHeld && button1.isAugment ? maxAugmentStack : 1);
                     b.isAugment = button1.isAugment;
                     validate();
                     return;

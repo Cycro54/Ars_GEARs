@@ -49,7 +49,7 @@ public class CombatGearItem extends Item {
         CombatGearCap cap = CombatGearCap.getCap(gearStack);
 
         //If the player goes off the weapon, turn off the spell
-        if (!isSelected && cap.getActivated()) cap.setActivated(false);
+        if (!isSelected && cap.getActivated()) cap.setActivated(false, player);
 
         if (ArsUtil.getHeldGearCap(player, false, false).isEmpty()) return false;
 
@@ -57,7 +57,7 @@ public class CombatGearItem extends Item {
         if (SpellBook.getMode(gearStack.getOrCreateTag()) == 0){SpellBook.setMode(gearStack.getOrCreateTag(),0);}
 
         //If the item tier isn't high enough and the item is somehow activated, deactivate it.
-        if (cap.getTier().ordinal() <= 1 && cap.getActivated()) cap.setActivated(false);
+        if (cap.getTier().ordinal() <= 1 && cap.getActivated()) cap.setActivated(false, player);
 
         //Make sure the player has all the glyph bonuses
         IMana mana = ManaCapability.getMana(player).resolve().get();
@@ -71,7 +71,7 @@ public class CombatGearItem extends Item {
 
             for (AbstractSpellPart spellPart: spell.recipe){
                 if (CombatGearItem.isBanned(spellPart, false)){
-                    cap.setActivated(false);
+                    cap.setActivated(false, player);
                     String glyphName = spellPart.getLocaleName();
                     String reason = new TranslationTextComponent("ars_gears.chat.use_glyph_banned").getString();
                     player.sendMessage(new StringTextComponent(reason + glyphName), Util.NIL_UUID);

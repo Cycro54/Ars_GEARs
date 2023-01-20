@@ -52,6 +52,9 @@ public class buyUpgradeMsg {
                 cap.getTag(msg.gearCycle).merge((CompoundNBT) msg.nbtData);
             }
 
+            //If the player is in creative, don't touch their xp
+            if (player.isCreative()) return;
+
             //Now finally take their precious experience.
             player.giveExperiencePoints(-msg.cost);
         });

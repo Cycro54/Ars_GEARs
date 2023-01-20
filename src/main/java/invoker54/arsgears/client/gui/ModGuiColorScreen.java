@@ -8,7 +8,6 @@ import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.client.ClientUtil;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.edited.PacketUpdateSpellColors;
 import net.minecraft.client.GameSettings;

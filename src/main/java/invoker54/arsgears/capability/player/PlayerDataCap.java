@@ -50,6 +50,11 @@ public class PlayerDataCap implements IPlayerCap {
     //This will set an item stack to be the currently held utility gear
     @Override
     public void upgradeUtilityGear(ItemStack upgrade) {
+        if (upgrade.isEmpty()){
+            LOGGER.error("Utility upgrade is empty!! ABORTING");
+            return;
+        }
+
         utility_gear_copy = upgrade.copy();
 
         LOGGER.info("I am setting the held utility gear");
@@ -82,6 +87,11 @@ public class PlayerDataCap implements IPlayerCap {
 
     @Override
     public void upgradeCombatGear(ItemStack upgrade) {
+        if (upgrade.isEmpty()){
+            LOGGER.error("Combat upgrade is empty!! ABORTING");
+            return;
+        }
+
         combat_gear_copy = upgrade.copy();
 
         LOGGER.info("I am setting the held combat gear");
