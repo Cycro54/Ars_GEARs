@@ -49,9 +49,9 @@ public class CombatUpgradeScreen extends UpgradeScreen {
 
         //region Custom Upgrades
         //Mana steal
-        createCustomUpgrade(swordINT, GearUpgrades.swordManaSteal, "SWORD_MANA_STEAL",new int[]{1,0,2,0}, getImage("mana_steal.png"));
+        createCustomUpgrade(GearUpgrades.swordManaSteal, "SWORD_MANA_STEAL",new int[]{1,0,2,0}, getImage("mana_steal.png"));
         //Spell Sweep
-        createCustomUpgrade(swordINT, GearUpgrades.swordSpellSweep, "SWORD_SPELL_SWEEP",new int[]{0,0,1,0}, getImage("spell_sweep.png"));
+        createCustomUpgrade(GearUpgrades.swordSpellSweep, "SWORD_SPELL_SWEEP",new int[]{0,0,1,0}, getImage("spell_sweep.png"));
         //endregion
     }
 
@@ -63,13 +63,13 @@ public class CombatUpgradeScreen extends UpgradeScreen {
 
         //region Custom Upgrades
         //Bow Speed
-        createCustomUpgrade(bowInt, GearUpgrades.bowSpeed, "BOW_SPEED",new int[]{1,2,3,0}, getImage("bow_speed.png"));
+        createCustomUpgrade(GearUpgrades.bowSpeed, "BOW_SPEED",new int[]{1,2,3,0}, getImage("bow_speed.png"));
         //Spell Arrow
-        createCustomUpgrade(bowInt, GearUpgrades.bowSpellArrow, "BOW_SPELL_ARROW",new int[]{0,1,0,0}, getImage("spell_arrow.png"));
+        createCustomUpgrade(GearUpgrades.bowSpellArrow, "BOW_SPELL_ARROW",new int[]{0,1,0,0}, getImage("spell_arrow.png"));
         //Spell Cooldown
-        createCustomUpgrade(bowInt, GearUpgrades.bowCooldown, "BOW_COOLDOWN",new int[]{0,1,0,0}, getImage("spell_cooldown.png"));
+        createCustomUpgrade(GearUpgrades.bowCooldown, "BOW_COOLDOWN",new int[]{0,1,0,0}, getImage("spell_cooldown.png"));
         //Arrow Recycle
-        createCustomUpgrade(bowInt, GearUpgrades.bowArrowKeep, "BOW_ARROW_KEEP",new int[]{1,0,2,0}, getImage("arrow_keep.png"));
+        createCustomUpgrade(GearUpgrades.bowArrowKeep, "BOW_ARROW_KEEP",new int[]{1,0,2,0}, getImage("arrow_keep.png"));
         //Spell Split
 //        createCustomUpgrade(bowInt, GearUpgrades.bowSpellSplit, new int[]{0,0,1,2}, getImage("spell_split.png"));
         //endregion
@@ -77,11 +77,11 @@ public class CombatUpgradeScreen extends UpgradeScreen {
     private void mirrorUpgrades(){
         //region Custom Upgrades
         //Mana Discount
-        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorManaDiscount, "MIRROR_MANA_DISCOUNT",new int[]{0,1,2,0}, getImage("mana_discount.png"));
+        createCustomUpgrade(GearUpgrades.mirrorManaDiscount, "MIRROR_MANA_DISCOUNT",new int[]{0,1,2,0}, getImage("mana_discount.png"));
         //Extra Glyph
-        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorFreeGlyph, "MIRROR_FREE_GLYPH",new int[]{0,1,2,3}, getImage("free_glyph.png"));
+        createCustomUpgrade(GearUpgrades.mirrorFreeGlyph, "MIRROR_FREE_GLYPH",new int[]{0,1,2,3}, getImage("free_glyph.png"));
         //Quick Cast
-        createCustomUpgrade(mirrorInt, GearUpgrades.mirrorQuickCast, "MIRROR_QUICK_CAST",new int[]{0,1,0,0}, getImage("quick_cast.png"));
+        createCustomUpgrade(GearUpgrades.mirrorQuickCast, "MIRROR_QUICK_CAST",new int[]{0,1,0,0}, getImage("quick_cast.png"));
         //endregion
     }
 }

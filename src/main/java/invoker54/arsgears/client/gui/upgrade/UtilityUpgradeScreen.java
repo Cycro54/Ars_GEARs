@@ -51,7 +51,7 @@ public class UtilityUpgradeScreen extends UpgradeScreen {
 //        //Mining Power
 //        createCustomUpgrade(paxelINT, GearUpgrades.paxelMiningPower, new int[]{1,2,3,4}, getImage("paxel_mining_power.png"));
         //Auto Place Inventory
-        createCustomUpgrade(paxelINT, GearUpgrades.paxelAutoInv, "PAXEL_AUTO_INVENTORY", new int[]{0,1,0,0}, getImage("paxel_auto_inventory.png"));
+        createCustomUpgrade(GearUpgrades.paxelAutoInv, "PAXEL_AUTO_INVENTORY", new int[]{0,1,0,0}, getImage("paxel_auto_inventory.png"));
         //Radius
 //        createCustomUpgrade(paxelINT, GearUpgrades.paxelRadialMine, new int[]{0,0,1,0}, getImage("paxel_radial_mine.png"));
         //endregion
@@ -68,16 +68,16 @@ public class UtilityUpgradeScreen extends UpgradeScreen {
         /** This will be moved to the food overhaul mod I am making */
 //        createCustomUpgrade(fishingInt, GearUpgrades.fishrodBaitKeep, "FISHING_BAIT_KEEP", new int[]{1,0,2,0}, getImage("fishing_bait_keep.png"));
         //XP Gain
-        createCustomUpgrade(fishingINT, GearUpgrades.fishrodXPGain, "FISHING_XP_GAIN", new int[]{1,2,0,3}, getImage("fishing_xp_gain.png"));
+        createCustomUpgrade(GearUpgrades.fishrodXPGain, "FISHING_XP_GAIN", new int[]{1,2,0,3}, getImage("fishing_xp_gain.png"));
         //endregion
     }
 
     private void hoeUpgrades(){
         //region Custom Upgrades
         //Harvest Radius
-        createCustomUpgrade(hoeINT, GearUpgrades.hoeRadius, "HOE_RADIUS", new int[]{0,1,0,2}, getImage("hoe_radius.png"));
+        createCustomUpgrade(GearUpgrades.hoeRadius, "HOE_RADIUS", new int[]{0,1,0,2}, getImage("hoe_radius.png"));
         //Harvest Multiplier
-        createCustomUpgrade(hoeINT, GearUpgrades.hoeDrops, "HOE_DROPS", new int[]{1,0,2,0}, getImage("hoe_harvest_multiply.png"));
+        createCustomUpgrade(GearUpgrades.hoeDrops, "HOE_DROPS", new int[]{1,0,2,0}, getImage("hoe_harvest_multiply.png"));
         //endregion
     }
 }

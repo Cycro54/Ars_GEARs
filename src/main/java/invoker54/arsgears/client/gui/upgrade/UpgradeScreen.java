@@ -312,7 +312,7 @@ public class UpgradeScreen extends Screen {
         UpdatePositions();
     }
 
-    public void createCustomUpgrade(int gearCycle, String upgradeName, String descName, int[] upgradeLvl, ResourceLocation image){
+    public void createCustomUpgrade(String upgradeName, String descName, int[] upgradeLvl, ResourceLocation image){
         String catName = GearUpgrades.getName(upgradeName).getString();
         TranslationTextComponent desc = new TranslationTextComponent("ars_gears.upgrades." + descName + ".desc");
 
@@ -379,7 +379,7 @@ public class UpgradeScreen extends Screen {
                     return ITextComponent.nullToEmpty("\247cYou must upgrade to tier " + (GearTier.values()[upgradeTier]));
                 }
                 //Make sure they can afford it
-                else if (button.getPrice() > player.totalExperience) {
+                else if (button.getPrice() > player.totalExperience && !player.isCreative()) {
                     button.active = false;
                     return ITextComponent.nullToEmpty("\247cYou need: " + (button.getPrice() - player.totalExperience));
                 }
