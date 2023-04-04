@@ -24,7 +24,8 @@ public class SyncConfigEvents {
                 useCombatItems,
                 useUtilityItems,
                 useSpellbook,
-                disableCooldown,
+                disableSpellBookCooldown,
+                disableGearCooldown,
                 coolDownMultiplier,
                 coolDownValueChange,
                 upgradeValue
@@ -42,7 +43,8 @@ public class SyncConfigEvents {
                             useCombatItems,
                             useUtilityItems,
                             useSpellbook,
-                            disableCooldown,
+                            disableSpellBookCooldown,
+                            disableGearCooldown,
                             coolDownMultiplier,
                             coolDownValueChange,
                             upgradeValue

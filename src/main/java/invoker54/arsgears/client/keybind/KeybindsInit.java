@@ -8,6 +8,7 @@ import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.ModGuiRadialMenu;
 import invoker54.arsgears.client.gui.ModGuiSpellBook;
+import invoker54.arsgears.item.FakeSpellBook;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
 import invoker54.arsgears.network.NetworkHandler;
@@ -50,7 +51,7 @@ public class KeybindsInit {
 
             ItemStack item = ClientUtil.mC.player.getMainHandItem();
             GearCap cap = GearCap.getCap(item);
-            if (cap == null) return;
+            if (cap == null && !(item.getItem() instanceof FakeSpellBook)) return;
 
             NetworkHandler.INSTANCE.sendToServer(new CycleGearMsg());
         }));

@@ -4,6 +4,7 @@ import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,8 +46,8 @@ public class ArsUtil {
     }
 
     public static void replaceItemStack(PlayerEntity player, ItemStack oldItemStack, ItemStack newItemStack){
-        LOGGER.debug("Old Item: " + oldItemStack.getDisplayName().getString());
-        LOGGER.debug("New Item: " + newItemStack.getDisplayName().getString());
+//        LOGGER.debug("Old Item: " + oldItemStack.getDisplayName().getString());
+//        LOGGER.debug("New Item: " + newItemStack.getDisplayName().getString());
 
         //First go through main inventory
         for (int a = 0; a < player.inventory.items.size(); a++){

@@ -25,13 +25,16 @@ public class UtilityGearEvents {
         if(event.side == LogicalSide.CLIENT) return;
         //Make sure it's the last phase (only needs to run once)
         if(event.phase == TickEvent.Phase.END) return;
+        //Make sure the player is alive
+        if (!event.player.isAlive()) return;
         //I need the player
         PlayerEntity player = event.player;
         //The player capability
         PlayerDataCap cap = PlayerDataCap.getCap(player);
+        if (cap == null) return;
         //the tracked item in the capability
         ItemStack trackedGear = cap.getUtilityGear();
-        //Check hands for utility gear, spell sword, bow, or mirror
+        //Check hands for utility gear
         ItemStack focusedGear = player.getMainHandItem();
         GearCap itemCap = GearCap.getCap(focusedGear);
         if (itemCap == null || itemCap instanceof CombatGearCap) {

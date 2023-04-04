@@ -30,8 +30,11 @@ public class SyncServerPlayerCapMsg {
         context.enqueueWork(() -> {
             if (context.getSender() == null) return;
 
+            PlayerDataCap cap = PlayerDataCap.getCap(context.getSender());
+            if (cap == null) return;
+
             //Give player data cap to player
-            PlayerDataCap.getCap(context.getSender()).deserializeNBT((CompoundNBT) msg.nbtData);
+            cap.deserializeNBT((CompoundNBT) msg.nbtData);
         });
         context.setPacketHandled(true);
     }

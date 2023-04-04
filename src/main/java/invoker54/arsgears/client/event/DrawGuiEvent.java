@@ -57,20 +57,28 @@ public class DrawGuiEvent {
         if (ClientUtil.mC.screen != null) return;
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
         PlayerEntity player = ClientUtil.mC.player;
-        ItemStack gearStack = ArsUtil.getHeldGearCap(player, false, false);
+        int gearCycle = -1;
+        ItemStack magicStack = ArsUtil.getHeldGearCap(player, false, false);
+        CombatGearCap cap = CombatGearCap.getCap(magicStack);
 
-        //If the player isn't holding the combat gear, return
-        if (gearStack.isEmpty()) return;
+        if (cap != null) gearCycle = cap.getSelectedItem();
+        //If the player isn't holding the combat gear, try a spell book
+        else {
+            magicStack = player.getMainHandItem();
+            //Try looking in the other hand
+            if (!(magicStack.getItem() instanceof SpellBook))magicStack = player.getOffhandItem();
+            //If nothing shows, return.
+            if (!(magicStack.getItem() instanceof SpellBook)) return;
+        }
 
         int moveAmount = 50;
         int x = (event.getWindow().getGuiScaledWidth()/2) - moveAmount - 15;
         int y = event.getWindow().getGuiScaledHeight()/2 - moveAmount;
         MatrixStack stack = event.getMatrixStack();
 
-        Spell spell = CombatGearItem.SpellM.getCurrentRecipe(gearStack);
-        int gearCycle = GearCap.getCap(gearStack).getSelectedItem();
+        Spell spell = CombatGearItem.SpellM.getCurrentRecipe(magicStack);
 
-        renderCircle(stack, x, y, 12, spell, gearStack.getOrCreateTag(), gearStack, gearCycle);
+        renderCircle(stack, x, y, 12, spell, magicStack.getOrCreateTag(), magicStack, gearCycle);
     }
 
     @SubscribeEvent
@@ -101,21 +109,24 @@ public class DrawGuiEvent {
             spell_icon = new ResourceLocation(ArsNouveau.MODID, "textures/items/" + spell.recipe.get(1).getIcon());
         }
 
-        int x = 16;
-        int y = event.getWindow().getGuiScaledHeight() - 32 - 16 - 16;
+        int moveAmount = 50;
+        int padding = 4;
+        int size = 32;
+        int x = (event.getWindow().getGuiScaledWidth()/2) - moveAmount - 15 - 12 - size - padding;
+        int y = event.getWindow().getGuiScaledHeight()/2 - moveAmount - 12 - ((size - 24)/2);
         MatrixStack stack = event.getMatrixStack();
 
         //First the spell icon
         ClientUtil.TEXTURE_MANAGER.bind(spell_icon);
-        ClientUtil.blitImage(stack, x, 32, y, 32, 0, 16, 0, 16, 16);
+        ClientUtil.blitImage(stack, x, size, y, size, 0, 16, 0, 16, 16);
         //Then the outline
         ClientUtil.TEXTURE_MANAGER.bind(spell_slot_frame);
-        ClientUtil.blitImage(stack, x, 32, y, 32, 0, 16, 0, 16, 16);
+        ClientUtil.blitImage(stack, x, size, y, size, 0, 16, 0, 16, 16);
         ClientUtil.TEXTURE_MANAGER.release(spell_slot_frame);
 
         //If the spell is on cooldown, or mana is low, render the mana circle
         if (!CombatGearItem.SpellM.canCast(player, spell, itemTag)) {
-            ClientUtil.blitColor(stack, x, 32, y, 32, transparentBlackColor);
+            ClientUtil.blitColor(stack, x, size, y, size, transparentBlackColor);
             renderCircle(stack, x + 16, y + 16, 16, spell, itemTag, gearStack, mirrorInt);
         }
     }

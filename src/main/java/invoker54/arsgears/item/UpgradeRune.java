@@ -42,6 +42,7 @@ public class UpgradeRune extends Item {
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack runeStack = playerIn.getItemInHand(handIn);
         PlayerDataCap cap = PlayerDataCap.getCap(playerIn);
+        if (cap == null) return ActionResult.fail(runeStack);
         GearCap gearCap;
         ItemStack gearStack;
         int playerTier;

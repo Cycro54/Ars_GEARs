@@ -11,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
+import java.util.Optional;
 
 public class PlayerDataCap implements IPlayerCap {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -35,7 +37,19 @@ public class PlayerDataCap implements IPlayerCap {
     }
 
     public static PlayerDataCap getCap(LivingEntity player){
-        return player.getCapability(PlayerDataProvider.CAP_PLAYER_DATA).orElseThrow(NullPointerException::new);
+        Optional<PlayerDataCap> cap = player.getCapability(PlayerDataProvider.CAP_PLAYER_DATA).resolve();
+
+        if (!cap.isPresent()){
+            LOGGER.error("COULDN'T FIND THE PLAYER GEAR DATA!!");
+            try {
+                throw new NullPointerException();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return cap.orElse(null);
     }
 
     @Override
@@ -57,7 +71,7 @@ public class PlayerDataCap implements IPlayerCap {
 
         utility_gear_copy = upgrade.copy();
 
-        LOGGER.info("I am setting the held utility gear");
+        // LOGGER.info("I am setting the held utility gear");
         //Set the item stack as the held_utility_gear (this doesn't change the itemstack in the players inv)
         utility_gear_tracked = ItemStack.EMPTY;
     }
@@ -73,7 +87,7 @@ public class PlayerDataCap implements IPlayerCap {
         //Now copy the held utility gear data over to the utility gear copy
         CompoundNBT cNBT = utility_gear_tracked.serializeNBT();
         utility_gear_copy = ItemStack.of(cNBT);
-        LOGGER.info("I AM SYNCING THE UTILITY GEAR DATA RIGHT NOW");
+        // LOGGER.info("I AM SYNCING THE UTILITY GEAR DATA RIGHT NOW");
     }
 
     @Override
@@ -94,7 +108,7 @@ public class PlayerDataCap implements IPlayerCap {
 
         combat_gear_copy = upgrade.copy();
 
-        LOGGER.info("I am setting the held combat gear");
+        // LOGGER.info("I am setting the held combat gear");
         //Set the item stack as the held_combat_gear (this doesn't change the itemstack in the players inv)
         combat_gear_tracked = ItemStack.EMPTY;
     }
@@ -110,12 +124,12 @@ public class PlayerDataCap implements IPlayerCap {
         //Now copy the held combat gear data over to the combat gear copy
         CompoundNBT cNBT = combat_gear_tracked.serializeNBT();
         combat_gear_copy = ItemStack.of(cNBT);
-        LOGGER.info("I AM SYNCING THE COMBAT GEAR DATA RIGHT NOW");
+        // LOGGER.info("I AM SYNCING THE COMBAT GEAR DATA RIGHT NOW");
     }
 
     @Override
     public CompoundNBT serializeNBT() {
-        LOGGER.debug("I AM SAVING");
+//        LOGGER.debug("I AM SAVING");
         CompoundNBT cNBT = new CompoundNBT();
         cNBT.put(UTILITY_GEAR_DATA, utility_gear_copy.serializeNBT());
         cNBT.put(COMBAT_GEAR_DATA, combat_gear_copy.serializeNBT());

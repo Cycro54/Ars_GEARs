@@ -134,8 +134,8 @@ public class ModGuiSpellBook extends BaseBook {
     public void init() {
         super.init();
 
-        LOGGER.debug("What is craftingCells size? " + this.craftingCells.size());
-        LOGGER.debug("What is the Max Spell Tier? " + this.max_spell_tier);
+        // LOGGER.debug("What is craftingCells size? " + this.craftingCells.size());
+        // LOGGER.debug("What is the Max Spell Tier? " + this.max_spell_tier);
 
         //This is the currently selected spell
         int selected_slot_ind = SpellBook.getMode(spell_book_tag);
@@ -207,7 +207,7 @@ public class ModGuiSpellBook extends BaseBook {
             if(i == selected_slot_ind) {
                 selected_slot = slot;
                 selected_cast_slot = i;
-                LOGGER.debug("THE ACTUAL SLOT IS " + i);
+                // LOGGER.debug("THE ACTUAL SLOT IS " + i);
                 slot.isSelected = true;
             }
             addButton(slot);
@@ -460,7 +460,7 @@ public class ModGuiSpellBook extends BaseBook {
     public void onCraftingSlotClick(Button button){
         ModCraftingButton craftButton = (ModCraftingButton) button;
 
-        LOGGER.debug("is the player holding shift down? " + ClientUtil.mC.options.keyShift.isDown());
+        // LOGGER.debug("is the player holding shift down? " + ClientUtil.mC.options.keyShift.isDown());
         if (craftButton.stack == 1 || sneakHeld) craftButton.clear();
         else craftButton.stack--;
 
@@ -511,13 +511,13 @@ public class ModGuiSpellBook extends BaseBook {
     public void updateCraftingSlots(int bookSlot){
         //Crafting slots
         List<AbstractSpellPart> spell_recipe = this.spell_book_tag != null ? SpellBook.getRecipeFromTag(spell_book_tag, bookSlot).recipe : null;
-        if (spell_recipe != null) LOGGER.debug("SPELL RECIPE SIZE IS " + spell_recipe.size());
+//        if (spell_recipe != null) // LOGGER.debug("SPELL RECIPE SIZE IS " + spell_recipe.size());
         int spellIndex = 0;
         for (int i = 0; i < craftingCells.size(); i++) {
             //This wipes any data on the current slot
             ModCraftingButton slot = craftingCells.get(i);
             slot.clear();
-            LOGGER.debug("IS THE SLOT CLEARED? " + (slot.stack == 0));
+            // LOGGER.debug("IS THE SLOT CLEARED? " + (slot.stack == 0));
 
             boolean flag = false;
             while (!flag && spellIndex < spell_recipe.size()) {
@@ -534,22 +534,22 @@ public class ModGuiSpellBook extends BaseBook {
             slot.spellTag = spell_recipe.get(spellIndex).getTag();
             slot.resourceIcon = spell_recipe.get(spellIndex).getIcon();
             slot.isAugment = (spell_recipe.get(spellIndex) instanceof AbstractAugment);
-            LOGGER.debug("SPELL INDEX SIZE BEFORE STACK COUNT " + spellIndex);
+            // LOGGER.debug("SPELL INDEX SIZE BEFORE STACK COUNT " + spellIndex);
             //If there are Spell parts that equal the current spell part, stack em till the limit is reached or it's the end of the spell
             for (; spellIndex < spell_recipe.size(); spellIndex++){
                 //If the spell parts don't equal, break
-                LOGGER.debug("IS STACKING SPELL ICON EQUAL TO THIS SPELL ICON? " + Objects.equals(spell_recipe.get(spellIndex).getIcon(), slot.resourceIcon));
+                // LOGGER.debug("IS STACKING SPELL ICON EQUAL TO THIS SPELL ICON? " + Objects.equals(spell_recipe.get(spellIndex).getIcon(), slot.resourceIcon));
                 if (!Objects.equals(spell_recipe.get(spellIndex).getIcon(), slot.resourceIcon)) break;
                 //If we already reached the maxAugmentStack, break
                 //LOGGER.debug("What's the current stack: " + (slot.stack) + ", what's the max? " + (maxAugmentStack));
-                LOGGER.debug("Did I hit the max? " + (slot.stack == this.maxAugmentStack));
+                // LOGGER.debug("Did I hit the max? " + (slot.stack == this.maxAugmentStack));
                 if (slot.stack == this.maxAugmentStack) break;
                 if (slot.stack == 1 && spell_recipe.get(spellIndex) instanceof AbstractEffect) break;
-                LOGGER.debug("Stack size: " + (slot.stack + 1));
+                // LOGGER.debug("Stack size: " + (slot.stack + 1));
                 //Increase the slot stack amount
                 slot.stack++;
             }
-            LOGGER.debug("SPELL INDEX SIZE AFTER STACK COUNT " + spellIndex);
+            // LOGGER.debug("SPELL INDEX SIZE AFTER STACK COUNT " + spellIndex);
         }
     }
 
@@ -679,12 +679,12 @@ public class ModGuiSpellBook extends BaseBook {
 
         // Validate the crafting slots
         List<SpellValidationError> errors = spellValidator.validate(recipe);
-        LOGGER.error("Where are the errors located? ");
+//        LOGGER.error("Where are the errors located? ");
         if (errors.size() != 0) {
             spellIndex = 0;
             for (int a = 0; a < craftingCells.size(); a++) {
                 ModCraftingButton craftButton = craftingCells.get(a);
-                LOGGER.info("Crafting cell: " + a);
+                // LOGGER.info("Crafting cell: " + a);
 
                 for (int b = 0; b < craftButton.stack; b++) {
 
@@ -701,7 +701,7 @@ public class ModGuiSpellBook extends BaseBook {
 
                     spellIndex++;
                 }
-                LOGGER.debug("END CRAFTING CELL: " + a);
+                // LOGGER.debug("END CRAFTING CELL: " + a);
 
                 if (errors.get(errors.size() - 1).getPosition() < spellIndex) break;
             }
@@ -752,8 +752,8 @@ public class ModGuiSpellBook extends BaseBook {
         if (firstBlankSlot >= 0) {
             recipe = new ArrayList<>(recipe.subList(0, firstBlankSlot));
         }
-        LOGGER.debug("THIS IS WHAT's IN THE NEW SPELL LIST");
-        LOGGER.debug(recipe);
+        // LOGGER.debug("THIS IS WHAT's IN THE NEW SPELL LIST");
+        // LOGGER.debug(recipe);
 
         for(ModGlyphButton button : glyphButtons){
             validateGlyphButton(recipe, button);

@@ -317,7 +317,7 @@ public class UpgradeScreen extends Screen {
         TranslationTextComponent desc = new TranslationTextComponent("ars_gears.upgrades." + descName + ".desc");
 
         if (categories.containsKey(catName)){
-            LOGGER.error("DUPLICATE NAME FOUND " + catName);
+//            LOGGER.error("DUPLICATE NAME FOUND " + catName);
             return;
         }
         else {categories.put(catName, new ArrayList<>());}
@@ -325,7 +325,7 @@ public class UpgradeScreen extends Screen {
         //This is just to make sure that the upgrade lvl integers are all correct (also to get the total levels)
         int totalLvl = 0;
         if (upgradeLvl.length != 4){
-            LOGGER.error("THIS ARRAY ISN'T THE RIGHT SIZE!! " + (catName));
+//            LOGGER.error("THIS ARRAY ISN'T THE RIGHT SIZE!! " + (catName));
             return;
         }
         else {
@@ -333,11 +333,11 @@ public class UpgradeScreen extends Screen {
             for (int a : upgradeLvl){
                 if (a == 0) continue;
                 if (a == prevLvl){
-                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+//                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
                     return;
                 }
                 if (a < prevLvl) {
-                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+//                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
                     return;
                 }
                 prevLvl = a;
@@ -416,7 +416,7 @@ public class UpgradeScreen extends Screen {
         TranslationTextComponent desc = new TranslationTextComponent("ars_gears.upgrades." + descName + ".desc");
 
         if (categories.containsKey(catName)){
-            LOGGER.error("DUPLICATE NAME FOUND " + catName);
+//            LOGGER.error("DUPLICATE NAME FOUND " + catName);
             return;
         }
         else {categories.put(catName, new ArrayList<>());}
@@ -424,7 +424,7 @@ public class UpgradeScreen extends Screen {
         //This is just to make sure that the upgrade lvl integers are all correct (also to get the total levels)
         int totalLvl = 0;
         if (upgradeLvl.length != 4){
-            LOGGER.error("THIS ARRAY ISN'T THE RIGHT SIZE!! " + (catName));
+//            LOGGER.error("THIS ARRAY ISN'T THE RIGHT SIZE!! " + (catName));
             return;
         }
         else {
@@ -432,11 +432,11 @@ public class UpgradeScreen extends Screen {
             for (int a : upgradeLvl){
                 if (a == 0) continue;
                 if (a == prevLvl){
-                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+//                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
                     return;
                 }
                 if (a < prevLvl) {
-                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
+//                    LOGGER.error("UPGRADES ARE INCORRECT " + (catName));
                     return;
                 }
                 prevLvl = a;

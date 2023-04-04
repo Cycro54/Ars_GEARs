@@ -67,8 +67,8 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
     @Override
     public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
         if (!player.level.isClientSide) return;
-        LOGGER.debug("ON USE TIME IS: " + count);
-        LOGGER.debug("TIME NEEDED IS: " + getChargeDuration(stack));
+        // LOGGER.debug("ON USE TIME IS: " + count);
+        // LOGGER.debug("TIME NEEDED IS: " + getChargeDuration(stack));
         if ((stack.getUseDuration() - count) == ((int)getChargeDuration(stack))){
             player.playSound(SoundEvents.STONE_BUTTON_CLICK_ON, 1.0F, 1.0F);
         }
@@ -167,7 +167,7 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
                 arrowStack = new ItemStack(Items.ARROW);
             }
             canFire = true;
-            LOGGER.debug("Can I shoot? " + canFire);
+            // LOGGER.debug("Can I shoot? " + canFire);
         }
         //endregion
 
@@ -268,10 +268,10 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
                     //If the player has the spell arrow upgrade, and the bow is fully charged, make the arrow FAST
                     float velocity = (f * 3.0F);
                     float random = 1.0F;
-                    LOGGER.debug("F EQUALS " + f);
-                    LOGGER.debug("DOES PLAYER HAVE THE SPELL ARROW UPGRADE? " + (spellArrowLvl == 1));
-                    LOGGER.debug("firespell is " + (fireSpell));
-                    LOGGER.debug("IS THE PLAYER CROUCHING? " + (playerentity.isCrouching()));
+                    // LOGGER.debug("F EQUALS " + f);
+                    // LOGGER.debug("DOES PLAYER HAVE THE SPELL ARROW UPGRADE? " + (spellArrowLvl == 1));
+                    // LOGGER.debug("firespell is " + (fireSpell));
+                    // LOGGER.debug("IS THE PLAYER CROUCHING? " + (playerentity.isCrouching()));
                     if (f == 1.0F && spellArrowLvl == 1 && fireSpell && !playerentity.isCrouching()) {
                         arr.setNoGravity(true);
                         random = 0;
@@ -516,7 +516,9 @@ public class ModSpellBow extends BowItem implements IAnimatable, ICasterTool, IS
             PlayerEntity player = (PlayerEntity) livingEntity;
 
             //Gear Capability
-            ItemStack gearStack = PlayerDataCap.getCap(player).getCombatGear();
+            PlayerDataCap cap = PlayerDataCap.getCap(player);
+            if (cap == null) return;
+            ItemStack gearStack = cap.getCombatGear();
             CombatGearCap gearCap = CombatGearCap.getCap(gearStack);
 
             //Cooldown reduction

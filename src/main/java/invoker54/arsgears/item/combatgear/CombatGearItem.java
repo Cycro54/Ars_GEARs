@@ -147,7 +147,7 @@ public class CombatGearItem extends Item {
     public static float getCooldown(PlayerEntity playerEntity, CompoundNBT tag, int spellMode, boolean getDifference){
         if (!tag.contains(COMBAT_GEAR + COOLDOWN)) tag.put(COMBAT_GEAR + COOLDOWN, new CompoundNBT());
 
-        if (playerEntity.abilities.instabuild || ArsGearsConfig.disableCooldown){
+        if (playerEntity.abilities.instabuild || ArsGearsConfig.disableGearCooldown){
             return 0;
         }
 
@@ -173,7 +173,7 @@ public class CombatGearItem extends Item {
     //These are SpellBook methods that should've been static
     public static class SpellM {
         public static Spell getCurrentRecipe(ItemStack stack) {
-            return SpellBook.getRecipeFromTag(stack.getTag(), getMode(stack.getTag()));
+            return SpellBook.getRecipeFromTag(stack.getOrCreateTag(), getMode(stack.getOrCreateTag()));
         }
 
         public static int getInitialCost(Spell spell, int gearCycle, ItemStack gearStack) {

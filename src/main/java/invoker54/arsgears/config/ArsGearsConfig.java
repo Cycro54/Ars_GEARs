@@ -18,7 +18,8 @@ public final class ArsGearsConfig {
     public static Boolean useCombatItems;
     public static Boolean useUtilityItems;
     public static Boolean useSpellbook;
-    public static Boolean disableCooldown;
+    public static Boolean disableSpellBookCooldown;
+    public static Boolean disableGearCooldown;
     public static Double coolDownMultiplier;
     public static Double coolDownValueChange;
     public static Integer upgradeValue;
@@ -38,7 +39,8 @@ public final class ArsGearsConfig {
         useCombatItems = COMMON.useCombatItems.get();
         useUtilityItems = COMMON.useUtilityItems.get();
         useSpellbook = COMMON.useSpellbook.get();
-        disableCooldown = COMMON.disableCooldown.get();
+        disableSpellBookCooldown = COMMON.disableSpellBookCooldown.get();
+        disableGearCooldown = COMMON.disableGearCooldown.get();
         coolDownMultiplier = COMMON.coolDownMultiplier.get();
         coolDownValueChange = COMMON.coolDownValueChange.get();
         upgradeValue = COMMON.upgradeValue.get();
@@ -50,7 +52,7 @@ public final class ArsGearsConfig {
     public static void onConfigChanged(final ModConfig.ModConfigEvent eventConfig){
         //System.out.println("What's the config type? " + eventConfig.getConfig().getType());
         if(eventConfig.getConfig().getSpec() == ArsGearsConfig.COMMON_SPEC){
-            LOGGER.debug("CONFIG CHANGED, SENDING DATA TO PLAYERS NOW.");
+            // LOGGER.debug("CONFIG CHANGED, SENDING DATA TO PLAYERS NOW.");
             bakeCommonConfig();
             markDirty(true);
         }
@@ -71,7 +73,8 @@ public final class ArsGearsConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> useCombatItems;
         public final ForgeConfigSpec.ConfigValue<Boolean> useUtilityItems;
         public final ForgeConfigSpec.ConfigValue<Boolean> useSpellbook;
-        public final ForgeConfigSpec.ConfigValue<Boolean> disableCooldown;
+        public final ForgeConfigSpec.ConfigValue<Boolean> disableSpellBookCooldown;
+        public final ForgeConfigSpec.ConfigValue<Boolean> disableGearCooldown;
         public final ForgeConfigSpec.ConfigValue<Double> coolDownMultiplier;
         public final ForgeConfigSpec.ConfigValue<Double> coolDownValueChange;
         public final ForgeConfigSpec.ConfigValue<Integer> upgradeValue;
@@ -87,7 +90,8 @@ public final class ArsGearsConfig {
             useCombatItems = builder.comment("If you can use Combat items similar to the COMBAT Gear items").define("Allow Combat Items", false);
             useUtilityItems = builder.comment("If you can use Utility items similar to the UTILITY Gear items").define("Allow Utility Items", false);
             useSpellbook = builder.comment("If you can use the Spellbook for casting").define("Allow Spellbook", false);
-            disableCooldown = builder.comment("Disables the cooldown feature").define("Disable Cooldown", false);
+            disableSpellBookCooldown = builder.comment("Disables the cooldown feature for the SpellBook").define("Disable SpellBook Cooldown", true);
+            disableGearCooldown = builder.comment("Disables the cooldown feature for the Combat Gear").define("Disable GEAR Cooldown", false);
             coolDownMultiplier = builder.comment("Affects how long a cooldown last, 1 is default").defineInRange("Cooldown Multiplier", 1F, 0.01F, Integer.MAX_VALUE);
             coolDownValueChange = builder.comment("Increase/Decrease how long a cooldown should last in seconds (Not affected by Cooldown Multiplier)").defineInRange("Cooldown Shift", 0F, -Integer.MAX_VALUE, Integer.MAX_VALUE);
             upgradeValue = builder.comment("Affects how much each upgrade branch in total costs, 612 is default (which is 21 lvls)").defineInRange("Upgrade Cost", 612, 1, Integer.MAX_VALUE);

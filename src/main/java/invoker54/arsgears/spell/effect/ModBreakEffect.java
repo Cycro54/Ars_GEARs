@@ -56,7 +56,9 @@ public class ModBreakEffect extends AbstractEffect {
 //        LOGGER.debug("ITEMS IN FAKE INVENTORY: " + getPlayer(shooter, (ServerWorld) shooter.level).inventory.items);
 //        LOGGER.debug("HAS GEAR STACK? " + !(ArsUtil.getHeldGearCap(shooter, true, true)).isEmpty());
         if(isRealPlayer(shooter)){
-            ItemStack mainHand = PlayerDataCap.getCap(shooter).getUtilityGear();
+            PlayerDataCap cap = PlayerDataCap.getCap(shooter);
+            if (cap == null) return ItemStack.EMPTY;
+            ItemStack mainHand = cap.getUtilityGear();
             return (copy) ? mainHand.copy() : mainHand;
         }
 
@@ -89,7 +91,7 @@ public class ModBreakEffect extends AbstractEffect {
         String breakString = "glyph_break_count";
         int breakCount = itemTag.getInt(breakString);
         for(BlockPos pos1 : posList) {
-            LOGGER.debug("BEGIN BREAK");
+            // LOGGER.debug("BEGIN BREAK");
             breakCount++;
 
             if (gearStack.getDamageValue() == gearStack.getMaxDamage() - 1){
@@ -118,14 +120,14 @@ public class ModBreakEffect extends AbstractEffect {
             state.getBlock().popExperience((ServerWorld) world, pos1, state.getExpDrop(world, pos1, fortuneBonus, silkBonus));
             state.getBlock().playerDestroy(world, getPlayer(shooter, (ServerWorld) world), pos1, world.getBlockState(pos1), world.getBlockEntity(pos1), gearCopy);
             destroyBlockSafely(world, pos1, false, getPlayer(shooter, (ServerWorld) world));
-            LOGGER.debug("WHATS COUNT? " + (breakCount));
+            // LOGGER.debug("WHATS COUNT? " + (breakCount));
             if (breakCount == 3) {
                 breakCount = 0;
                 gearStack.hurtAndBreak(1, getPlayer(shooter, (ServerWorld) world), (p_220009_1_) -> {
                     p_220009_1_.broadcastBreakEvent(shooter.getUsedItemHand());
                 });
             }
-            LOGGER.debug("END BREAK");
+            // LOGGER.debug("END BREAK");
         }
         //Save the break count for later
         itemTag.putInt(breakString, breakCount);

@@ -45,8 +45,8 @@ public class VerticalityEffect extends AbstractEffect {
         boolean hasDampen = spellStats.hasBuff(AugmentDampen.INSTANCE);
         float direction = (hasDampen ? 1 : -1);
         float range = (2 * spellStats.getBuffCount(AugmentAmplify.INSTANCE));
-        LOGGER.debug("WHATS MY HEIGHT? " + hitEntity.getBbHeight());
-        LOGGER.debug("WHATS MY HEIGHT ROUNDED? " + Math.ceil(hitEntity.getBbHeight()));
+        // LOGGER.debug("WHATS MY HEIGHT? " + hitEntity.getBbHeight());
+        // LOGGER.debug("WHATS MY HEIGHT ROUNDED? " + Math.ceil(hitEntity.getBbHeight()));
 //        Vector3d origVector = (hasDampen ? hitEntity.position().add(0, Math.ceil(hitEntity.getBbHeight()), 0) : hitEntity.position());
         Vector3d origVector = hitEntity.position().add(0, (hasDampen ? Math.ceil(hitEntity.getBbHeight()) : 0), 0);
         float addition = hasDampen ? 0.5F : -0.5F;

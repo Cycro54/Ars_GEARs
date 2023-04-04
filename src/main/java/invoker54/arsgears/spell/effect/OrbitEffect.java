@@ -48,7 +48,7 @@ public class OrbitEffect extends AbstractEffect {
         }
 
         threshold += (amp - damp) * 2;
-        LOGGER.debug("THRESHOLD IS " + (threshold) +" HEARTS");
+        // LOGGER.debug("THRESHOLD IS " + (threshold) +" HEARTS");
         return MathHelper.clamp(threshold, 1, entityHit.getMaxHealth() - 1);
     }
 

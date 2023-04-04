@@ -99,18 +99,18 @@ public class ModHoeItem extends HoeItem {
             ArrayList<BlockPos> blockPosList = new ArrayList<>();
             blockPosList.add(blockPos);
 
-            LOGGER.debug("RADIUS LEVEL " + (radiusLvl));
+            // LOGGER.debug("RADIUS LEVEL " + (radiusLvl));
             if (radiusLvl != 0) {
                 //Left to right
                 for (int a = -(radiusLvl); a < radiusLvl + 1; a++) {
                     //Backward to forward
                     for (int b = -(radiusLvl); b < radiusLvl + 1; b++) {
                         if (a == 0 && b == 0) continue;
-                        LOGGER.debug("pos offset X:" + (a) + " Y:" + (0) + " Z:" + (b));
+                        // LOGGER.debug("pos offset X:" + (a) + " Y:" + (0) + " Z:" + (b));
                         BlockState state2 = world.getBlockState(blockPos.offset(a, 0, b));
-                        LOGGER.debug("THE BLOCK STATE is empty? " + (state2.getBlock() instanceof AirBlock));
-                        LOGGER.debug("What is the block for this block state? " + (state2.getBlock()));
-                        LOGGER.debug("Does it equal first block state? " + (state.equals(state2)));
+                        // LOGGER.debug("THE BLOCK STATE is empty? " + (state2.getBlock() instanceof AirBlock));
+                        // LOGGER.debug("What is the block for this block state? " + (state2.getBlock()));
+                        // LOGGER.debug("Does it equal first block state? " + (state.equals(state2)));
 
                         if (!(state2.getBlock() instanceof CropsBlock)) continue;
 

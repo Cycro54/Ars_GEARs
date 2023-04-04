@@ -1,7 +1,10 @@
 package invoker54.arsgears.init;
 
 import com.hollingsworth.arsnouveau.ArsNouveau;
+import com.hollingsworth.arsnouveau.api.spell.ISpellTier;
+import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.item.FakeSpellBook;
 import invoker54.arsgears.item.GearTier;
 import invoker54.arsgears.item.UpgradeRune;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
@@ -119,6 +122,7 @@ public class ItemInit {
 
     //region Regular items
     public static final Item STICK_CROSS = addItem(new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)), "stick_cross");
+    public static final Item FAKE_SPELL_BOOK = addItem(new FakeSpellBook(ISpellTier.Tier.THREE), "combat/fake_spell_book");
     //endregion
 
     public static Item.Properties getDefault(boolean itemGroup) {
@@ -133,6 +137,6 @@ public class ItemInit {
         for (Item item: items){
             registry.register(item);
         }
-        LOGGER.error(WOODEN_MOD_SWORD.getRegistryName().getPath());
+//        LOGGER.error(WOODEN_MOD_SWORD.getRegistryName().getPath());
     }
 }

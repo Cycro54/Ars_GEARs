@@ -121,7 +121,7 @@ public class ModSpellSword extends SwordItem implements IAnimatable, ICasterTool
         //Finally grab the itemStack tag
         CompoundNBT itemTag = gearStack.getOrCreateTag();
 
-        LOGGER.debug("IS MY CAP ACTIVATED? " + cap.getActivated());
+        // LOGGER.debug("IS MY CAP ACTIVATED? " + cap.getActivated());
 
 
         //get the spell stuff set up

@@ -27,10 +27,14 @@ public class PlayerDataCapEvents {
     public static void onPlayerCopy(PlayerEvent.Clone event){
         if (!event.isWasDeath()) return;
 
-        //Grab ye old cap data
-        CompoundNBT oldCapData = PlayerDataCap.getCap(event.getOriginal()).serializeNBT();
+        //Grab ye old cap
+        PlayerDataCap origCap = PlayerDataCap.getCap(event.getOriginal());
+        //Grab the new cap
+        PlayerDataCap newCap = PlayerDataCap.getCap(event.getPlayer());
 
-        //Now place the old data on the new body
-        PlayerDataCap.getCap(event.getPlayer()).deserializeNBT(oldCapData);
+        if (origCap == null || newCap == null) throw new NullPointerException();
+
+        //Now place the old data on the new cap
+        newCap.deserializeNBT(origCap.serializeNBT());
     }
 }

@@ -5,8 +5,8 @@
   "__comment": "This is for some text in the ModGuiSpellbook class",
   "ars_nouveau.spell.validation.exists.banned_glyph": "This glyph is banned %s",
   "ars_nouveau.spell.validation.adding.banned_glyph": "This glyph is banned %s",
-  "ars_gears.spell_book.gui.stack_augment.increase": "§aLEFT CLICK to decrease stack§r",
-  "ars_gears.spell_book.gui.stack_augment.decrease": "§cRIGHT CLICK to increase§r",
+  "ars_gears.spell_book.gui.stack_augment.increase": "§cLEFT CLICK to decrease stack§r",
+  "ars_gears.spell_book.gui.stack_augment.decrease": "§aRIGHT CLICK to increase§r",
 
   "__comment": "This is for UTILITY item names",
   "item.ars_gears.utility.wood_utility_gear": "Utility GEAR (Wood)",
@@ -61,6 +61,8 @@
   "item.ars_gears.combat.arcane_combat_bow": "GEAR Bow (Arcane)",
   "item.ars_gears.combat.arcane_combat_mirror": "GEAR Mirror (Arcane)",
 
+  "item.ars_gears.combat.fake_spell_book": "FAKE Spell Book",
+
   "item.ars_gears.combat.combat_rune_1": "Combat Rune (Stone)",
   "item.ars_gears.combat.combat_rune_2": "Combat Rune (Iron)",
   "item.ars_gears.combat.combat_rune_3": "Combat Rune (Diamond)",
@@ -91,6 +93,8 @@
   "ars_gears.chat.split_augment.gear_tier_low" : "Split augment count may not exceed Combat magic tier (Iron = 1, Diamond = 2, Arcane = 3)",
   "ars_gears.chat.gear_combat_set" : "Your Combat GEAR has been changed to ",
   "ars_gears.chat.gear_utility_set" : "Your Utility GEAR has been changed to ",
+  "ars_gears.chat.fake_book.scribe" : "You can't write to this book!",
+  "ars_gears.chat.fake_book.cast" : "You can't cast with this book!",
 
   "__comment": "This is for the GEAR upgrades",
   "ars_gears.upgrades.SWORD_MANA_STEAL": "Mana Steal",

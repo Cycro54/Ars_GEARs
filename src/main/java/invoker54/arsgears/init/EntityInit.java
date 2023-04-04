@@ -46,7 +46,7 @@ public class EntityInit {
 
         for (EntityType<?> entityType : entityTypes){
             registry.register(entityType);
-            LOGGER.debug("JUST REGISTERED ENTITY: " + entityType.getRegistryName());
+            // LOGGER.debug("JUST REGISTERED ENTITY: " + entityType.getRegistryName());
         }
     }
 

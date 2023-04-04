@@ -14,6 +14,10 @@
     },
     {
       "type": "text",
+      "text": "To use like a spell book for crafting:$(br2) Sneak then click the GEAR cycle key ( $(k:ars_nouveau.open_book) )."
+    },
+    {
+      "type": "text",
       "text": "How to use:$(br2)Sword: $(br)Spell activation is right-click$(br2)right-click again to cast the spell on a mob or block, or to disable if not looking at anything.$(br2)You may also cast the spell with left-click (only works on mobs)"
     },
     {

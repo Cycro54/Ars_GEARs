@@ -4,11 +4,16 @@ import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
 import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.GearProvider;
+import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
+import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearUpgrades;
+import invoker54.arsgears.item.combatgear.CombatGearItem;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,7 +31,9 @@ import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
 public class CombatGearCap extends GearCap implements ICombatGear {
     private static final Logger LOGGER = LogManager.getLogger();
     private final String ACTIVATED = "ACTIVATED";
+    private final String BOOKSPELLS = "BOOK_SPELLS";
     private boolean activated = false;
+    private CompoundNBT bookNBT = new CompoundNBT();
 
     public static CombatGearCap getCap(ItemStack item) {
         GearCap cap = item.getCapability(GearProvider.CAP_GEAR).orElseGet(() -> null);
@@ -34,6 +41,11 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         if (cap instanceof CombatGearCap) return (CombatGearCap) cap;
 
         return null;
+    }
+
+    public static CombatGearCap getCap(LivingEntity player){
+        PlayerDataCap playerDataCap = PlayerDataCap.getCap(player);
+        return getCap(playerDataCap.getCombatGear());
     }
 
     public CombatGearCap(){}
@@ -48,8 +60,6 @@ public class CombatGearCap extends GearCap implements ICombatGear {
 
         //Let's add all the starter spell parts
         for (AbstractSpellPart spellPart : spellParts){
-            if (spellPart instanceof AbstractCastMethod) continue;
-
             if (!unlockedParts.contains(spellPart)){
                 SpellBook.unlockSpell(gearTag, spellPart.getTag());
             }
@@ -73,6 +83,35 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     String mode = "mode";
     String recipe = "recipe";
     String name = "_name";
+
+    public void changeToGEAR(PlayerEntity player, ItemStack fakeBookStack){
+        //Save book data
+        this.bookNBT = fakeBookStack.getOrCreateTag().copy();
+
+        //Finally replace the fakeBookStack with the gearStack
+        ArsUtil.replaceItemStack(player, fakeBookStack, PlayerDataCap.getCap(player).getCombatGear());
+    }
+
+    public void changeToBook(PlayerEntity player, ItemStack gearStack){
+        //Make the fake book
+        ItemStack fakeBookStack = new ItemStack(ItemInit.FAKE_SPELL_BOOK);
+
+        //Grab the bookNBT data
+        fakeBookStack.getOrCreateTag().merge(this.bookNBT);
+        //Then Grab the unlocked spells from the gear stack
+        fakeBookStack.getOrCreateTag().putString(SpellBook.UNLOCKED_SPELLS, SpellBook.getUnlockedSpellString(gearStack.getOrCreateTag()));
+
+
+        //Finally replace the gearStack with a fakeStack
+        ArsUtil.replaceItemStack(player, gearStack, fakeBookStack);
+    }
+
+    public void setBookTag(CompoundNBT newNBT){
+        this.bookNBT = newNBT.copy();
+    }
+    public CompoundNBT getBookTag(){
+        return this.bookNBT.copy();
+    }
 
     @Override
     protected void saveTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT) {
@@ -118,7 +157,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
 //            this.getTag(bowInt).put(GearUpgrades.gearUpgradeNBT, tagNBT.get(GearUpgrades.gearUpgradeNBT));
 //        }
 
-        LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
+//        LOGGER.error("(COMBAT) HEY AM I SAVING THOSE SPELLS? " + capNBT.getString("1recipe"));
     }
 
     @Override
@@ -173,6 +212,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
     public CompoundNBT serializeNBT() {
         CompoundNBT cNBT = super.serializeNBT();
         cNBT.putBoolean(ACTIVATED, activated);
+        cNBT.put(BOOKSPELLS, this.bookNBT);
         return cNBT;
     }
 
@@ -181,6 +221,7 @@ public class CombatGearCap extends GearCap implements ICombatGear {
         super.deserializeNBT(nbt);
 
         activated = nbt.getBoolean(ACTIVATED);
+        this.bookNBT = nbt.getCompound(BOOKSPELLS);
     }
 
     public static class CombatGearNBTStorage implements Capability.IStorage<CombatGearCap>{

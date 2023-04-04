@@ -184,7 +184,7 @@ public class GearContainer extends Container {
         //Grab its capability as well
         int tier = GearCap.getCap(gearStack).getTier().ordinal();
         int damage = gearStack.getDamageValue();
-        LOGGER.debug("My damage is: " + damage);
+        // LOGGER.debug("My damage is: " + damage);
 
         for (int a = 0; a < foodToEat.length; a++){
             ItemStack itemToInspect = tempInv.getItem(a);
@@ -201,8 +201,8 @@ public class GearContainer extends Container {
             if (repairValue >= damage) break;
         }
 
-        LOGGER.debug("Total needed count is: " + Arrays.toString(foodToEat));
-        LOGGER.debug("Total needed food is: " + repairValue);
+        // LOGGER.debug("Total needed count is: " + Arrays.toString(foodToEat));
+        // LOGGER.debug("Total needed food is: " + repairValue);
         this.broadcastChanges();
     }
 

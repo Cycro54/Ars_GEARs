@@ -4,10 +4,12 @@ import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.init.SoundsInit;
 import invoker54.arsgears.item.GearTier;
+import net.minecraft.entity.IAngerable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import org.apache.logging.log4j.LogManager;
@@ -95,6 +97,7 @@ public class GearCap implements IGearCap {
 
         //Make sure to set the tracked combat item or else it will change
         PlayerDataCap cap = PlayerDataCap.getCap(player);
+        if (cap == null) return;
 
         //make a new item with the modified mainNBT
         gearStack = ItemStack.of(mainNBT);
@@ -123,7 +126,7 @@ public class GearCap implements IGearCap {
         //id is the actual item
         if (mainNBT.contains("id")){
             capNBT.putString("id", mainNBT.getString("id"));
-            LOGGER.debug("WHATS THE OLD ID? " + mainNBT.getString("id"));
+//            LOGGER.debug("WHATS THE OLD ID? " + mainNBT.getString("id"));
         }
     }
     protected void loadTag(CompoundNBT mainNBT, CompoundNBT tagNBT, CompoundNBT capNBT){
@@ -135,7 +138,7 @@ public class GearCap implements IGearCap {
         //id is the actual item
         if (capNBT.contains("id")){
             mainNBT.putString("id", capNBT.getString("id"));
-            LOGGER.debug("WHATS THE NEW ID? " + capNBT.getString("id"));
+//            LOGGER.debug("WHATS THE NEW ID? " + capNBT.getString("id"));
         }
     }
 

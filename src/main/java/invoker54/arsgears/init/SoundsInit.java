@@ -34,6 +34,6 @@ public class SoundsInit {
         for (SoundEvent sound: soundEvents){
             registry.register(sound);
         }
-        LOGGER.error(GEAR_EAT.getRegistryName().getPath());
+//        LOGGER.error(GEAR_EAT.getRegistryName().getPath());
     }
 }

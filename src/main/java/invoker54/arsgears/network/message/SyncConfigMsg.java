@@ -11,17 +11,19 @@ public class SyncConfigMsg {
     public Boolean useCombatItems;
     public Boolean useUtilityItems;
     public Boolean useSpellbook;
-    public Boolean disableCooldown;
+    public Boolean disableSpellBookCooldown;
+    public Boolean disableGearCooldown;
     public Double coolDownMultiplier;
     public Double coolDownValueChange;
     public Integer upgradeValue;
 
-    public SyncConfigMsg(boolean useCombatItems, boolean useUtilityItems, boolean useSpellbook, boolean disableCooldown,
-                         double coolDownMultiplier, double coolDownValueChange, int upgradeValue){
+    public SyncConfigMsg(boolean useCombatItems, boolean useUtilityItems, boolean useSpellbook, boolean disableSpellBookCooldown,
+                         boolean disableGearCooldown, double coolDownMultiplier, double coolDownValueChange, int upgradeValue){
         this.useCombatItems = useCombatItems;
         this.useUtilityItems = useUtilityItems;
         this.useSpellbook = useSpellbook;
-        this.disableCooldown = disableCooldown;
+        this.disableSpellBookCooldown = disableSpellBookCooldown;
+        this.disableGearCooldown = disableGearCooldown;
         this.coolDownMultiplier = coolDownMultiplier;
         this.coolDownValueChange = coolDownValueChange;
         this.upgradeValue = upgradeValue;
@@ -31,7 +33,8 @@ public class SyncConfigMsg {
         buffer.writeBoolean(msg.useCombatItems);
         buffer.writeBoolean(msg.useUtilityItems);
         buffer.writeBoolean(msg.useSpellbook);
-        buffer.writeBoolean(msg.disableCooldown);
+        buffer.writeBoolean(msg.disableSpellBookCooldown);
+        buffer.writeBoolean(msg.disableGearCooldown);
         buffer.writeDouble(msg.coolDownMultiplier);
         buffer.writeDouble(msg.coolDownValueChange);
         buffer.writeInt(msg.upgradeValue);
@@ -39,6 +42,7 @@ public class SyncConfigMsg {
 
     public static SyncConfigMsg decode(PacketBuffer buffer) {
         return new SyncConfigMsg(
+                buffer.readBoolean(),
                 buffer.readBoolean(),
                 buffer.readBoolean(),
                 buffer.readBoolean(),
@@ -61,7 +65,8 @@ public class SyncConfigMsg {
             ArsGearsConfig.useCombatItems = msg.useCombatItems;
             ArsGearsConfig.useUtilityItems = msg.useUtilityItems;
             ArsGearsConfig.useSpellbook = msg.useSpellbook;
-            ArsGearsConfig.disableCooldown = msg.disableCooldown;
+            ArsGearsConfig.disableSpellBookCooldown = msg.disableSpellBookCooldown;
+            ArsGearsConfig.disableGearCooldown = msg.disableGearCooldown;
             ArsGearsConfig.coolDownMultiplier = msg.coolDownMultiplier;
             ArsGearsConfig.coolDownValueChange = msg.coolDownValueChange;
             ArsGearsConfig.upgradeValue = msg.upgradeValue;

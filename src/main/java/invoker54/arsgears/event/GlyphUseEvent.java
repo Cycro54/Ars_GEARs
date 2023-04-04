@@ -29,15 +29,16 @@ public class GlyphUseEvent {
         //If this is happening on the client, just return.
         if (event.getSide() == LogicalSide.CLIENT) return;
 
-        if (((Glyph)itemStack.getItem()).spellPart instanceof AbstractCastMethod) {
-            event.getPlayer().sendMessage(new TranslationTextComponent("ars_gears.chat.use_glyph_cast_method"),  Util.NIL_UUID);
-            return;
-        }
+//        if (((Glyph)itemStack.getItem()).spellPart instanceof AbstractCastMethod) {
+//            event.getPlayer().sendMessage(new TranslationTextComponent("ars_gears.chat.use_glyph_cast_method"),  Util.NIL_UUID);
+//            return;
+//        }
 
         //Grab the extra needed objects
         PlayerEntity player = event.getPlayer();
         Glyph glyph = (Glyph) itemStack.getItem();
         PlayerDataCap cap = PlayerDataCap.getCap(player);
+        if (cap == null) return;
         ItemStack gearStack = cap.getCombatGear();
 
         //Now lets use the method stuff directly from the Glyph use item class
