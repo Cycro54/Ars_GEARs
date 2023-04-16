@@ -1,0 +1,51 @@
+{
+  "type": "ars_nouveau:enchanting_apparatus",
+  "item_1": [
+    {
+      "item": "ars_gears:utility/diamond_paxel_fake"
+    }
+  ],
+  "item_2": [
+    {
+      "item": "minecraft:diamond_hoe"
+    }
+  ],
+  "item_3": [
+    {
+      "item": "ars_nouveau:mana_gem"
+    }
+  ],
+  "item_4": [
+    {
+      "tag": "forge:gems/diamond"
+    }
+  ],
+  "item_5": [
+    {
+      "item": "ars_nouveau:mana_gem"
+    }
+  ],
+  "item_6": [
+    {
+      "tag": "forge:gems/diamond"
+    }
+  ],
+  "item_7": [
+    {
+      "tag": "forge:ingots/gold"
+    }
+  ],
+  "item_8": [
+    {
+      "tag": "forge:ingots/gold"
+    }
+  ],
+  "reagent": [
+    {
+      "item": "ars_gears:stick_cross"
+    }
+  ],
+  "output": {
+    "item": "ars_gears:utility/utility_rune_3"
+  }
+}

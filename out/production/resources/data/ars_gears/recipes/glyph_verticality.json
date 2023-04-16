@@ -1,0 +1,6 @@
+{
+  "type": "ars_nouveau:glyph_recipe",
+  "tier": "ONE",
+  "input": "minecraft:heavy_weighted_pressure_plate",
+  "output": "ars_nouveau:glyph_verticality"
+}

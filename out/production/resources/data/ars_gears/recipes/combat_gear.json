@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ADA",
+    "CBE",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:logs"
+    },
+    "B": {
+      "item": "ars_gears:stick_cross"
+    },
+    "C": {
+      "item": "minecraft:wooden_sword"
+    },
+    "D": {
+      "item": "minecraft:bow"
+    },
+    "E": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "item": "ars_gears:combat/wood_combat_gear"
+  }
+}

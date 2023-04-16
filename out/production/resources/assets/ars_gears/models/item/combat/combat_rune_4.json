@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld_rod",
+  "textures": {
+    "layer0": "ars_gears:item/combat_rune_4"
+  }
+}

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.capability.gear.GearCap;
+import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.Ticker;
 import invoker54.arsgears.init.SoundsInit;
@@ -11,6 +12,7 @@ import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.FeedGearMsg;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ChestContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -40,6 +42,8 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
 
     public GearContainerScreen(GearContainer inst, PlayerInventory inv, ITextComponent title) {
         super(inst, inv, title);
+        this.passEvents = false;
+        this.isQuickCrafting = false;
         this.imageWidth = 176;
         this.imageHeight = 200;
     }
@@ -82,8 +86,10 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
             //Set the damage value
             gearStack.setDamageValue(gearStack.getDamageValue() - menu.repairValue);
 
+            boolean isCombat = GearCap.getCap(gearStack) instanceof CombatGearCap;
+
             //Finally, sync player cap with server
-            NetworkHandler.INSTANCE.sendToServer(new FeedGearMsg(gearStack.getDamageValue(), this.menu.foodToEat));
+            NetworkHandler.INSTANCE.sendToServer(new FeedGearMsg(gearStack.getDamageValue(), this.menu.foodToEat, isCombat));
         }));
         //endregion
 
@@ -92,11 +98,6 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
 
     @Override
     public void tick() {
-        ItemStack gearStack = ClientUtil.mC.player.getMainHandItem();
-        GearCap cap = GearCap.getCap(gearStack);
-
-        if (cap == null) ClientUtil.mC.player.closeContainer();
-
         eatButton.active = (this.menu.repairValue != 0);
     }
 
@@ -158,38 +159,6 @@ public class GearContainerScreen extends ContainerScreen<GearContainer> {
         ClientUtil.blitColor(stack, halfWidthSpace + 23, (int) (130 * beforePercent), halfHeightSpace + 78, 9, getRGBDurabilityForDisplay(beforePercent));
         //endregion
         RenderSystem.disableBlend();
-
-        //Render the button
-
-
-
-//
-//        drawCenteredString(stack,font,"Total",halfWidthSpace + (imageWidth/2),halfHeightSpace + 91, TextFormatting.WHITE.getColor());
-//
-//        renderExperienceBar(stack);
-//
-//        //region Render the flags next
-//        ClientUtil.TEXTURE_MANAGER.bind(ShopScreen.SHOP_LOCATION);
-//
-//        //Render buy flag
-//        ClientUtil.blitImage(stack,halfWidthSpace + 3, 14,halfHeightSpace + imageHeight - offsetY,21,162, 28, 177, 42,256);
-//        //Render Sell flag
-//        ClientUtil.blitImage(stack,halfWidthSpace + 3 + 14, 14,halfHeightSpace + imageHeight - offsetY,28,134, 28, 177, 56,256);
-//        //endregion
-//
-//        //Now render green slots for sellable items
-//        for (int a = 0; a < menu.slots.size(); a++){
-//            Slot slot = menu.getSlot(a);
-//
-//            if (!slot.hasItem()) continue;
-//
-//            if (ShopData.sellEntries.containsKey(slot.getItem().getItem())){
-//                ClientUtil.blitColor(stack,slot.x + halfWidthSpace, 16, slot.y + halfHeightSpace, 16, sellableColor);
-//            }
-//            else {
-//                ClientUtil.blitColor(stack,slot.x + halfWidthSpace, 16, slot.y + halfHeightSpace, 16, unSellableColor);
-//            }
-//        }
     }
 
     @Override

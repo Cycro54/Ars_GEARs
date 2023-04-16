@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ADA",
+    "CBE",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:logs"
+    },
+    "B": {
+      "item": "ars_gears:stick_cross"
+    },
+    "C": {
+      "item": "ars_gears:utility/wood_paxel_fake"
+    },
+    "D": {
+      "item": "minecraft:fishing_rod"
+    },
+    "E": {
+      "item": "minecraft:wooden_hoe"
+    }
+  },
+  "result": {
+    "item": "ars_gears:utility/wood_utility_gear"
+  }
+}
