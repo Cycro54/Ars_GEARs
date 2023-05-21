@@ -1,7 +1,6 @@
 package invoker54.arsgears.capability.gear.combatgear;
 
 import com.hollingsworth.arsnouveau.api.ArsNouveauAPI;
-import com.hollingsworth.arsnouveau.api.spell.AbstractCastMethod;
 import com.hollingsworth.arsnouveau.api.spell.AbstractSpellPart;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
 import invoker54.arsgears.ArsUtil;
@@ -11,8 +10,6 @@ import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.init.ItemInit;
 import invoker54.arsgears.init.SoundsInit;
-import invoker54.arsgears.item.GearUpgrades;
-import invoker54.arsgears.item.combatgear.CombatGearItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -26,7 +23,8 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COMBAT_GEAR;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.COOLDOWN;
 
 public class CombatGearCap extends GearCap implements ICombatGear {
     private static final Logger LOGGER = LogManager.getLogger();

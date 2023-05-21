@@ -10,7 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static invoker54.arsgears.item.combatgear.CombatGearItem.*;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.bowInt;
+import static invoker54.arsgears.item.combatgear.CombatGearItem.swordINT;
 
 public class CombatUpgradeScreen extends UpgradeScreen {
     private static final Logger LOGGER = LogManager.getLogger();

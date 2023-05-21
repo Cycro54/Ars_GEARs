@@ -12,7 +12,6 @@ import invoker54.arsgears.network.NetworkHandler;
 import invoker54.arsgears.network.message.FeedGearMsg;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ChestContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;

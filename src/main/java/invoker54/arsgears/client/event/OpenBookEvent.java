@@ -7,7 +7,6 @@ import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.config.ArsGearsConfig;
 import invoker54.arsgears.item.FakeSpellBook;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import jdk.nashorn.internal.ir.IfNode;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -15,7 +14,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 

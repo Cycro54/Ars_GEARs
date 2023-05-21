@@ -2,50 +2,28 @@ package invoker54.arsgears.event;
 
 
 import com.hollingsworth.arsnouveau.api.event.SpellCastEvent;
-import com.hollingsworth.arsnouveau.api.event.SpellResolveEvent;
 import com.hollingsworth.arsnouveau.api.spell.Spell;
 import com.hollingsworth.arsnouveau.api.spell.SpellContext;
 import com.hollingsworth.arsnouveau.api.spell.SpellResolver;
-import com.hollingsworth.arsnouveau.api.util.MathUtil;
-import com.hollingsworth.arsnouveau.api.util.SpellUtil;
-import com.hollingsworth.arsnouveau.common.block.tile.IntangibleAirTile;
-import com.hollingsworth.arsnouveau.common.block.tile.PhantomBlockTile;
-import com.hollingsworth.arsnouveau.common.block.tile.ScribesTile;
-import com.hollingsworth.arsnouveau.common.capability.ManaCapability;
 import com.hollingsworth.arsnouveau.common.items.SpellBook;
-import com.hollingsworth.arsnouveau.common.network.Networking;
-import com.hollingsworth.arsnouveau.common.network.PacketOpenSpellBook;
-import com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive;
 import com.hollingsworth.arsnouveau.common.util.PortUtil;
 import invoker54.arsgears.ArsGears;
+import invoker54.arsgears.ArsUtil;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
-import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.config.ArsGearsConfig;
 import invoker54.arsgears.item.combatgear.CombatGearItem;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static invoker54.arsgears.item.combatgear.CombatGearItem.SpellM.getCurrentRecipe;
 
 @Mod.EventBusSubscriber(modid = ArsGears.MOD_ID)
 public class SpellBookUseEvent {
@@ -70,6 +48,8 @@ public class SpellBookUseEvent {
             player.sendMessage(new TranslationTextComponent("ars_gears.chat.use_spell_book"), Util.NIL_UUID);
             event.setCanceled(true);
         }
+
+
         //This will stop the player from casting if there is a cooldown
         if (ArsGearsConfig.disableSpellBookCooldown) return;
         if (player.isCreative()) return;
@@ -78,45 +58,32 @@ public class SpellBookUseEvent {
             PortUtil.sendMessageNoSpam(player, new TranslationTextComponent("ars_gears.chat.cast_cooldown"));
             event.setCanceled(true);
         }
-        //Set the cooldown after doing a quick check
-        else if (canCast(player, itemStack)){
-            Spell spell = SpellBook.getRecipeFromTag(itemTag, SpellBook.getMode(itemTag));
-            if (!new SpellResolver(new SpellContext(spell, player)).canCast(player)) return;
-
-            float cooldown = CombatGearItem.calcCooldown(-1, spell, true) + event.getEntityLiving().level.getGameTime();
-            //One for the bookNBT in your Combat Gear cap
-            CombatGearItem.setCooldown(bookNBT, SpellBook.getMode(itemTag), cooldown);
-            // One for the spell book itself!
-            CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
-            gearCap.setBookTag(bookNBT);
-        }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void checkCastEvent(SpellCastEvent event){
+        if (!(event.getEntityLiving() instanceof PlayerEntity)) return;
+        if (event.isCanceled()) return;
+        if (ArsGearsConfig.disableSpellBookCooldown) return;
 
-    //Code ripped from the SpellBook code, tis messy yes.
-    public static boolean canCast(PlayerEntity playerIn, ItemStack stack){
-        World worldIn = playerIn.level;
+        PlayerEntity player = (PlayerEntity) event.getEntityLiving();
+        ItemStack magicStack = ArsUtil.getHeldItem(player, SpellBook.class);
+        CombatGearCap gearCap = CombatGearCap.getCap(player);
+        CompoundNBT bookNBT = gearCap.getBookTag();
 
-        if(!stack.hasTag())
-            return false;
+        if (magicStack == ItemStack.EMPTY) return;
 
-        SpellResolver resolver = new SpellResolver(new SpellContext(getCurrentRecipe(stack), playerIn));
-        boolean isSensitive = resolver.spell.getBuffsAtIndex(0, playerIn, AugmentSensitive.INSTANCE) > 0;
-        RayTraceResult result = playerIn.pick(5, 0, isSensitive);
-        if(result instanceof BlockRayTraceResult && worldIn.getBlockEntity(((BlockRayTraceResult) result).getBlockPos()) instanceof ScribesTile)
-            return false;
-        if(result instanceof BlockRayTraceResult && !playerIn.isShiftKeyDown()){
-            if(worldIn.getBlockEntity(((BlockRayTraceResult) result).getBlockPos()) != null &&
-                    !(worldIn.getBlockEntity(((BlockRayTraceResult) result).getBlockPos()) instanceof IntangibleAirTile
-                            ||(worldIn.getBlockEntity(((BlockRayTraceResult) result).getBlockPos()) instanceof PhantomBlockTile))) {
-                return false;
-            }
-        }
+        CompoundNBT itemTag = magicStack.getOrCreateTag();
 
-        EntityRayTraceResult entityRes = MathUtil.getLookedAtEntity(playerIn, 25);
+        //Set the cooldown
+        Spell spell = SpellBook.getRecipeFromTag(itemTag, SpellBook.getMode(itemTag));
+        if (!new SpellResolver(new SpellContext(spell, player)).canCast(player)) return;
 
-        if(entityRes != null && entityRes.getEntity() instanceof LivingEntity)  return true;
-
-        return result.getType() == RayTraceResult.Type.BLOCK || (isSensitive && result instanceof BlockRayTraceResult);
+        float cooldown = CombatGearItem.calcCooldown(-1, spell, true) + player.level.getGameTime();
+        //One for the bookNBT in your Combat Gear cap
+        CombatGearItem.setCooldown(bookNBT, SpellBook.getMode(itemTag), cooldown);
+        // One for the spell book itself!
+        CombatGearItem.setCooldown(itemTag, SpellBook.getMode(itemTag), cooldown);
+        gearCap.setBookTag(bookNBT);
     }
 }

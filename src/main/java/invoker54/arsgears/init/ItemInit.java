@@ -2,7 +2,6 @@ package invoker54.arsgears.init;
 
 import com.hollingsworth.arsnouveau.ArsNouveau;
 import com.hollingsworth.arsnouveau.api.spell.ISpellTier;
-import com.hollingsworth.arsnouveau.setup.ItemsRegistry;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.item.FakeSpellBook;
 import invoker54.arsgears.item.GearTier;

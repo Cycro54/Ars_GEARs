@@ -1,7 +1,6 @@
 package invoker54.arsgears.network.message;
 
 import invoker54.arsgears.capability.gear.GearCap;
-import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.capability.player.PlayerDataCap;
 import invoker54.arsgears.client.gui.container.GearContainer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.Calendar;
 import java.util.function.Supplier;
 
 public class FeedGearMsg {

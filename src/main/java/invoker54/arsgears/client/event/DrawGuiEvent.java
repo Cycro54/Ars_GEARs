@@ -9,7 +9,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import invoker54.arsgears.ArsGears;
 import invoker54.arsgears.ArsUtil;
-import invoker54.arsgears.capability.gear.GearCap;
 import invoker54.arsgears.capability.gear.combatgear.CombatGearCap;
 import invoker54.arsgears.client.ClientUtil;
 import invoker54.arsgears.client.gui.CircleRender;
